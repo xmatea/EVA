@@ -1,0 +1,5 @@
+# Database file
+c:\database.json
+# Defaults
+# Normalisation (On_counts or On_Pulses)
+On_Counts
