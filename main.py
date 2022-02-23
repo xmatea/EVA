@@ -30,11 +30,12 @@ if __name__ == '__main__':
     window_welcome = WS.WelcomeWindow()
     window_welcome.show()  # IMPORTANT!!!!! Windows are hidden by default.
     # Start the event loop.
-    #app_welcome.exec()
+    app_welcome.exec()
 
     # load settings file
     ls.loadsettings()
     print(ls.settings_info)
+    print('here')
 
     # load database file
     peakdata=ldf.loadDatabaseFile()
@@ -43,8 +44,10 @@ if __name__ == '__main__':
 
 
     # Close welcome screen
+    print('hello')
 
-    app_welcome.closeAllWindows()
+    app_welcome.exit(0)
+    print('dam')
 
     # launch main window
     app_main = QApplication(sys.argv)
@@ -52,6 +55,8 @@ if __name__ == '__main__':
     window_main = MW.MainWindow()
     window_main.show()  # IMPORTANT!!!!! Windows are hidden by default.
     # Start the event loop.
+    print('here')
+
     app_main.exec()
 
 

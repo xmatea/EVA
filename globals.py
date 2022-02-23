@@ -1,2 +1,15 @@
+import array as arr
 workingdirectory='C:/Users/adh37/OneDrive - Science and Technology Facilities Council/Data/Negative Muons/Experiments/Wallace Steel'
+dataset_GE1 = arr.array('i',[])
+dataset_GE2 = arr.array('i',[])
+dataset_GE3 = arr.array('i',[])
+dataset_GE4 = arr.array('i',[])
+flag_d_GE1 = 0
+flag_d_GE2 = 0
+flag_d_GE3 = 0
+flag_d_GE4 = 0
+x_GE1 = arr.array('i', [])
+y_GE1 = arr.array('i', [])
+err_GE1 = arr.array('i', [])
+
 

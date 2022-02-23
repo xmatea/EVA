@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
@@ -17,9 +18,9 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QLineEdit,
     QFileDialog,
+    QMessageBox,
 )
-from PyQt5.QtGui import QPalette, QColor
-
+from PyQt5.QtGui import QPalette, QColor, QCloseEvent
 import sys
 import loaddata
 import loadcomment
@@ -36,10 +37,23 @@ class Color(QWidget):
         palette.setColor(QPalette.Window, QColor(color))
         self.setPalette(palette)
 
+class PlotWindow(QWidget):
+    """
+        This "window" is a QWidget. If it has no parent, it
+        will appear as a free-floating window as we want.
+        """
+
+    def __init__(self):
+        super().__init__()
+        layout = QVBoxLayout()
+        self.label = QLabel("Another Window")
+        layout.addWidget(self.label)
+        self.setLayout(layout)
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.wp = None
 
         app = QApplication(sys.argv)
         w = QWidget()
@@ -60,7 +74,8 @@ class MainWindow(QMainWindow):
 
         # setting up the actions
 
-        file_exit.triggered.connect(quit)
+        # file_exit.triggered.connect(quit)
+        file_exit.triggered.connect(lambda: self.closeit(app))
         file_browse_dir.triggered.connect(lambda: self.Browse_dir())
 
         # setting up the layout
@@ -117,6 +132,20 @@ class MainWindow(QMainWindow):
         w.show()
         sys.exit(app.exec_())
 
+    def closeit(self, app):
+        print('here')
+        quit_msg = "Are you sure you want to quit?"
+        reply = QMessageBox.question(self, 'Message', quit_msg,
+                                               QMessageBox.Yes, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+
+            print('Yes')
+            sys.exit(app.exec_())
+
+            return
+
+
+
     def loadrunandcom(self, RunNum):
         print('load data and comment')
         flag,rtn_str = loadcomment.loadcomment(RunNum)
@@ -142,9 +171,40 @@ class MainWindow(QMainWindow):
             self.label_Events.setText("Events:")
 
         flag = loaddata.loaddata(RunNum)
-        if flag == 0:
-            print('yeah')
+        if (globals.flag_d_GE1 == 0 or globals.flag_d_GE2 == 0 or globals.flag_d_GE3 == 0 or globals.flag_d_GE4 == 0):
+            print('oh no')
+            self.label_RN.setText("Run Number:   File load failed")
+        else:
+            print ('yeah!')
+            self.label_RN.setText("Run Number:   " + str(RunNum))
 
+
+
+            self.Show_Plot_Window()
+
+
+
+    def Show_Plot_Window(self):
+
+        print('in Show_plot_window')
+        print(self.wp)
+
+        if self.wp is None:
+            self.wp = PlotWindow()
+            self.wp.show()
+            print('plotting')
+            plt.fill_between(globals.x_GE1, globals.y_GE1, step='mid', color='yellow')
+            plt.step(globals.x_GE1, globals.y_GE1, where='mid', color='black')
+            plt.xlabel("Energy")
+            plt.ylabel("Intensity")
+            plt.legend("yeah!")
+            plt.title('Customized histogram')
+
+            plt.show()
+
+
+
+        print(self.wp)
 
 
 
@@ -161,63 +221,6 @@ class MainWindow(QMainWindow):
         print(dir_path)
         globals.workingdirectory = dir_path
 
-        '''self.setWindowTitle("Elemental Analysis")
-        # labels for the run information
-
-        label1 = QLabel("Run Number")
-        label1.setAlignment(Qt.AlignCenter)
-        label2 = QLabel("Title")
-        label2.setAlignment(Qt.AlignCenter)
-        label3 = QLabel("Start:")
-        label3.setAlignment(Qt.AlignCenter)
-        label4 = QLabel("End:")
-        label4.setAlignment(Qt.AlignCenter)
-        label5 = QLabel("Events:")
-        label5.setAlignment(Qt.AlignCenter)
-
-        layout = QVBoxLayout()
-        layout.addWidget(Color('red'))
-        layout.addWidget(Color('green'))
-        layout.addWidget(Color('blue'))
-
-        widget = QWidget()
-        widget.setLayout(layout)
-        widget.resize(600,600)
-        self.setCentralWidget(widget)
-
-        self.setCentralWidget(label1)
-        self.setCentralWidget(label2)
-        self.setCentralWidget(label3)
-        self.setCentralWidget(label4)
-        self.setCentralWidget(label5)
-
-        toolbar = QToolBar("My main toolbar")
-        toolbar.setIconSize(QSize(16, 16))
-        self.addToolBar(toolbar)
-
-        button_action = QAction(QIcon("bug.png"), "&Your button", self)
-        button_action.setStatusTip("This is your button")
-        button_action.triggered.connect(self.onMyToolBarButtonClick)
-        button_action.setCheckable(True)
-        toolbar.addAction(button_action)
-
-        toolbar.addSeparator()
-
-        button_action2 = QAction(QIcon("bug.png"), "Your &button2", self)
-        button_action2.setStatusTip("This is your button2")
-        button_action2.triggered.connect(self.onMyToolBarButtonClick)
-        button_action2.setCheckable(True)
-        toolbar.addAction(button_action2)
-
-        toolbar.addWidget(QLabel("Hello"))
-        toolbar.addWidget(QCheckBox())
-
-        self.setStatusBar(QStatusBar(self))
-
-        menu = self.menuBar()
-
-        file_menu = menu.addMenu("&File")
-        file_menu.addAction(button_action)'''
-
     def onMyToolBarButtonClick(self, s):
         print("click", s)
+
