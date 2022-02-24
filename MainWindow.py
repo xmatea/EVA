@@ -195,6 +195,7 @@ class MainWindow(QMainWindow):
             print('plotting')
             plt.fill_between(globals.x_GE1, globals.y_GE1, step='mid', color='yellow')
             plt.step(globals.x_GE1, globals.y_GE1, where='mid', color='black')
+            plt.ylim(bottom=0.0)
             plt.xlabel("Energy")
             plt.ylabel("Intensity")
             plt.legend("yeah!")
