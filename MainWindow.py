@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from matplotlib.backend_bases import MouseButton
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
@@ -106,7 +107,7 @@ class MainWindow(QMainWindow):
         self.label_End.move(100, 280)
         self.label_End.show()
 
-        # setting up the buttons
+        # setting up the buttons and run number
 
         RunNum_Text = QLineEdit(w)
         RunNum_Text.setText('2630')
@@ -140,7 +141,8 @@ class MainWindow(QMainWindow):
         if reply == QMessageBox.Yes:
 
             print('Yes')
-            sys.exit(app.exec_())
+            app.closeAllWindows()
+
 
             return
 
@@ -200,6 +202,45 @@ class MainWindow(QMainWindow):
             plt.ylabel("Intensity")
             plt.legend("yeah!")
             plt.title('Customized histogram')
+
+            print('hello')
+
+            #annot = plt.annotate("", xy=(0, 0), xytext=(20, 20), textcoords="offset points",
+            #                    bbox=dict(boxstyle="round", fc="w"),
+            #                    arrowprops=dict(arrowstyle="->"))
+            #annot.set_visible(False)
+            print('oops')
+
+            def on_move(event):
+                # get the x and y pixel coords
+                x, y = event.x, event.y
+                if event.inaxes:
+                    ax = event.inaxes  # the axes instance
+                    print('data coords %f %f' % (event.xdata, event.ydata))
+                    #annot.set_text(event.x,event.y)
+
+            def on_click(event):
+                if event.button is MouseButton.RIGHT:
+                    print('disconnecting callback')
+                    plt.disconnect(binding_id)
+
+                if event.button is MouseButton.LEFT:
+                    x, y = event.x, event.y
+                    if event.inaxes:
+                        ax = event.inaxes  # the axes instance
+                        print('data coords this time are %f %f' % (event.xdata, event.ydata))
+                        #need to store these
+                        #annot.set_visible(True)
+                        #annot.set_text(event.x)
+                        plt.annotate(str(event.x)+" "+str(event.y), xy=(500,500), xytext=(event.x, event.y))
+
+
+
+
+
+
+            binding_id = plt.connect('motion_notify_event', on_move)
+            plt.connect('button_press_event', on_click)
 
             plt.show()
 
