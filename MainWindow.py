@@ -176,7 +176,7 @@ class MainWindow(QWidget):
         if reply == QMessageBox.Yes:
 
             print('Yes')
-            app.exit(0)
+            QApplication.quit()
 
 
             return
