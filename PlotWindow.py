@@ -37,7 +37,11 @@ class PlotWindow(QWidget):
 
     def __init__(self):
         super().__init__()
-        layout = QVBoxLayout()
+        '''layout = QVBoxLayout()
         self.label = QLabel("Another Window")
         layout.addWidget(self.label)
-        self.setLayout(layout)
+        self.setLayout(layout)'''
+
+        wPlot = QWidget()
+        wPlot.resize(1200, 600)
+        wPlot.setWindowTitle("Plot Window")

@@ -44,26 +44,51 @@ class PlotWindow(QWidget):
         will appear as a free-floating window as we want.
         """
 
-    def __init__(self):
-        super().__init__()
-        layout = QVBoxLayout()
+    def __init__(self, parent = None):
+        super(PlotWindow,self).__init__(parent)
+        label = QLabel("Plot Window", self)
+
+
+        '''layout = QVBoxLayout()
         self.label = QLabel("Another Window")
         layout.addWidget(self.label)
         self.setLayout(layout)
+        '''
+        print('in here')
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
+
+
+        self.resize(1200, 600)
+        self.setWindowTitle("Plot Window")
+        print('part wplot')
+
+
+        self.label_Element = QLabel("Possible Transition:                                            ", self)
+        self.label_Element.move(300, 180)
+        self.label_Element.show()
+
+
+        print('here in wplot')
+
+        #wPlot.show()
+
+    def closeEvent(self, event):
+        event.ignore()
+
+class MainWindow(QWidget):
+    def __init__(self, parent = None):
+        super(MainWindow,self).__init__(parent)
         self.wp = None
 
-        app = QApplication(sys.argv)
-        w = QWidget()
-        w.resize(1200, 600)
-        w.setWindowTitle("Elemental Analysis")
+        #app = QApplication(sys.argv)
 
-        # setting up the menu bar
+        '''w = QWidget()'''
+        self.resize(1200, 600)
+        self.setWindowTitle("Elemental Analysis")
 
-        bar = QMenuBar(w)
+        # setting up the menu bar'''
+
+        bar = QMenuBar(self)
         file = bar.addMenu('File')
         file_loaddef = file.addAction('Load Default Setting')
         file_browse_dir = file.addAction('Browse to Data Directory')
@@ -75,63 +100,73 @@ class MainWindow(QMainWindow):
 
         # setting up the actions
 
-        # file_exit.triggered.connect(quit)
         file_exit.triggered.connect(lambda: self.closeit(app))
         file_browse_dir.triggered.connect(lambda: self.Browse_dir())
 
         # setting up the layout
 
-        self.label_RN = QLabel(w)
+        self.label_RN = QLabel(self)
         self.label_RN.setText("Run Number                                            ")
         self.label_RN.move(100, 80)
         self.label_RN.show()
 
-        self.label_Com = QLabel(w)
+        self.label_Com = QLabel(self)
         self.label_Com.setText("Comment " +
              "                                                                                                  ")
         self.label_Com.move(100, 130)
         self.label_Com.show()
 
-        self.label_Events = QLabel(w)
+        self.label_Events = QLabel(self)
         self.label_Events.setText("Events                                            ")
         self.label_Events.move(100, 180)
         self.label_Events.show()
 
-        self.label_Start = QLabel(w)
+        self.label_Start = QLabel(self)
         self.label_Start.setText("Start Time                                            ")
         self.label_Start.move(100, 230)
         self.label_Start.show()
 
-        self.label_End = QLabel(w)
+        self.label_End = QLabel(self)
         self.label_End.setText("End Time                                             ")
         self.label_End.move(100, 280)
         self.label_End.show()
 
         # setting up the buttons and run number
 
-        RunNum_Text = QLineEdit(w)
+        RunNum_Text = QLineEdit(self)
         RunNum_Text.setText('2630')
         RunNum_Text.move(350, 360)
 
 
-        button_plus = QPushButton(w)
+        button_plus = QPushButton(self)
         button_plus.setText('+1')
         button_plus.move(750, 350)
         button_plus.clicked.connect(lambda: self.Incr_RunNum(RunNum_Text))
 
-        button_minus = QPushButton(w)
+        button_minus = QPushButton(self)
         button_minus.setText('-1')
         button_minus.move(100, 350)
         button_minus.clicked.connect(lambda: self.Decr_RunNum(RunNum_Text))
 
-        button_load = QPushButton(w)
+        button_load = QPushButton(self)
         button_load.setText('Load')
         button_load.move(420, 420)
         button_load.clicked.connect(lambda: self.loadrunandcom(
             RunNum_Text.text()))
 
-        w.show()
-        sys.exit(app.exec_())
+
+
+    def closeEvent(self, event):
+        print('in closeevent')
+        widgetList = QApplication.topLevelWidgets()
+        numWindows = len(widgetList)
+        if numWindows > 0:
+            event.accept()
+            QApplication.quit()
+
+
+        else:
+            event.ignore()
 
     def closeit(self, app):
         print('here')
@@ -141,7 +176,7 @@ class MainWindow(QMainWindow):
         if reply == QMessageBox.Yes:
 
             print('Yes')
-            app.closeAllWindows()
+            app.exit(0)
 
 
             return
@@ -150,8 +185,9 @@ class MainWindow(QMainWindow):
 
     def loadrunandcom(self, RunNum):
         print('load data and comment')
-        flag,rtn_str = loadcomment.loadcomment(RunNum)
-        print(flag,rtn_str)
+        globals.RunNum = RunNum
+        flag, rtn_str = loadcomment.loadcomment(RunNum)
+        print(flag, rtn_str)
         if flag == 1:
             mapping = dict.fromkeys(range(32))
 
@@ -193,60 +229,72 @@ class MainWindow(QMainWindow):
 
         if self.wp is None:
             self.wp = PlotWindow()
+            print('self,wp = none')
+            self.wp.resize(1200, 600)
+            self.wp.setWindowTitle("Plot Window")
             self.wp.show()
-            print('plotting')
-            plt.fill_between(globals.x_GE1, globals.y_GE1, step='mid', color='yellow')
-            plt.step(globals.x_GE1, globals.y_GE1, where='mid', color='black')
-            plt.ylim(bottom=0.0)
-            plt.xlabel("Energy")
-            plt.ylabel("Intensity")
-            plt.legend("yeah!")
-            plt.title('Customized histogram')
 
-            print('hello')
+        else:
+            print('window exists')
 
-            #annot = plt.annotate("", xy=(0, 0), xytext=(20, 20), textcoords="offset points",
-            #                    bbox=dict(boxstyle="round", fc="w"),
-            #                    arrowprops=dict(arrowstyle="->"))
-            #annot.set_visible(False)
-            print('oops')
+        print('plotting')
+        plt.figure(figsize=(16, 7))
 
-            def on_move(event):
-                # get the x and y pixel coords
+
+        plt.fill_between(globals.x_GE1, globals.y_GE1, step='mid', color='yellow')
+        plt.step(globals.x_GE1, globals.y_GE1, where='mid', color='black')
+        plt.ylim(bottom=0.0)
+        plt.xlim(left = 0.0)
+        plt.xlabel("Energy")
+        plt.ylabel("Intensity")
+        plt.legend(str(globals.RunNum))
+        plt.title("Run Number: " + str(globals.RunNum) + "  " + globals.comment_str)
+        plt.rc('font', size = 16)
+
+
+        plt.show()
+        print('hello')
+
+        print('oops')
+
+        def on_move(event):
+
+            # get the x and y pixel coords
+            x, y = event.x, event.y
+            if event.inaxes:
+
+                ax = event.inaxes  # the axes instance
+                print('data coords %f %f' % (event.xdata, event.ydata))
+                #annot.set_text(event.x,event.y)
+
+        def on_click(event):
+            if event.button is MouseButton.RIGHT:
+                print('disconnecting callback')
+                plt.disconnect(binding_id)
+
+            if event.button is MouseButton.LEFT:
                 x, y = event.x, event.y
                 if event.inaxes:
                     ax = event.inaxes  # the axes instance
-                    print('data coords %f %f' % (event.xdata, event.ydata))
-                    #annot.set_text(event.x,event.y)
+                    print('cool data coords this time are %f %f' % (event.xdata, event.ydata))
+                    #need to store these
+                    #annot.set_visible(True)
+                    #annot.set_text(event.x)
+                    #plt.annotate(str(event.x)+" "+str(event.y), xy=(500,500), xytext=(event.x, event.y))
 
-            def on_click(event):
-                if event.button is MouseButton.RIGHT:
-                    print('disconnecting callback')
-                    plt.disconnect(binding_id)
-
-                if event.button is MouseButton.LEFT:
-                    x, y = event.x, event.y
-                    if event.inaxes:
-                        ax = event.inaxes  # the axes instance
-                        print('data coords this time are %f %f' % (event.xdata, event.ydata))
-                        #need to store these
-                        #annot.set_visible(True)
-                        #annot.set_text(event.x)
-                        plt.annotate(str(event.x)+" "+str(event.y), xy=(500,500), xytext=(event.x, event.y))
+        binding_id = plt.connect('motion_notify_event', on_move)
+        plt.connect('button_press_event', on_click)
 
 
 
 
 
 
-            binding_id = plt.connect('motion_notify_event', on_move)
-            plt.connect('button_press_event', on_click)
-
-            plt.show()
 
 
 
-        print(self.wp)
+
+        #print(self.wp)
 
 
 
@@ -266,3 +314,7 @@ class MainWindow(QMainWindow):
     def onMyToolBarButtonClick(self, s):
         print("click", s)
 
+app = QApplication(sys.argv)
+mainWin = MainWindow()
+mainWin.show()
+sys.exit(app.exec_())

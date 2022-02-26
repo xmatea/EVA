@@ -17,12 +17,12 @@ def loadcomment(RunNum):
         else:
             print('Run Info', search_str, 'Found in Line', index - 1)
 
-            starttime_str = commenttext[index]
-            endtime_str = commenttext[index+1]
-            events_str = commenttext[index+2]
-            comment_str = commenttext[index+4]
-            rtn_str = [starttime_str,endtime_str,events_str,comment_str]
+            globals.starttime_str = commenttext[index]
+            globals.endtime_str = commenttext[index+1]
+            globals.events_str = commenttext[index+2]
+            globals.comment_str = commenttext[index+4]
+            rtn_str = [globals.starttime_str, globals.endtime_str, globals.events_str, globals.comment_str]
     except IOError:
-        rtn_str = [" "," "," "," "]
+        rtn_str = [" ", " ", " ", " "]
         flag = 0
     return flag,rtn_str

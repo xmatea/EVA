@@ -11,5 +11,8 @@ flag_d_GE4 = 0
 x_GE1 = arr.array('i', [])
 y_GE1 = arr.array('i', [])
 err_GE1 = arr.array('i', [])
-
-
+starttime_str = " "
+endtime_str = " "
+events_str = " "
+comment_str = " "
+RunNum = 0
