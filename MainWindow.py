@@ -62,18 +62,70 @@ class PlotWindow(QWidget):
         self.setWindowTitle("Plot Window")
         print('part wplot')
 
-
         self.label_Element = QLabel("Possible Transition:                                            ", self)
         self.label_Element.move(300, 180)
         self.label_Element.show()
 
 
         print('here in wplot')
+        self.PlotSpectra()
 
         #wPlot.show()
 
     def closeEvent(self, event):
         event.ignore()
+
+    def PlotSpectra(self):
+        print('plotting')
+        plt.figure(figsize=(16, 7))
+
+        plt.fill_between(globals.x_GE1, globals.y_GE1, step='mid', color='yellow')
+        plt.step(globals.x_GE1, globals.y_GE1, where='mid', color='black')
+        plt.ylim(bottom=0.0)
+        plt.xlim(left=0.0)
+        plt.xlabel("Energy")
+        plt.ylabel("Intensity")
+        plt.legend(str(globals.RunNum))
+        plt.title("Run Number: " + str(globals.RunNum) + "  " + globals.comment_str)
+        plt.rc('font', size=16)
+
+        plt.show()
+        print('hello')
+
+        print('oops')
+
+        def on_move(event):
+
+            # get the x and y pixel coords
+            x, y = event.x, event.y
+            if event.inaxes:
+
+                ax = event.inaxes  # the axes instance
+                print('data coords %f %f' % (event.xdata, event.ydata))
+                #annot.set_text(event.x,event.y)
+
+        def on_click(event):
+            if event.button is MouseButton.RIGHT:
+                print('disconnecting callback')
+                plt.disconnect(binding_id)
+
+
+            if event.button is MouseButton.LEFT:
+                x, y = event.x, event.y
+                if event.inaxes:
+                    ax = event.inaxes  # the axes instance
+                    print('cool data coords this time are %f %f' % (event.xdata, event.ydata))
+                    self.label_Element.setText("yippee")
+
+                    #need to store these
+                    #annot.set_visible(True)
+                    #annot.set_text(event.x)
+                    #plt.annotate(str(event.x)+" "+str(event.y), xy=(500,500), xytext=(event.x, event.y))
+
+        binding_id = plt.connect('motion_notify_event', on_move)
+        plt.connect('button_press_event', on_click)
+
+
 
 class MainWindow(QWidget):
     def __init__(self, parent = None):
@@ -237,53 +289,7 @@ class MainWindow(QWidget):
         else:
             print('window exists')
 
-        print('plotting')
-        plt.figure(figsize=(16, 7))
 
-
-        plt.fill_between(globals.x_GE1, globals.y_GE1, step='mid', color='yellow')
-        plt.step(globals.x_GE1, globals.y_GE1, where='mid', color='black')
-        plt.ylim(bottom=0.0)
-        plt.xlim(left = 0.0)
-        plt.xlabel("Energy")
-        plt.ylabel("Intensity")
-        plt.legend(str(globals.RunNum))
-        plt.title("Run Number: " + str(globals.RunNum) + "  " + globals.comment_str)
-        plt.rc('font', size = 16)
-
-
-        plt.show()
-        print('hello')
-
-        print('oops')
-
-        def on_move(event):
-
-            # get the x and y pixel coords
-            x, y = event.x, event.y
-            if event.inaxes:
-
-                ax = event.inaxes  # the axes instance
-                print('data coords %f %f' % (event.xdata, event.ydata))
-                #annot.set_text(event.x,event.y)
-
-        def on_click(event):
-            if event.button is MouseButton.RIGHT:
-                print('disconnecting callback')
-                plt.disconnect(binding_id)
-
-            if event.button is MouseButton.LEFT:
-                x, y = event.x, event.y
-                if event.inaxes:
-                    ax = event.inaxes  # the axes instance
-                    print('cool data coords this time are %f %f' % (event.xdata, event.ydata))
-                    #need to store these
-                    #annot.set_visible(True)
-                    #annot.set_text(event.x)
-                    #plt.annotate(str(event.x)+" "+str(event.y), xy=(500,500), xytext=(event.x, event.y))
-
-        binding_id = plt.connect('motion_notify_event', on_move)
-        plt.connect('button_press_event', on_click)
 
 
 

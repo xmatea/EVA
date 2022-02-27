@@ -47,6 +47,7 @@ def Show_Plot_Window(self):
                 if event.inaxes:
                     ax = event.inaxes  # the axes instance
                     print('data coords this time are %f %f' % (event.xdata, event.ydata))
+
                     # need to store these
                     # annot.set_visible(True)
                     # annot.set_text(event.x)
