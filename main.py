@@ -14,6 +14,7 @@ import MainWindow as MW
 import loadsettings as ls
 
 import LoadDatabaseFile as ldf
+import globals
 
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
@@ -38,8 +39,8 @@ if __name__ == '__main__':
     print('here')
 
     # load database file
-    peakdata=ldf.loadDatabaseFile()
-    for key, value in peakdata.items():
+    ldf.loadDatabaseFile()
+    for key, value in globals.peakdata.items():
         print(key, ":", value)
 
 

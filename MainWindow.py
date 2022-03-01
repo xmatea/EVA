@@ -20,12 +20,18 @@ from PyQt5.QtWidgets import (
     QLineEdit,
     QFileDialog,
     QMessageBox,
+    QTableWidget,
+    QTableWidgetItem,
 )
 from PyQt5.QtGui import QPalette, QColor, QCloseEvent
 import sys
 import loaddata
 import loadcomment
 import globals
+import getmatch
+import loadsettings as ls
+
+import LoadDatabaseFile as ldf
 
 
 class Color(QWidget):
@@ -58,13 +64,32 @@ class PlotWindow(QWidget):
 
 
 
-        self.resize(1200, 600)
+        self.resize(100, 200)
+        self.setMinimumSize(500,1000)
         self.setWindowTitle("Plot Window")
         print('part wplot')
 
         self.label_Element = QLabel("Possible Transition:                                            ", self)
         self.label_Element.move(300, 180)
         self.label_Element.show()
+
+        self.table_clickpeaks = QTableWidget(self)
+        self.table_clickpeaks.setShowGrid(True)
+        self.table_clickpeaks.setColumnCount(2)
+        self.table_clickpeaks.setRowCount(10)
+        self.table_clickpeaks.move(300,220)
+        self.table_clickpeaks.setMinimumSize(300,600)
+        #self.table_clickpeaks.resize(200,500)
+        #self.locationTable.setGeometry(10, 10, self.geometry().width() / 2 - 20, self.geometry().height() / 2)
+        self.table_clickpeaks.setHorizontalHeaderLabels(['Element', 'Transition'])
+
+        self.table_clickpeaks.setFixedWidth(700)
+        #self.table_clickpeaks.setFixedHeight(500)
+        print('helo')
+        self.table_clickpeaks.setItem(1, 1, QTableWidgetItem('hello'))
+        print('oh no')
+        self.table_clickpeaks.show()
+        self.show()
 
 
         print('here in wplot')
@@ -94,7 +119,7 @@ class PlotWindow(QWidget):
 
         print('oops')
 
-        def on_move(event):
+        '''def on_move(event):
 
             # get the x and y pixel coords
             x, y = event.x, event.y
@@ -102,27 +127,44 @@ class PlotWindow(QWidget):
 
                 ax = event.inaxes  # the axes instance
                 print('data coords %f %f' % (event.xdata, event.ydata))
-                #annot.set_text(event.x,event.y)
+                #annot.set_text(event.x,event.y)'''
 
         def on_click(event):
             if event.button is MouseButton.RIGHT:
+                #print(globals.peak_data)
                 print('disconnecting callback')
-                plt.disconnect(binding_id)
+                #plt.disconnect(binding_id)
+
 
 
             if event.button is MouseButton.LEFT:
                 x, y = event.x, event.y
                 if event.inaxes:
                     ax = event.inaxes  # the axes instance
-                    print('cool data coords this time are %f %f' % (event.xdata, event.ydata))
-                    self.label_Element.setText("yippee")
+                    #self.label_Element.setText("yippee")
+                    default_peaks = [event.x]
+                    default_sigma = [0.45]*len(default_peaks)
+                    input_data = list(zip(default_peaks, default_sigma))
+                    res = getmatch.get_matches(input_data)
+                    temp = res[0]
+                    i = 0
+                    for match in temp:
 
-                    #need to store these
-                    #annot.set_visible(True)
-                    #annot.set_text(event.x)
-                    #plt.annotate(str(event.x)+" "+str(event.y), xy=(500,500), xytext=(event.x, event.y))
+                        row = [match['peak_centre'], match['energy'], match['element'],
+                               match['transition'], match['error'], match['diff']]
 
-        binding_id = plt.connect('motion_notify_event', on_move)
+                        self.table_clickpeaks.setItem(i, 0, QTableWidgetItem(row[2]))
+                        self.table_clickpeaks.setItem(i, 1, QTableWidgetItem(row[3]))
+                        i += 1
+
+                    self.table_clickpeaks.setRowCount(i)
+
+                    self.show()
+
+
+
+
+        #binding_id = plt.connect('motion_notify_event', on_move)
         plt.connect('button_press_event', on_click)
 
 
@@ -319,6 +361,22 @@ class MainWindow(QWidget):
 
     def onMyToolBarButtonClick(self, s):
         print("click", s)
+
+    # load settings file
+    ls.loadsettings()
+    print(ls.settings_info)
+    print('here')
+
+    # load database file
+    ldf.loadDatabaseFile()
+    #for key, value in globals.peakdata.items():
+        #print(key, ":", value)
+
+
+    # Close welcome screen
+    print('hello')
+
+    print('dam')
 
 app = QApplication(sys.argv)
 mainWin = MainWindow()
