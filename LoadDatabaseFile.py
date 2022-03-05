@@ -24,6 +24,7 @@ def loadDatabaseFile():
         globals.peak_data['Primary energy'] = primary_energies
         globals.peak_data['Secondary energy'] = secondary_energies
         globals.peak_data['All energies'] = all_energies
+        print(len(globals.peak_data))
 
     return
 

@@ -1,9 +1,12 @@
+import os
+
 import globals
 
 
 def loadcomment(RunNum):
     try:
         commenttext = open(globals.workingdirectory + '/comment.dat', 'r').readlines()
+
         search_str = 'Run ' + str(RunNum)
         flag = 0
         index = 0
@@ -14,6 +17,7 @@ def loadcomment(RunNum):
                 break
         if flag == 0:
             print('Run Info', search_str, ' Not found')
+            rtn_str = [" ", " ", " ", " "]
         else:
             print('Run Info', search_str, 'Found in Line', index - 1)
 
@@ -25,4 +29,7 @@ def loadcomment(RunNum):
     except IOError:
         rtn_str = [" ", " ", " ", " "]
         flag = 0
+
+
+
     return flag,rtn_str

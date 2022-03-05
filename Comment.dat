@@ -1,0 +1,209 @@
+       :  Thu May 3 10:20:09 2018
+End   Time        :  Thu May 3 11:10:41 2018
+Number of Events  : 111000
+Number of Records : 444 / 666
+Comments : mu- 40MeV/c Carbon 100x100x10
+-----------------------------------
+Run 2628
+Start Time        :  Thu May 3 11:18:30 2018
+End   Time        :  Thu May 3 12:00:32 2018
+Number of Events  : 51906
+Number of Records : 208 / 312
+Comments : mu- 40MeV/c Nothing in beam Air
+-----------------------------------
+Run 2629
+Start Time        :  Thu May 3 12:06:44 2018
+End   Time        :  Thu May 3 13:02:48 2018
+Number of Events  : 3476326
+Number of Records : 13905 / 20858
+Comments : Source Calibration Co, Cs, Ba
+-----------------------------------
+Run 2630
+Start Time        :  Thu May 3 13:08:56 2018
+End   Time        :  Thu May 3 13:58:33 2018
+Number of Events  : 118466
+Number of Records : 474 / 711
+Comments : Mu- 40MeV/c Ti 40x40mm ISIS furnace sample holders
+-----------------------------------
+Run 2631
+Start Time        :  Thu May 3 14:03:17 2018
+End   Time        :  Thu May 3 14:22:47 2018
+Number of Events  : 46515
+Number of Records : 187 / 281
+Comments : Mu- 40MeV/c C 100x100x10mm
+-----------------------------------
+Run 2632
+Start Time        :  Thu May 3 14:24:46 2018
+End   Time        :  Thu May 3 14:43:35 2018
+Number of Events  : 44932
+Number of Records : 180 / 270
+Comments : Mu- 40MeV/c Q1Q2 90% C 100x100x10mm
+-----------------------------------
+Run 2633
+Start Time        :  Thu May 3 14:52:01 2018
+End   Time        :  Fri May 4 08:38:28 2018
+Number of Events  : 2229566
+Number of Records : 8919 / 13379
+Comments : Mu- 40MeV/c Q1Q2 90% 1050 Admiral Steel As cast
+-----------------------------------
+Run 2634
+Start Time        :  Fri May 4 09:07:56 2018
+End   Time        :  Fri May 4 14:13:11 2018
+Number of Events  : 651287
+Number of Records : 2605 / 3908
+Comments : Mu- 40MeV/c Q1Q2 90% Fe 50x50x0.5 4 sheets
+-----------------------------------
+Run 2635
+Start Time        :  Sat May 5 09:29:00 2018
+End   Time        :  Sun May 6 08:33:26 2018
+Number of Events  : 717637
+Number of Records : 2871 / 4307
+Comments : Mu- 40MeV/c Q1Q2 90% Fe 50x50x0.5 4 sheets
+-----------------------------------
+Run 2636
+Start Time        :  Sun May 6 08:57:36 2018
+End   Time        :  Sun May 6 08:59:09 2018
+Number of Events  : 3705
+Number of Records : 15 / 23
+Comments : Mu- 30MeV/c Rust Fe Admiral
+-----------------------------------
+Run 2636
+Start Time        :  Sun May 6 09:15:39 2018
+End   Time        :  Sun May 6 10:05:00 2018
+Number of Events  : 111078
+Number of Records : 445 / 668
+Comments : Mu- 30MeV/c Rust Fe Admiral
+-----------------------------------
+Run 2637
+Start Time        :  Sun May 6 10:09:15 2018
+End   Time        :  Sun May 6 11:45:31 2018
+Number of Events  : 194479
+Number of Records : 778 / 1167
+Comments : Mu- 20MeV/c Rust Fe Admiral
+-----------------------------------
+Run 2638
+Start Time        :  Sun May 6 11:49:24 2018
+End   Time        :  Sun May 6 13:18:25 2018
+Number of Events  : 207412
+Number of Records : 830 / 1245
+Comments : Mu- 24MeV/c Rust Fe Admiral
+-----------------------------------
+Run 2639
+Start Time        :  Sun May 6 13:42:56 2018
+End   Time        :  Sun May 6 15:21:49 2018
+Number of Events  : 42995
+Number of Records : 172 / 258
+Comments : Mu- 22MeV/c Rust Fe Admiral
+-----------------------------------
+Run 2639
+Start Time        :  Sun May 6 15:22:56 2018
+End   Time        :  Sun May 6 17:02:45 2018
+Number of Events  : 238298
+Number of Records : 953 / 1430
+Comments : Mu- 22MeV/c Rust Fe Admiral
+-----------------------------------
+Run 2640
+Start Time        :  Sun May 6 17:12:20 2018
+End   Time        :  Mon May 7 08:08:04 2018
+Number of Events  : 2086841
+Number of Records : 8348 / 12522
+Comments : Mu- 40MeV/c Rust Fe Admiral
+-----------------------------------
+Run 2641
+Start Time        :  Mon May 7 08:38:31 2018
+End   Time        :  Mon May 7 09:01:10 2018
+Number of Events  : 54098
+Number of Records : 217 / 326
+Comments : Mu- 40MeV/c Rust Fe Admiral
+-----------------------------------
+Run 2642
+Start Time        :  Mon May 7 09:20:05 2018
+End   Time        :  Mon May 7 12:10:43 2018
+Number of Events  : 391599
+Number of Records : 1567 / 2351
+Comments : Mu- 40MeV/c large Cannon Ball Wallace 18th cen
+-----------------------------------
+Run 2643
+Start Time        :  Mon May 7 12:25:40 2018
+End   Time        :  Mon May 7 16:06:41 2018
+Number of Events  : 517231
+Number of Records : 2069 / 3104
+Comments : Mu- 40MeV/c large Cannon Ball Wallace 18th cen
+-----------------------------------
+Run 2644
+Start Time        :  Mon May 7 16:12:28 2018
+End   Time        :  Mon May 7 22:00:42 2018
+Number of Events  : 767669
+Number of Records : 3071 / 4607
+Comments : Mu- 20MeV/c large Cannon Ball Wallace 18th cen
+-----------------------------------
+Run 2645
+Start Time        :  Mon May 7 22:16:33 2018
+End   Time        :  Tue May 8 08:55:15 2018
+Number of Events  : 1491218
+Number of Records : 5965 / 8948
+Comments : Mu- 40MeV/c QandT rust
+-----------------------------------
+Run 2646
+Start Time        :  Tue May 8 09:27:33 2018
+End   Time        :  Tue May 8 13:44:44 2018
+Number of Events  : 610709
+Number of Records : 2443 / 3665
+Comments : Mu- 40MeV/c Small cannonball - Round side facing
+-----------------------------------
+Run 2647
+Start Time        :  Tue May 8 13:52:06 2018
+End   Time        :  Tue May 8 19:12:47 2018
+Number of Events  : 590929
+Number of Records : 2364 / 3546
+Comments : Mu- 40MeV/c Small cannonball - flat side facing
+-----------------------------------
+Run 2648
+Start Time        :  Tue May 8 19:28:01 2018
+End   Time        :  Wed May 9 09:25:12 2018
+Number of Events  : 1807286
+Number of Records : 7227 / 10842
+Comments : Mu- 40MeV/c section of outside, inside facing bea
+-----------------------------------
+Run 2649
+Start Time        :  Wed May 9 10:27:52 2018
+End   Time        :  Wed May 9 10:48:22 2018
+Number of Events  : 48951
+Number of Records : 196 / 294
+Comments : Mu- 40MeV/c small cannonball, flat side, 70 MeV/c
+-----------------------------------
+Run 2650
+Start Time        :  Wed May 9 10:49:57 2018
+End   Time        :  Wed May 9 10:51:20 2018
+Number of Events  : 3317
+Number of Records : 14 / 21
+Comments : Mu- 40MeV/c small cannonball, flat side, 70 MeV/c
+-----------------------------------
+Run 2650
+Start Time        :  Wed May 9 10:52:58 2018
+End   Time        :  Wed May 9 10:54:54 2018
+Number of Events  : 4619
+Number of Records : 19 / 29
+Comments : Mu- 40MeV/c small cannonball, flat side, 70 MeV/c
+-----------------------------------
+Run 2650
+Start Time        :  Wed May 9 10:55:57 2018
+End   Time        :  Wed May 9 11:01:09 2018
+Number of Events  : 11658
+Number of Records : 47 / 71
+Comments : Mu- 40MeV/c small cannonball, flat side, 70 MeV/c
+-----------------------------------
+Run 2650
+Start Time        :  Wed May 9 11:01:24 2018
+End   Time        :  Wed May 9 15:57:20 2018
+Number of Events  : 706473
+Number of Records : 2826 / 4239
+Comments : Mu- 70MeV/c small cannonball, flat side
+-----------------------------------
+Run 2651
+Start Time        :  Wed May 9 16:10:46 2018
+End   Time        :  Wed May 9 20:13:04 2018
+Number of Events  : 578500
+Number of Records : 2314 / 3471
+Comments : Mu- 40MeV/c large cannonabll crust, roundside
+-----------------------------------

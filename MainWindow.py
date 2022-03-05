@@ -30,6 +30,7 @@ import loadcomment
 import globals
 import getmatch
 import loadsettings as ls
+import Plot_Spectra
 
 import LoadDatabaseFile as ldf
 
@@ -54,20 +55,9 @@ class PlotWindow(QWidget):
         super(PlotWindow,self).__init__(parent)
         label = QLabel("Plot Window", self)
 
-
-        '''layout = QVBoxLayout()
-        self.label = QLabel("Another Window")
-        layout.addWidget(self.label)
-        self.setLayout(layout)
-        '''
-        print('in here')
-
-
-
         self.resize(100, 200)
         self.setMinimumSize(500,1000)
         self.setWindowTitle("Plot Window")
-        print('part wplot')
 
         self.label_Element = QLabel("Possible Transition:                                            ", self)
         self.label_Element.move(300, 180)
@@ -79,55 +69,22 @@ class PlotWindow(QWidget):
         self.table_clickpeaks.setRowCount(10)
         self.table_clickpeaks.move(300,220)
         self.table_clickpeaks.setMinimumSize(300,600)
-        #self.table_clickpeaks.resize(200,500)
-        #self.locationTable.setGeometry(10, 10, self.geometry().width() / 2 - 20, self.geometry().height() / 2)
         self.table_clickpeaks.setHorizontalHeaderLabels(['Element', 'Transition'])
 
         self.table_clickpeaks.setFixedWidth(700)
-        #self.table_clickpeaks.setFixedHeight(500)
-        print('helo')
-        self.table_clickpeaks.setItem(1, 1, QTableWidgetItem('hello'))
-        print('oh no')
         self.table_clickpeaks.show()
         self.show()
 
-
-        print('here in wplot')
         self.PlotSpectra()
 
-        #wPlot.show()
 
     def closeEvent(self, event):
         event.ignore()
 
     def PlotSpectra(self):
         print('plotting')
-        plt.figure(figsize=(16, 7))
+        Plot_Spectra.Plot_Spectra(globals.x_GE1, globals.y_GE1)
 
-        plt.fill_between(globals.x_GE1, globals.y_GE1, step='mid', color='yellow')
-        plt.step(globals.x_GE1, globals.y_GE1, where='mid', color='black')
-        plt.ylim(bottom=0.0)
-        plt.xlim(left=0.0)
-        plt.xlabel("Energy")
-        plt.ylabel("Intensity")
-        plt.legend(str(globals.RunNum))
-        plt.title("Run Number: " + str(globals.RunNum) + "  " + globals.comment_str)
-        plt.rc('font', size=16)
-
-        plt.show()
-        print('hello')
-
-        print('oops')
-
-        '''def on_move(event):
-
-            # get the x and y pixel coords
-            x, y = event.x, event.y
-            if event.inaxes:
-
-                ax = event.inaxes  # the axes instance
-                print('data coords %f %f' % (event.xdata, event.ydata))
-                #annot.set_text(event.x,event.y)'''
 
         def on_click(event):
             if event.button is MouseButton.RIGHT:
@@ -141,13 +98,15 @@ class PlotWindow(QWidget):
                 x, y = event.x, event.y
                 if event.inaxes:
                     ax = event.inaxes  # the axes instance
-                    #self.label_Element.setText("yippee")
-                    default_peaks = [event.x]
+                    default_peaks=[event.x]
                     default_sigma = [0.45]*len(default_peaks)
                     input_data = list(zip(default_peaks, default_sigma))
                     res = getmatch.get_matches(input_data)
+
                     temp = res[0]
                     i = 0
+                    print(len(res[0]))
+                    self.table_clickpeaks.setRowCount(len(res[0]))
                     for match in temp:
 
                         row = [match['peak_centre'], match['energy'], match['element'],
@@ -189,6 +148,19 @@ class MainWindow(QWidget):
         file_exit = file.addAction('Exit')
         plot = bar.addMenu('Plot')
         plot_set = plot.addAction('Plot Settings')
+        plot_det = plot.addMenu('Select detectors')
+        plot_which_det_GE1 = plot_det.addAction('GE1')
+        plot_which_det_GE1.setCheckable(True)
+        plot_which_det_GE1.setChecked(True)
+        plot_which_det_GE1.setShortcut("Atl+1")
+        plot_which_det_GE2 = plot_det.addAction('GE2')
+        plot_which_det_GE2.setCheckable(True)
+        plot_which_det_GE3 = plot_det.addAction('GE3')
+        plot_which_det_GE3.setCheckable(True)
+        plot_which_det_GE3.setChecked(True)
+        plot_which_det_GE4 = plot_det.addAction('GE4')
+        plot_which_det_GE4.setCheckable(True)
+
         TRIM = bar.addMenu('SRIM/TRIM')
         Trim_sim = TRIM.addAction('SRIM/TRIM Simulation')
 
