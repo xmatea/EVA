@@ -240,7 +240,7 @@ class MainWindow(QWidget):
         button_plusandload = QPushButton(self)
         button_plusandload.setText('Load +1')
         button_plusandload.move(750, 420)
-        button_plusandload.clicked.connect(lambda: self.Incr_RunNumandload(RunNum_Text))
+        button_plusandload.clicked.connect(lambda: self.Incr_RunNumandload(RunNum_Text.text(),RunNum_Text))
 
         button_minus = QPushButton(self)
         button_minus.setText('-1')
@@ -250,7 +250,7 @@ class MainWindow(QWidget):
         button_minusandload = QPushButton(self)
         button_minusandload.setText('Load -1')
         button_minusandload.move(100, 420)
-        button_minusandload.clicked.connect(lambda: self.Decr_RunNumandload(RunNum_Text))
+        button_minusandload.clicked.connect(lambda: self.Decr_RunNumandload(RunNum_Text.text(),RunNum_Text))
 
 
         button_load = QPushButton(self)
@@ -303,7 +303,25 @@ class MainWindow(QWidget):
         globals.plot_GE4 = value
 
 
+    def Decr_RunNumandload(self, RunNum, RunNum_text):
+        print('in decr')
+        NewRunNum = int(RunNum) - 1
+        self.loadcom(str(NewRunNum))
+        print('back')
+        RunNum_text.setText(str(NewRunNum))
+
+    def Incr_RunNumandload(self, RunNum, RunNum_text):
+        NewRunNum = int(RunNum) + 1
+        self.loadcom(str(NewRunNum))
+        RunNum_text.setText(str(NewRunNum))
+
+
     def loadrunandcom(self, RunNum):
+        print('hello')
+        self.loadcom(RunNum)
+        print('Im back')
+
+    def loadcom(self, RunNum):
         print('load data and comment')
         globals.RunNum = RunNum
         flag, rtn_str = loadcomment.loadcomment(RunNum)
