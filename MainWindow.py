@@ -184,6 +184,13 @@ class MainWindow(QWidget):
         plot_which_det_GE4.setShortcut("Alt+4")
 
         Normalise = bar.addMenu('Normalisation')
+        Normalise_do_not = Normalise.addAction('Use Raw Data')
+        Normalise_do_not.setCheckable(True)
+        Normalise_do_not.setShortcut("Alt+D")
+        Normalise_do_not.setChecked(False)
+        Normalise_do_not.triggered.connect(lambda: self.N_do_not(Normalise_do_not.isChecked(),
+                                                                  Normalise_total_counts, Normalise_total_spills))
+
         Normalise_total_counts = Normalise.addAction('Normalise by total Counts')
         Normalise_total_counts.setCheckable(True)
         Normalise_total_counts.setShortcut("Alt+C")
@@ -272,6 +279,18 @@ class MainWindow(QWidget):
         button_load.move(420, 420)
         button_load.clicked.connect(lambda: self.loadrunandcom(
             RunNum_Text.text()))
+
+
+    def N_do_not(self,checked,Norm_Counts,Norm_Spills):
+        print(checked)
+        if checked:
+            Norm_Spills.setChecked(False)
+            Norm_Counts.setChecked(False)
+        else:
+            Norm_Spills.setChecked(globals.Normalise_spill)
+            Norm_Counts.setChecked(globals.Normalise_counts)
+
+
 
     def NTC(self,checked,Norm_Counts,Norm_Spills):
         print(checked)
