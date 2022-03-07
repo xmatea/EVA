@@ -83,7 +83,21 @@ class PlotWindow(QWidget):
 
     def PlotSpectra(self):
         print('plotting')
-        Plot_Spectra.Plot_Spectra(globals.x_GE1, globals.y_GE1)
+        '''if globals.plot_GE1:
+            if globals.flag_d_GE1 == 1:
+                Plot_Spectra.Plot_Spectra(self,globals.x_GE1, globals.y_GE1)
+        if globals.plot_GE2:
+            if globals.flag_d_GE2 == 1:
+                Plot_Spectra.Plot_Spectra(self,globals.x_GE2, globals.y_GE2)
+        if globals.plot_GE3:
+            if globals.flag_d_GE3 == 1:
+                Plot_Spectra.Plot_Spectra(self,globals.x_GE3, globals.y_GE3)
+        if globals.plot_GE4:
+            if globals.flag_d_GE1 == 1:
+                Plot_Spectra.Plot_Spectra(self,globals.x_GE4, globals.y_GE4)'''
+
+        Plot_Spectra.Plot_Spectra2()
+
 
 
         def on_click(event):
@@ -120,9 +134,6 @@ class PlotWindow(QWidget):
 
                     self.show()
 
-
-
-
         #binding_id = plt.connect('motion_notify_event', on_move)
         plt.connect('button_press_event', on_click)
 
@@ -149,17 +160,29 @@ class MainWindow(QWidget):
         plot = bar.addMenu('Plot')
         plot_set = plot.addAction('Plot Settings')
         plot_det = plot.addMenu('Select detectors')
+
         plot_which_det_GE1 = plot_det.addAction('GE1')
         plot_which_det_GE1.setCheckable(True)
-        plot_which_det_GE1.setChecked(True)
-        plot_which_det_GE1.setShortcut("Atl+1")
+        print('plot_ge1', globals.plot_GE1)
+        plot_which_det_GE1.setChecked(globals.plot_GE1)
+        plot_which_det_GE1.setShortcut("Alt+1")
+
         plot_which_det_GE2 = plot_det.addAction('GE2')
         plot_which_det_GE2.setCheckable(True)
+        plot_which_det_GE2.setChecked(globals.plot_GE2)
+        plot_which_det_GE2.setShortcut("Alt+2")
+
         plot_which_det_GE3 = plot_det.addAction('GE3')
         plot_which_det_GE3.setCheckable(True)
         plot_which_det_GE3.setChecked(True)
+        plot_which_det_GE3.setChecked(globals.plot_GE3)
+        plot_which_det_GE3.setShortcut("Alt+3")
+
         plot_which_det_GE4 = plot_det.addAction('GE4')
         plot_which_det_GE4.setCheckable(True)
+        plot_which_det_GE4.setChecked(globals.plot_GE4)
+        plot_which_det_GE4.setShortcut("Alt+4")
+
 
         TRIM = bar.addMenu('SRIM/TRIM')
         Trim_sim = TRIM.addAction('SRIM/TRIM Simulation')
@@ -168,6 +191,10 @@ class MainWindow(QWidget):
 
         file_exit.triggered.connect(lambda: self.closeit(app))
         file_browse_dir.triggered.connect(lambda: self.Browse_dir())
+        plot_which_det_GE1.triggered.connect(lambda: self.setplotGE1(plot_which_det_GE1.isChecked()))
+        plot_which_det_GE2.triggered.connect(lambda: self.setplotGE2(plot_which_det_GE2.isChecked()))
+        plot_which_det_GE3.triggered.connect(lambda: self.setplotGE3(plot_which_det_GE3.isChecked()))
+        plot_which_det_GE4.triggered.connect(lambda: self.setplotGE4(plot_which_det_GE4.isChecked()))
 
         # setting up the layout
 
@@ -200,6 +227,7 @@ class MainWindow(QWidget):
         # setting up the buttons and run number
 
         RunNum_Text = QLineEdit(self)
+        RunNum_Text.setAlignment(Qt.AlignCenter)
         RunNum_Text.setText('2630')
         RunNum_Text.move(350, 360)
 
@@ -247,6 +275,21 @@ class MainWindow(QWidget):
 
             return
 
+    def setplotGE1(self,value):
+        print('in here self.plot_which_det_GE1',value)
+        globals.plot_GE1 = value
+
+    def setplotGE2(self,value):
+        print('in here self.plot_which_det_GE2',value)
+        globals.plot_GE2 = value
+
+    def setplotGE3(self,value):
+        print('in here self.plot_which_det_GE3',value)
+        globals.plot_GE3 = value
+
+    def setplotGE4(self,value):
+        print('in here self.plot_which_det_GE4',value)
+        globals.plot_GE4 = value
 
 
     def loadrunandcom(self, RunNum):
@@ -282,6 +325,8 @@ class MainWindow(QWidget):
             print ('yeah!')
             self.label_RN.setText("Run Number:   " + str(RunNum))
 
+            #print(MainWindow.Show_Plot_Window.isVisble)
+
 
 
             self.Show_Plot_Window()
@@ -297,11 +342,17 @@ class MainWindow(QWidget):
             self.wp = PlotWindow()
             print('self,wp = none')
             self.wp.resize(1200, 600)
-            self.wp.setWindowTitle("Plot Window")
+            self.wp.setWindowTitle("Plot Window"+globals.RunNum)
             self.wp.show()
 
         else:
             print('window exists')
+            self.wp = PlotWindow()
+            print('self,wp = none')
+            self.wp.resize(1200, 600)
+            self.wp.setWindowTitle("Plot Window"+globals.RunNum)
+            self.wp.show()
+
 
 
 

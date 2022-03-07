@@ -49,5 +49,7 @@ def get_matches(input_peaks):
                         data['diff'] = abs(peak - energy)
                         matches.append(data)
         matches = sorted(matches, key=lambda x: x['diff'])
+        print(matches)
     all_matches.append(matches)
+    print(all_matches)
     return all_matches
