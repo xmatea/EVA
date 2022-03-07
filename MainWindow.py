@@ -229,7 +229,7 @@ class MainWindow(QWidget):
         RunNum_Text = QLineEdit(self)
         RunNum_Text.setAlignment(Qt.AlignCenter)
         RunNum_Text.setText('2630')
-        RunNum_Text.move(350, 360)
+        RunNum_Text.move(370, 360)
 
 
         button_plus = QPushButton(self)
@@ -237,10 +237,21 @@ class MainWindow(QWidget):
         button_plus.move(750, 350)
         button_plus.clicked.connect(lambda: self.Incr_RunNum(RunNum_Text))
 
+        button_plusandload = QPushButton(self)
+        button_plusandload.setText('Load +1')
+        button_plusandload.move(750, 420)
+        button_plusandload.clicked.connect(lambda: self.Incr_RunNumandload(RunNum_Text))
+
         button_minus = QPushButton(self)
         button_minus.setText('-1')
         button_minus.move(100, 350)
         button_minus.clicked.connect(lambda: self.Decr_RunNum(RunNum_Text))
+
+        button_minusandload = QPushButton(self)
+        button_minusandload.setText('Load -1')
+        button_minusandload.move(100, 420)
+        button_minusandload.clicked.connect(lambda: self.Decr_RunNumandload(RunNum_Text))
+
 
         button_load = QPushButton(self)
         button_load.setText('Load')
