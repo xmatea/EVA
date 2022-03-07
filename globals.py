@@ -31,3 +31,5 @@ comment_str = ''
 RunNum = 0
 peakdata = ''
 peak_data = {}
+Normalise_counts = True
+Normalise_spill = False

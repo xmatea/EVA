@@ -183,6 +183,20 @@ class MainWindow(QWidget):
         plot_which_det_GE4.setChecked(globals.plot_GE4)
         plot_which_det_GE4.setShortcut("Alt+4")
 
+        Normalise = bar.addMenu('Normalisation')
+        Normalise_total_counts = Normalise.addAction('Normalise by total Counts')
+        Normalise_total_counts.setCheckable(True)
+        Normalise_total_counts.setShortcut("Alt+C")
+        Normalise_total_counts.setChecked(True)
+        Normalise_total_counts.triggered.connect(lambda: self.NTC(Normalise_total_counts.isChecked(),
+                                                                  Normalise_total_counts, Normalise_total_spills))
+
+        Normalise_total_spills = Normalise.addAction('Normalise by spills')
+        Normalise_total_spills.setCheckable(True)
+        Normalise_total_spills.setShortcut("Alt+S")
+        Normalise_total_spills.setChecked(False)
+        Normalise_total_spills.triggered.connect(lambda: self.NTS(Normalise_total_spills.isChecked(),
+                                                                  Normalise_total_counts, Normalise_total_spills))
 
         TRIM = bar.addMenu('SRIM/TRIM')
         Trim_sim = TRIM.addAction('SRIM/TRIM Simulation')
@@ -259,6 +273,26 @@ class MainWindow(QWidget):
         button_load.clicked.connect(lambda: self.loadrunandcom(
             RunNum_Text.text()))
 
+    def NTC(self,checked,Norm_Counts,Norm_Spills):
+        print(checked)
+        if checked:
+            Norm_Spills.setChecked(False)
+            globals.Normalise_counts = True
+            globals.Normalise_spill = False
+        else:
+            Norm_Spills.setChecked(True)
+            globals.Normalise_counts = False
+            globals.Normalise_spill = True
+
+    def NTS(self,checked,Norm_Counts,Norm_Spills):
+        if checked:
+            Norm_Counts.setChecked(False)
+            globals.Normalise_counts = False
+            globals.Normalise_spill = True
+        else:
+            Norm_Counts.setChecked(True)
+            globals.Normalise_counts = True
+            globals.Normalise_spill = False
 
 
     def closeEvent(self, event):
