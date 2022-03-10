@@ -16,6 +16,56 @@ def How_many_plot():
 
 
 
+def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4):
+    numplots=How_many_plot()
+    print('numplot', numplots)
+    print(globals.Normalise_spill,globals.Normalise_counts)
+
+    fig, axs = plt.subplots(numplots,figsize=(16,7))
+
+    fig.suptitle("Run Number: " + str(globals.RunNum) + "  " + globals.comment_str)
+    fig.supxlabel("Energy (keV)")
+    if globals.Normalise_do_not:
+        fig.supylabel("Intensity")
+    elif globals.Normalise_counts:
+        fig.supylabel("Intensity Normalised to Counts (10^5)")
+    elif globals.Normalise_spill:
+        fig.supylabel("Intensity Normalised to Spills (10^5)")
+    i=0
+    if globals.plot_GE1:
+        axs[i].fill_between(x1, y1,step='mid',color='yellow')
+        axs[i].step(x1,y1,where='mid',color='black')
+        axs[i].set_ylim(0.0)
+        axs[i].set_xlim(0.0)
+        axs[i].set_title('2099')
+        i+=1
+    if globals.plot_GE2:
+        axs[i].fill_between(x2, y2,step='mid',color='yellow')
+        axs[i].step(x2,y2,where='mid',color='black')
+        axs[i].set_ylim(0.0)
+        axs[i].set_xlim(0.0)
+        axs[i].set_title('3099')
+        i+=1
+    if globals.plot_GE3:
+        axs[i].fill_between(x3, y3,step='mid',color='yellow')
+        axs[i].step(x3,y3,where='mid',color='black')
+        axs[i].set_ylim(0.0)
+        axs[i].set_xlim(0.0)
+        axs[i].set_title('4099')
+        i+=1
+    if globals.plot_GE4:
+        axs[i].fill_between(x4, y4,step='mid',color='yellow')
+        axs[i].step(x4,y4,where='mid',color='black')
+        axs[i].set_ylim(0.0)
+        axs[i].set_xlim(0.0)
+        axs[i].set_title('5099')
+        i+=1
+
+    plt.rc('font',size=16)
+    plt.tight_layout()
+
+    plt.show()
+
 def Plot_Spectra2():
     numplots=How_many_plot()
     print('numplot', numplots)

@@ -96,7 +96,24 @@ class PlotWindow(QWidget):
             if globals.flag_d_GE1 == 1:
                 Plot_Spectra.Plot_Spectra(self,globals.x_GE4, globals.y_GE4)'''
 
-        Plot_Spectra.Plot_Spectra2()
+        #Plot_Spectra.Plot_Spectra2()
+        if globals.Normalise_do_not:
+            Plot_Spectra.Plot_Spectra3(globals.x_GE1, globals.y_GE1,
+                                       globals.x_GE2, globals.y_GE2,
+                                       globals.x_GE3, globals.y_GE3,
+                                       globals.x_GE4, globals.y_GE4)
+        elif globals.Normalise_counts:
+            Plot_Spectra.Plot_Spectra3(globals.x_GE1_Ncounts, globals.y_GE1_Ncounts,
+                                       globals.x_GE2_Ncounts, globals.y_GE2_Ncounts,
+                                       globals.x_GE3_Ncounts, globals.y_GE3_Ncounts,
+                                       globals.x_GE4_Ncounts, globals.y_GE4_Ncounts)
+        elif globals.Normalise_spill:
+            Plot_Spectra.Plot_Spectra3(globals.x_GE1_NEvents, globals.y_GE1_NEvents,
+                                       globals.x_GE2_NEvents, globals.y_GE2_NEvents,
+                                       globals.x_GE3_NEvents, globals.y_GE3_NEvents,
+                                       globals.x_GE4_NEvents, globals.y_GE4_NEvents)
+
+
 
 
 
@@ -189,21 +206,24 @@ class MainWindow(QWidget):
         Normalise_do_not.setShortcut("Alt+D")
         Normalise_do_not.setChecked(False)
         Normalise_do_not.triggered.connect(lambda: self.N_do_not(Normalise_do_not.isChecked(),
-                                                                  Normalise_total_counts, Normalise_total_spills))
+                                                                  Normalise_total_counts, Normalise_total_spills
+                                                                 ,Normalise_do_not))
 
         Normalise_total_counts = Normalise.addAction('Normalise by total Counts')
         Normalise_total_counts.setCheckable(True)
         Normalise_total_counts.setShortcut("Alt+C")
         Normalise_total_counts.setChecked(True)
         Normalise_total_counts.triggered.connect(lambda: self.NTC(Normalise_total_counts.isChecked(),
-                                                                  Normalise_total_counts, Normalise_total_spills))
+                                                                  Normalise_total_counts, Normalise_total_spills
+                                                                  ,Normalise_do_not))
 
         Normalise_total_spills = Normalise.addAction('Normalise by spills')
         Normalise_total_spills.setCheckable(True)
         Normalise_total_spills.setShortcut("Alt+S")
         Normalise_total_spills.setChecked(False)
         Normalise_total_spills.triggered.connect(lambda: self.NTS(Normalise_total_spills.isChecked(),
-                                                                  Normalise_total_counts, Normalise_total_spills))
+                                                                  Normalise_total_counts, Normalise_total_spills
+                                                                  ,Normalise_do_not))
 
         TRIM = bar.addMenu('SRIM/TRIM')
         Trim_sim = TRIM.addAction('SRIM/TRIM Simulation')
@@ -281,37 +301,50 @@ class MainWindow(QWidget):
             RunNum_Text.text()))
 
 
-    def N_do_not(self,checked,Norm_Counts,Norm_Spills):
+    def N_do_not(self,checked,Norm_Counts,Norm_Spills,Normalise_do_not):
         print(checked)
         if checked:
             Norm_Spills.setChecked(False)
             Norm_Counts.setChecked(False)
+            Normalise_do_not.setChecked(True)
+            globals.Normalise_do_not = True
+
         else:
             Norm_Spills.setChecked(globals.Normalise_spill)
             Norm_Counts.setChecked(globals.Normalise_counts)
+            Normalise_do_not.setChecked(False)
+            globals.Normalise_do_not = False
 
 
 
-    def NTC(self,checked,Norm_Counts,Norm_Spills):
+
+    def NTC(self,checked,Norm_Counts,Norm_Spills,Normalise_do_not):
         print(checked)
         if checked:
             Norm_Spills.setChecked(False)
+            Normalise_do_not.setChecked(False)
             globals.Normalise_counts = True
             globals.Normalise_spill = False
+            globals.Normalise_do_not = False
         else:
             Norm_Spills.setChecked(True)
             globals.Normalise_counts = False
             globals.Normalise_spill = True
+            Normalise_do_not.setChecked(False)
 
-    def NTS(self,checked,Norm_Counts,Norm_Spills):
+
+    def NTS(self,checked,Norm_Counts,Norm_Spills,Normalise_do_not):
         if checked:
             Norm_Counts.setChecked(False)
+            Normalise_do_not.setChecked(False)
             globals.Normalise_counts = False
             globals.Normalise_spill = True
+            globals.Normalise_do_not = False
         else:
             Norm_Counts.setChecked(True)
             globals.Normalise_counts = True
             globals.Normalise_spill = False
+            Normalise_do_not.setChecked(False)
 
 
     def closeEvent(self, event):
@@ -424,7 +457,7 @@ class MainWindow(QWidget):
             self.wp = PlotWindow()
             print('self,wp = none')
             self.wp.resize(1200, 600)
-            self.wp.setWindowTitle("Plot Window"+globals.RunNum)
+            self.wp.setWindowTitle("Plot Window: "+globals.RunNum)
             self.wp.show()
 
         else:
@@ -435,19 +468,6 @@ class MainWindow(QWidget):
             self.wp.setWindowTitle("Plot Window"+globals.RunNum)
             self.wp.show()
 
-
-
-
-
-
-
-
-
-
-
-
-
-        #print(self.wp)
 
 
 

@@ -2,6 +2,7 @@ import array as arr
 
 import globals
 import numpy as np
+import Normalise
 
 
 def loaddata(RunNum):
@@ -52,6 +53,10 @@ def loaddata(RunNum):
     except IOError:
         globals.flag_d_GE4 = 0
         print('5099 file not found')
+
+    print('going to Normalise')
+
+    Normalise.Normalise()
 
     return flag
 
