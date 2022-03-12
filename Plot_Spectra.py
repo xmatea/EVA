@@ -65,6 +65,7 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4):
     plt.tight_layout()
 
     plt.show()
+    return fig, axs, plt
 
 def Plot_Spectra2():
     numplots=How_many_plot()

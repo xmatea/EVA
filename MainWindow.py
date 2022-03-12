@@ -22,6 +22,7 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QTableWidget,
     QTableWidgetItem,
+    QTabWidget,
 )
 from PyQt5.QtGui import QPalette, QColor, QCloseEvent
 import sys
@@ -59,20 +60,51 @@ class PlotWindow(QWidget):
         self.setMinimumSize(500,1000)
         self.setWindowTitle("Plot Window")
 
-        self.label_Element = QLabel("Possible Transition:                                            ", self)
-        self.label_Element.move(300, 180)
-        self.label_Element.show()
+        self.layout = QVBoxLayout(self)
 
-        self.table_clickpeaks = QTableWidget(self)
-        self.table_clickpeaks.setShowGrid(True)
-        self.table_clickpeaks.setColumnCount(2)
-        self.table_clickpeaks.setRowCount(10)
-        self.table_clickpeaks.move(300,220)
-        self.table_clickpeaks.setMinimumSize(300,600)
-        self.table_clickpeaks.setHorizontalHeaderLabels(['Element', 'Transition'])
+        # Initialize tab screen
+        print('initialising tabs')
+        self.tabs = QTabWidget()
+        self.tab1 = QWidget()
+        self.tab2 = QWidget()
+        self.tabs.resize(200, 300)
 
-        self.table_clickpeaks.setFixedWidth(700)
-        self.table_clickpeaks.show()
+        # Add tabs
+        self.tabs.addTab(self.tab1, "Peak Identification")
+        self.tabs.addTab(self.tab2, "Element Search")
+
+        # Create first tab
+        #self.tab1.layout = QVBoxLayout(self)
+        #self.pushButton1 = QPushButton("PyQt5 button")
+        #self.tab1.layout.addWidget(self.pushButton1)
+        #self.tab1.setLayout(self.tab1.layout)
+
+
+
+        print('here')
+
+
+
+        self.tab1.label_Element = QLabel("Possible Transition:                                            ", self.tab1)
+        self.tab1.label_Element.move(300, 180)
+        self.tab1.label_Element.show()
+
+        self.tab1.table_clickpeaks = QTableWidget(self.tab1)
+        self.tab1.table_clickpeaks.setShowGrid(True)
+        self.tab1.table_clickpeaks.setColumnCount(2)
+        self.tab1.table_clickpeaks.setRowCount(10)
+        self.tab1.table_clickpeaks.move(300,220)
+        self.tab1.table_clickpeaks.setMinimumSize(300,600)
+        self.tab1.table_clickpeaks.setHorizontalHeaderLabels(['Element', 'Transition'])
+
+        self.tab1.table_clickpeaks.setFixedWidth(700)
+        self.tab1.table_clickpeaks.show()
+        #self.tab1.setLayout(self.tab1.layout)
+
+        # Add tabs to widget
+        self.layout.addWidget(self.tabs)
+        self.setLayout(self.layout)
+
         self.show()
 
         self.PlotSpectra()
@@ -98,17 +130,17 @@ class PlotWindow(QWidget):
 
         #Plot_Spectra.Plot_Spectra2()
         if globals.Normalise_do_not:
-            Plot_Spectra.Plot_Spectra3(globals.x_GE1, globals.y_GE1,
+            fig,axs,plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1, globals.y_GE1,
                                        globals.x_GE2, globals.y_GE2,
                                        globals.x_GE3, globals.y_GE3,
                                        globals.x_GE4, globals.y_GE4)
         elif globals.Normalise_counts:
-            Plot_Spectra.Plot_Spectra3(globals.x_GE1_Ncounts, globals.y_GE1_Ncounts,
+            fig,axs,plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1_Ncounts, globals.y_GE1_Ncounts,
                                        globals.x_GE2_Ncounts, globals.y_GE2_Ncounts,
                                        globals.x_GE3_Ncounts, globals.y_GE3_Ncounts,
                                        globals.x_GE4_Ncounts, globals.y_GE4_Ncounts)
         elif globals.Normalise_spill:
-            Plot_Spectra.Plot_Spectra3(globals.x_GE1_NEvents, globals.y_GE1_NEvents,
+            fig,axs,plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1_NEvents, globals.y_GE1_NEvents,
                                        globals.x_GE2_NEvents, globals.y_GE2_NEvents,
                                        globals.x_GE3_NEvents, globals.y_GE3_NEvents,
                                        globals.x_GE4_NEvents, globals.y_GE4_NEvents)
@@ -126,28 +158,32 @@ class PlotWindow(QWidget):
 
 
             if event.button is MouseButton.LEFT:
-                x, y = event.x, event.y
+                x, y = event.xdata, event.ydata
                 if event.inaxes:
                     ax = event.inaxes  # the axes instance
-                    default_peaks=[event.x]
-                    default_sigma = [0.45]*len(default_peaks)
+                    default_peaks=[event.xdata]
+                    default_sigma = [2.0]*len(default_peaks)
+                    "{:.1f}".format(45.34531)
+                    self.tab1.label_Element.setText('Possible transitions at '
+                                               + "{:.1f}".format(default_peaks[0]) +' +/- '
+                                               + str(default_sigma[0]))
                     input_data = list(zip(default_peaks, default_sigma))
                     res = getmatch.get_matches(input_data)
 
                     temp = res[0]
                     i = 0
                     print(len(res[0]))
-                    self.table_clickpeaks.setRowCount(len(res[0]))
+                    self.tab1.table_clickpeaks.setRowCount(len(res[0]))
                     for match in temp:
 
                         row = [match['peak_centre'], match['energy'], match['element'],
                                match['transition'], match['error'], match['diff']]
 
-                        self.table_clickpeaks.setItem(i, 0, QTableWidgetItem(row[2]))
-                        self.table_clickpeaks.setItem(i, 1, QTableWidgetItem(row[3]))
+                        self.tab1.table_clickpeaks.setItem(i, 0, QTableWidgetItem(row[2]))
+                        self.tab1.table_clickpeaks.setItem(i, 1, QTableWidgetItem(row[3]))
                         i += 1
 
-                    self.table_clickpeaks.setRowCount(i)
+                    self.tab1.table_clickpeaks.setRowCount(i)
 
                     self.show()
 
