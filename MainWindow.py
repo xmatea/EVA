@@ -32,6 +32,7 @@ import globals
 import getmatch
 import loadsettings as ls
 import Plot_Spectra
+import FindPeaks
 
 import LoadDatabaseFile as ldf
 
@@ -54,13 +55,16 @@ class PlotWindow(QWidget):
 
     def __init__(self, parent = None):
         super(PlotWindow,self).__init__(parent)
-        label = QLabel("Plot Window", self)
+        #label = QLabel("Plot Window ", self)
 
-        self.resize(100, 200)
+        self.resize(1500, 1000)
         self.setMinimumSize(500,1000)
-        self.setWindowTitle("Plot Window")
+        self.setWindowTitle("Plot Window ")
 
         self.layout = QVBoxLayout(self)
+        self.temp = QLabel(self)
+
+
 
         # Initialize tab screen
         print('initialising tabs')
@@ -68,32 +72,23 @@ class PlotWindow(QWidget):
         self.tab1 = QWidget()
         self.tab2 = QWidget()
         self.tabs.resize(200, 300)
+        self.tabs.move(500,500)
 
         # Add tabs
         self.tabs.addTab(self.tab1, "Peak Identification")
         self.tabs.addTab(self.tab2, "Element Search")
 
         # Create first tab
-        #self.tab1.layout = QVBoxLayout(self)
-        #self.pushButton1 = QPushButton("PyQt5 button")
-        #self.tab1.layout.addWidget(self.pushButton1)
-        #self.tab1.setLayout(self.tab1.layout)
-
-
-
-        print('here')
-
-
 
         self.tab1.label_Element = QLabel("Possible Transition:                                            ", self.tab1)
-        self.tab1.label_Element.move(300, 180)
+        self.tab1.label_Element.move(70, 100)
         self.tab1.label_Element.show()
 
         self.tab1.table_clickpeaks = QTableWidget(self.tab1)
         self.tab1.table_clickpeaks.setShowGrid(True)
         self.tab1.table_clickpeaks.setColumnCount(2)
         self.tab1.table_clickpeaks.setRowCount(10)
-        self.tab1.table_clickpeaks.move(300,220)
+        self.tab1.table_clickpeaks.move(70,150)
         self.tab1.table_clickpeaks.setMinimumSize(300,600)
         self.tab1.table_clickpeaks.setHorizontalHeaderLabels(['Element', 'Transition'])
 
@@ -101,9 +96,66 @@ class PlotWindow(QWidget):
         self.tab1.table_clickpeaks.show()
         #self.tab1.setLayout(self.tab1.layout)
 
+        print('setting up tab2')
+
+
+
+        self.tab2.label_Element2 = QLabel("hello", self.tab2)
+        self.tab2.label_Element2.move(70, 20)
+        self.tab2.label_Element2.show()
+        self.tab2.find_peaks_button = QPushButton("Find possible Elements", self.tab2)
+        self.tab2.find_peaks_button.move(70,70)
+        self.tab2.find_peaks_button.show()
+        self.tab2.find_peaks_button.clicked.connect(lambda: self.find_peaks_automatically())
+
+        self.tab2.useDef_checkbox = QCheckBox("Use defaults",self.tab2)
+        self.tab2.useDef_checkbox.move(70,170)
+        self.tab2.useDef_checkbox.setChecked(True)
+        self.tab2.useDef_checkbox.show()
+
+        print('here')
+
+
+        self.tab2.tabs = QTabWidget(self.tab2)
+        self.tab2.tab1 = QWidget()
+        self.tab2.tab2 = QWidget()
+        self.tab2.tab3 = QWidget()
+
+        self.tab2.tabs.addTab(self.tab2.tab1, "Most Probable")
+        print('hello')
+
+        self.tab2.table_peaks = QTableWidget(self.tab2.tab2)
+        print('hello')
+        self.tab2.table_peaks.setShowGrid(True)
+        print('hello')
+        self.tab2.table_peaks.setColumnCount(6)
+        print('hello')
+        self.tab2.table_peaks.setRowCount(10)
+        print('hello')
+        print('hello')
+        self.tab2.table_peaks.move(70,150)
+        print('hello')
+        self.tab2.table_peaks.setMinimumSize(300,600)
+        print('hello')
+        self.tab2.table_peaks.setHorizontalHeaderLabels(['Element', 'Transition'])
+        print('hello')
+
+        self.tab2.table_peaks.setFixedWidth(700)
+        self.tab2.table_peaks.show()
+
+        self.tab2.tabs.addTab(self.tab2.tab2, "Transitions")
+        #self.tab2.tabs.addTab(self.tab2.tab3, "Secondary")
+
+        self.tab2.tabs.move(70,220)
+        self.tab2.tabs.resize(600,500)
+
+
+
         # Add tabs to widget
+        #self.layout.addWidget(self.temp)
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
+
 
         self.show()
 
@@ -112,6 +164,16 @@ class PlotWindow(QWidget):
 
     def closeEvent(self, event):
         event.ignore()
+
+    def find_peaks_automatically(self):
+        print('hello finding peaks')
+        peaks, peak_pos = FindPeaks.FindPeaks(h=10,t=15,d=1)
+        print(peaks[0])
+        default_peaks = peaks[0]
+        default_sigma = [2.0] * len(default_peaks)
+        input_data = list(zip(default_peaks, default_sigma))
+        res = getmatch.get_matches(input_data)
+        print(res)
 
     def PlotSpectra(self):
         print('plotting')
