@@ -2,7 +2,7 @@ import globals
 
 def Energy_Corrections():
 
-    print(globals.E_Corr_GE1_apply)
+    #print(globals.E_Corr_GE1_apply)
 
     if globals.E_Corr_GE1_apply:
         globals.x_GE1 = lincorr(globals.x_GE1, globals.E_Corr_GE1_gradient, globals.E_Corr_GE1_offset)
