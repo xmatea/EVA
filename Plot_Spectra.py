@@ -17,8 +17,11 @@ def How_many_plot():
 def Plot_Peak_Location(fig,axs,plt,peaks,x,i):
 
     height = peaks[1]['peak_heights']
+    print('height',height)
     peak_pos = x[peaks[0]]
+    print('peak_pos',peak_pos)
     axs[i].scatter(peak_pos, height, color='r', s=20, marker='X', label='peaks')
+    #axs[i].scatter(x, peaks, color='r', s=20, marker='X', label='peaks')
 
 
 def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4):

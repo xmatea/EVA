@@ -23,6 +23,8 @@ from PyQt5.QtWidgets import (
     QTableWidget,
     QTableWidgetItem,
     QTabWidget,
+    QComboBox,
+    QGridLayout,
 )
 from PyQt5.QtGui import QPalette, QColor, QCloseEvent
 import sys
@@ -33,6 +35,7 @@ import getmatch
 import loadsettings as ls
 import Plot_Spectra
 import FindPeaks
+import SortMatch
 
 import LoadDatabaseFile as ldf
 
@@ -46,6 +49,124 @@ class Color(QWidget):
         palette = self.palette()
         palette.setColor(QPalette.Window, QColor(color))
         self.setPalette(palette)
+
+class Correction_E(QWidget):
+    """
+        This "window" is a QWidget. If it has no parent, it
+        will appear as a free-floating window as we want.
+        """
+
+    def __init__(self, parent = None):
+        super(Correction_E,self).__init__(parent)
+        #label = QLabel("Energy Correction ", self)
+
+        self.resize(800, 500)
+        self.setMinimumSize(800, 500)
+        self.setWindowTitle("Energy Correction ")
+
+        # setting up buttons
+        self.save_GE1_Esettings = QPushButton("Save Detector 1")
+        self.save_GE1_Esettings.clicked.connect(
+            lambda: self.save_GE_E_settings('GE1', LE_GE1_off.text(), LE_GE1_grad.text()))
+        self.save_GE2_Esettings = QPushButton("Save Detector 2")
+        self.save_GE2_Esettings.clicked.connect(
+            lambda: self.save_GE_E_settings('GE2', LE_GE2_off.text(), LE_GE2_grad.text()))
+        self.save_GE3_Esettings = QPushButton("Save Detector 3")
+        self.save_GE3_Esettings.clicked.connect(
+            lambda: self.save_GE_E_settings('GE3', LE_GE3_off.text(), LE_GE3_grad.text()))
+        self.save_GE4_Esettings = QPushButton("Save Detector 4")
+        self.save_GE4_Esettings.clicked.connect(
+            lambda: self.save_GE_E_settings('GE4', LE_GE4_off.text(), LE_GE4_grad.text()))
+        self.save_All_Esettings = QPushButton("Save Detector 4")
+        self.save_All_Esettings.clicked.connect(
+            lambda: self.save_GE_E_settings('All'))
+
+        # Setting up Checkboxes
+        GE1_apply = QCheckBox()
+        GE1_apply.setChecked(globals.E_Corr_GE1_apply)
+        #GE1_apply.text('GE1')
+        GE1_apply.stateChanged.connect(lambda: self.set_E_corr_apply('GE1', GE1_apply))
+        GE2_apply = QCheckBox()
+        GE2_apply.setChecked(globals.E_Corr_GE2_apply)
+        GE2_apply.stateChanged.connect(lambda: self.set_E_corr_apply('GE2', GE2_apply))
+        GE3_apply = QCheckBox()
+        GE3_apply.setChecked(globals.E_Corr_GE3_apply)
+        GE3_apply.stateChanged.connect(lambda: self.set_E_corr_apply('GE3', GE3_apply))
+        GE4_apply = QCheckBox()
+        GE4_apply.setChecked(globals.E_Corr_GE4_apply)
+        GE4_apply.stateChanged.connect(lambda: self.set_E_corr_apply('GE4', GE4_apply))
+
+        # Setting up Line edits
+        LE_GE1_off = QLineEdit(str(globals.E_Corr_GE1_offset))
+        LE_GE1_grad = QLineEdit(str(globals.E_Corr_GE1_gradient))
+        LE_GE2_off = QLineEdit(str(globals.E_Corr_GE2_offset))
+        LE_GE2_grad = QLineEdit(str(globals.E_Corr_GE2_gradient))
+        LE_GE3_off = QLineEdit(str(globals.E_Corr_GE3_offset))
+        LE_GE3_grad = QLineEdit(str(globals.E_Corr_GE3_gradient))
+        LE_GE4_off = QLineEdit(str(globals.E_Corr_GE4_offset))
+        LE_GE4_grad = QLineEdit(str(globals.E_Corr_GE4_gradient))
+
+
+
+        self.layout = QGridLayout()
+        self.layout.addWidget(QLabel('Detector 1'), 1, 0)
+        self.layout.addWidget(QLabel('Detector 2'), 2, 0)
+        self.layout.addWidget(QLabel('Detector 3'), 3, 0)
+        self.layout.addWidget(QLabel('Detector 4'), 4, 0)
+        self.layout.addWidget(QLabel("Offset"), 0, 1)
+        self.layout.addWidget(QLabel("Gradient"), 0, 2)
+        self.layout.addWidget(LE_GE1_off, 1, 1)
+        self.layout.addWidget(LE_GE1_grad, 1, 2)
+        self.layout.addWidget(LE_GE2_off, 2, 1)
+        self.layout.addWidget(LE_GE2_grad, 2, 2)
+        self.layout.addWidget(LE_GE3_off, 3, 1)
+        self.layout.addWidget(LE_GE3_grad, 3, 2)
+        self.layout.addWidget(LE_GE4_off, 4, 1)
+        self.layout.addWidget(LE_GE4_grad, 4, 2)
+        self.layout.addWidget(GE1_apply, 1, 3)
+        self.layout.addWidget(GE2_apply, 2, 3)
+        self.layout.addWidget(GE3_apply, 3, 3)
+        self.layout.addWidget(GE4_apply, 4, 3)
+
+        self.layout.addWidget(self.save_GE1_Esettings, 1, 4)
+        self.layout.addWidget(self.save_GE2_Esettings, 2, 4)
+        self.layout.addWidget(self.save_GE3_Esettings, 3, 4)
+        self.layout.addWidget(self.save_GE4_Esettings, 4, 4)
+
+        self.setLayout(self.layout)
+        self.show()
+
+    def save_GE_E_settings(self, det, off, grad):
+
+        if det == 'GE1':
+            globals.E_Corr_GE1_offset = off
+            globals.E_Corr_GE1_gradient = grad
+        if det == 'GE2':
+            globals.E_Corr_GE2_offset = off
+            globals.E_Corr_GE2_gradient = grad
+        if det == 'GE3':
+            globals.E_Corr_GE3_offset = off
+            globals.E_Corr_GE3_gradient = grad
+        if det == 'GE4':
+            globals.E_Corr_GE4_offset = off
+            globals.E_Corr_GE4_gradient = grad
+
+    def closeEvent(self, event):
+        #close window cleanly
+        globals.we = None
+        return None
+
+    def set_E_corr_apply(self, det,checkbox):
+
+        if det == 'GE1':
+            globals.E_Corr_GE1_apply = checkbox.isChecked()
+        if det == 'GE2':
+            globals.E_Corr_GE2_apply = checkbox.isChecked()
+        if det == 'GE3':
+            globals.E_Corr_GE3_apply = checkbox.isChecked()
+        if det == 'GE4':
+            globals.E_Corr_GE4_apply = checkbox.isChecked()
+
 
 class PlotWindow(QWidget):
     """
@@ -86,13 +207,13 @@ class PlotWindow(QWidget):
 
         self.tab1.table_clickpeaks = QTableWidget(self.tab1)
         self.tab1.table_clickpeaks.setShowGrid(True)
-        self.tab1.table_clickpeaks.setColumnCount(2)
+        self.tab1.table_clickpeaks.setColumnCount(3)
         self.tab1.table_clickpeaks.setRowCount(10)
         self.tab1.table_clickpeaks.move(70,150)
         self.tab1.table_clickpeaks.setMinimumSize(300,600)
-        self.tab1.table_clickpeaks.setHorizontalHeaderLabels(['Element', 'Transition'])
+        self.tab1.table_clickpeaks.setHorizontalHeaderLabels(['Element', 'Transition','Error'])
 
-        self.tab1.table_clickpeaks.setFixedWidth(700)
+        self.tab1.table_clickpeaks.setFixedWidth(900)
         self.tab1.table_clickpeaks.show()
         #self.tab1.setLayout(self.tab1.layout)
 
@@ -103,18 +224,30 @@ class PlotWindow(QWidget):
         self.tab2.label_Element2 = QLabel("hello", self.tab2)
         self.tab2.label_Element2.move(70, 20)
         self.tab2.label_Element2.show()
-        self.tab2.find_peaks_button = QPushButton("Find possible Elements", self.tab2)
+
+        self.tab2.find_peaks_button = QPushButton("Find Peaks", self.tab2)
         self.tab2.find_peaks_button.move(70,70)
         self.tab2.find_peaks_button.show()
-        self.tab2.find_peaks_button.clicked.connect(lambda: self.find_peaks_automatically())
+        self.tab2.find_peaks_button.clicked.connect(
+            lambda: self.find_peaks_automatically())
+
+        '''self.tab2.id_peaks_button = QPushButton("Find Peaks", self.tab2)
+        self.tab2.id_peaks_button.move(70,70)
+        self.tab2.id_peaks_button.show()
+        self.tab2.id_peaks_button.clicked.connect(lambda: self.id_peaks())'''
+
+
 
         self.tab2.useDef_checkbox = QCheckBox("Use defaults",self.tab2)
         self.tab2.useDef_checkbox.move(70,170)
         self.tab2.useDef_checkbox.setChecked(True)
         self.tab2.useDef_checkbox.show()
 
-        print('here')
-
+        self.tab2.peakfindroutine = QComboBox(self.tab2)
+        self.tab2.peakfindroutine.move(470,70)
+        self.tab2.peakfindroutine.addItem('scipy.FindPeak')
+        self.tab2.peakfindroutine.addItem('scipy.Find_Peak_Cwt')
+        self.tab2.peakfindroutine.show()
 
         self.tab2.tabs = QTabWidget(self.tab2)
         self.tab2.tab1 = QWidget()
@@ -123,13 +256,14 @@ class PlotWindow(QWidget):
 
 
         self.tab2.tabs.addTab(self.tab2.tab1, "Most Probable")
-        self.tab2.table_peaks = QTableWidget(self.tab2.tab2)
+
+        self.tab2.table_peaks = QTableWidget(self.tab2.tab1)
         self.tab2.table_peaks.setShowGrid(True)
         self.tab2.table_peaks.setColumnCount(6)
         self.tab2.table_peaks.setRowCount(10)
-        self.tab2.table_peaks.move(70,150)
-        self.tab2.table_peaks.setMinimumSize(300,600)
-        self.tab2.table_peaks.setHorizontalHeaderLabels(['Element', 'Transition'])
+        self.tab2.table_peaks.move(50,50)
+        self.tab2.table_peaks.setMinimumSize(600,1600)
+        self.tab2.table_peaks.setHorizontalHeaderLabels(['Detector', 'Probable Elements'])
         self.tab2.table_peaks.setFixedWidth(700)
         self.tab2.table_peaks.show()
 
@@ -137,6 +271,7 @@ class PlotWindow(QWidget):
         #self.tab2.tabs.addTab(self.tab2.tab3, "Secondary")
 
         self.tab2.tabs.move(70,220)
+        self.tab2.tabs.setFixedWidth(900)
         self.tab2.tabs.resize(600,500)
 
 
@@ -156,23 +291,31 @@ class PlotWindow(QWidget):
         event.ignore()
 
     def find_peaks_automatically(self):
-        print('hello finding peaks')
+        whichpeakfindroute = self.tab2.peakfindroutine.currentText()
         figpeak, axspeak, pltpeak = Plot_Spectra.Plot_Spectra3(globals.x_GE1, globals.y_GE1,
                                                    globals.x_GE2, globals.y_GE2,
                                                    globals.x_GE3, globals.y_GE3,
                                                    globals.x_GE4, globals.y_GE4)
         i = 0
         if globals.plot_GE1:
+
             peaks_GE1, peak_pos_GE1 = FindPeaks.FindPeaks(globals.x_GE1,globals.y_GE1,h=10,t=15,d=1)
+
             default_peaks = peaks_GE1[0]
+            #default_peaks = peaks_GE1
             default_sigma = [2.0] * len(default_peaks)
             input_data = list(zip(default_peaks, default_sigma))
             match_GE1 = getmatch.get_matches(input_data)
-            print('match_GE1',match_GE1)
+
 
             Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, globals.x_GE1,i)
-            i+=1
+            #Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, peak_pos_GE1, i)
 
+            out = SortMatch.SortMatch(match_GE1)
+            self.tab2.table_peaks.setItem(i, 0, QTableWidgetItem("Detector 1"))
+            self.tab2.table_peaks.setItem(i, 1, QTableWidgetItem(str(dict(list(out.items())))))
+            print('after table_peaks')
+            i += 1
 
         if globals.plot_GE2:
             peaks_GE2, peak_pos_GE2 = FindPeaks.FindPeaks(globals.x_GE2,globals.y_GE2,h=10,t=15,d=1)
@@ -259,7 +402,7 @@ class PlotWindow(QWidget):
                 if event.inaxes:
                     ax = event.inaxes  # the axes instance
                     default_peaks=[event.xdata]
-                    default_sigma = [2.0]*len(default_peaks)
+                    default_sigma = [0.5]*len(default_peaks)
                     "{:.1f}".format(45.34531)
                     self.tab1.label_Element.setText('Possible transitions at '
                                                + "{:.1f}".format(default_peaks[0]) +' +/- '
@@ -278,6 +421,10 @@ class PlotWindow(QWidget):
 
                         self.tab1.table_clickpeaks.setItem(i, 0, QTableWidgetItem(row[2]))
                         self.tab1.table_clickpeaks.setItem(i, 1, QTableWidgetItem(row[3]))
+                        print(row[4])
+                        print(row[5])
+                        self.tab1.table_clickpeaks.setItem(i, 2, QTableWidgetItem("{:.2f}".format(row[5])))
+
                         i += 1
 
                     self.tab1.table_clickpeaks.setRowCount(i)
@@ -293,10 +440,9 @@ class MainWindow(QWidget):
     def __init__(self, parent = None):
         super(MainWindow,self).__init__(parent)
         self.wp = None
+        globals.we = None
 
-        #app = QApplication(sys.argv)
 
-        '''w = QWidget()'''
         self.resize(1200, 600)
         self.setWindowTitle("Elemental Analysis")
 
@@ -357,6 +503,17 @@ class MainWindow(QWidget):
         Normalise_total_spills.triggered.connect(lambda: self.NTS(Normalise_total_spills.isChecked(),
                                                                   Normalise_total_counts, Normalise_total_spills
                                                                   ,Normalise_do_not))
+
+        Corr = bar.addMenu('Corrections')
+        Corr_eff = Corr.addAction('Efficiency Corrections')
+
+        Corr_E = Corr.addAction('Energy Corrections')
+        #Corr_E.setCheckable(True)
+        #Corr_E.setChecked(False)
+        Corr_E.triggered.connect(lambda: self.Corr_Energy())
+
+        #Corr_Abs = plot.addAction('Absorption Correction')
+
 
         TRIM = bar.addMenu('SRIM/TRIM')
         Trim_sim = TRIM.addAction('SRIM/TRIM Simulation')
@@ -434,6 +591,22 @@ class MainWindow(QWidget):
             RunNum_Text.text()))
 
 
+    def Corr_Energy(self):
+        print('in Corr_Energy')
+        #self.show(Correction_Energy())
+        if globals.we is None:
+            globals.we = Correction_E()
+            print('self,wp = none')
+            #self.we.resize(1200, 600)
+            #self.we.setWindowTitle("Plot Window: "+globals.RunNum)
+            globals.we.show()
+
+        else:
+            print('window exists')
+
+
+
+
     def N_do_not(self,checked,Norm_Counts,Norm_Spills,Normalise_do_not):
         print(checked)
         if checked:
@@ -481,14 +654,13 @@ class MainWindow(QWidget):
 
 
     def closeEvent(self, event):
-        print('in closeevent')
+        #close window cleanly
+
         widgetList = QApplication.topLevelWidgets()
         numWindows = len(widgetList)
         if numWindows > 0:
             event.accept()
             QApplication.quit()
-
-
         else:
             event.ignore()
 
@@ -498,11 +670,7 @@ class MainWindow(QWidget):
         reply = QMessageBox.question(self, 'Message', quit_msg,
                                                QMessageBox.Yes, QMessageBox.No)
         if reply == QMessageBox.Yes:
-
-            print('Yes')
             QApplication.quit()
-
-
             return
 
     def setplotGE1(self,value):

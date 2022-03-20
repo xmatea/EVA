@@ -61,3 +61,19 @@ peak_data = {}
 Normalise_counts = True
 Normalise_spill = False
 Normalise_do_not = False
+
+we = None
+
+E_Corr_GE1_offset = 0.0
+E_Corr_GE1_gradient = 1.0
+E_Corr_GE2_offset = 0.0
+E_Corr_GE2_gradient = 1.0
+E_Corr_GE3_offset = 0.0
+E_Corr_GE3_gradient = 1.0
+E_Corr_GE4_offset = 0.0
+E_Corr_GE4_gradient = 1.0
+E_Corr_GE1_apply = False
+E_Corr_GE2_apply = False
+E_Corr_GE3_apply = False
+E_Corr_GE4_apply = False
+

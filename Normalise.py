@@ -4,7 +4,7 @@ import numpy as np
 def Normalise():
     print('in normalise ', globals.Normalise_counts)
     if globals.Normalise_counts:
-        print('hello')
+        #print('hello')
         globals.x_GE1_Ncounts = globals.x_GE1
         globals.y_GE1_Ncounts = globals.y_GE1/np.sum(globals.y_GE1)*pow(10,5)
         #err_GE1_Ncounts = arr.array('i', [])
@@ -20,10 +20,10 @@ def Normalise():
         print('bye')
 
     if globals.Normalise_spill:
-        print('in spills')
-        print(globals.events_str[19:])
+        #print('in spills')
+        #print(globals.events_str[19:])
         Spills = int(globals.events_str[19:])
-        print(Spills)
+        #print(Spills)
         globals.x_GE1_NEvents= globals.x_GE1
         globals.y_GE1_NEvents = globals.y_GE1/Spills*pow(10,5)
         #err_GE1_Ncounts = arr.array('i', [])
@@ -36,5 +36,5 @@ def Normalise():
         globals.x_GE4_NEvents = globals.x_GE4
         globals.y_GE4_NEvents = globals.y_GE4/Spills*pow(10,5)
         #err_GE4_Ncounts = arr.array('i', [])
-        print('bye')
+        #print('bye')
 
