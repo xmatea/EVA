@@ -4,7 +4,7 @@ import globals
 
 
 def loadDatabaseFile():
-    with open('peak_data.json','r') as read_file:
+    with open('./Databases/Muonic X-rays/peak_data.json','r') as read_file:
         print('decoding file')
         globals.peakdata = json.load(read_file)
         primary_energies = {}
@@ -12,6 +12,7 @@ def loadDatabaseFile():
         all_energies = {}
         # sort data
         for element in globals.peakdata:
+            print('element', element)
             primary_energy = [float(x[1]) for x in list(globals.peakdata[element]['Primary'].items())]
             secondary_energy = [float(x[1]) for x in list(globals.peakdata[element]['Secondary'].items())]
             primary_trans = [x[0] for x in list(globals.peakdata[element]['Primary'].items())]
@@ -24,7 +25,7 @@ def loadDatabaseFile():
         globals.peak_data['Primary energy'] = primary_energies
         globals.peak_data['Secondary energy'] = secondary_energies
         globals.peak_data['All energies'] = all_energies
-        print(len(globals.peak_data))
+        #print(len(globals.peak_data))
 
     return
 

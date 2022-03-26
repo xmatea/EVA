@@ -1,3 +1,5 @@
+import time
+
 import matplotlib.pyplot as plt
 from matplotlib.backend_bases import MouseButton
 from PyQt5.QtCore import QSize, Qt
@@ -38,6 +40,7 @@ import FindPeaks
 import SortMatch
 
 import LoadDatabaseFile as ldf
+import loadgamma as lg
 
 
 class Color(QWidget):
@@ -178,8 +181,8 @@ class PlotWindow(QWidget):
         super(PlotWindow,self).__init__(parent)
         #label = QLabel("Plot Window ", self)
 
-        self.resize(1500, 1000)
-        self.setMinimumSize(500,1000)
+        self.resize(1300, 1100)
+        self.setMinimumSize(1300,1100)
         self.setWindowTitle("Plot Window ")
 
         self.layout = QVBoxLayout(self)
@@ -201,20 +204,40 @@ class PlotWindow(QWidget):
 
         # Create first tab
 
-        self.tab1.label_Element = QLabel("Possible Transition:                                            ", self.tab1)
-        self.tab1.label_Element.move(70, 100)
+        self.tab1.label_Element = QLabel("Possible Muonic X-ray Transition:                                            "
+                                         , self.tab1)
+        self.tab1.label_Element.move(30, 50)
         self.tab1.label_Element.show()
 
         self.tab1.table_clickpeaks = QTableWidget(self.tab1)
         self.tab1.table_clickpeaks.setShowGrid(True)
         self.tab1.table_clickpeaks.setColumnCount(3)
         self.tab1.table_clickpeaks.setRowCount(10)
-        self.tab1.table_clickpeaks.move(70,150)
-        self.tab1.table_clickpeaks.setMinimumSize(300,600)
+        self.tab1.table_clickpeaks.move(70,120)
+        self.tab1.table_clickpeaks.setMinimumSize(1050,350)
+        #self.tab1.table_clickpeaks.
         self.tab1.table_clickpeaks.setHorizontalHeaderLabels(['Element', 'Transition','Error'])
 
-        self.tab1.table_clickpeaks.setFixedWidth(900)
+        self.tab1.table_clickpeaks.setFixedWidth(1050)
         self.tab1.table_clickpeaks.show()
+
+        self.tab1.label_Element2 = QLabel("Possible Gamma Transition:                                            "
+                                         , self.tab1)
+        self.tab1.label_Element2.move(30, 500)
+        self.tab1.label_Element2.show()
+
+        self.tab1.table_clickpeaks2 = QTableWidget(self.tab1)
+        self.tab1.table_clickpeaks2.setShowGrid(True)
+        self.tab1.table_clickpeaks2.setColumnCount(3)
+        self.tab1.table_clickpeaks2.setRowCount(10)
+        self.tab1.table_clickpeaks2.move(70, 570)
+        self.tab1.table_clickpeaks2.setMinimumSize(1050, 350)
+        # self.tab1.table_clickpeaks.
+        self.tab1.table_clickpeaks2.setHorizontalHeaderLabels(['Element', 'Error', 'Intensity'])
+
+        self.tab1.table_clickpeaks2.setFixedWidth(1050)
+        self.tab1.table_clickpeaks2.show()
+
         #self.tab1.setLayout(self.tab1.layout)
 
         print('setting up tab2')
@@ -259,12 +282,15 @@ class PlotWindow(QWidget):
 
         self.tab2.table_peaks = QTableWidget(self.tab2.tab1)
         self.tab2.table_peaks.setShowGrid(True)
-        self.tab2.table_peaks.setColumnCount(6)
-        self.tab2.table_peaks.setRowCount(10)
+        self.tab2.table_peaks.setColumnCount(2)
+        self.tab2.table_peaks.setRowCount(4)
         self.tab2.table_peaks.move(50,50)
-        self.tab2.table_peaks.setMinimumSize(600,1600)
+        self.tab2.table_peaks.setMinimumSize(800,400)
         self.tab2.table_peaks.setHorizontalHeaderLabels(['Detector', 'Probable Elements'])
-        self.tab2.table_peaks.setFixedWidth(700)
+        self.tab2.table_peaks.setColumnWidth(1,600)
+        #self.tab2.table_peaks.setFixedWidth(700)
+        self.tab2.table_peaks.verticalScrollBar()
+        self.tab2.table_peaks.horizontalScrollBar()
         self.tab2.table_peaks.show()
 
         self.tab2.tabs.addTab(self.tab2.tab2, "Transitions")
@@ -272,7 +298,7 @@ class PlotWindow(QWidget):
 
         self.tab2.tabs.move(70,220)
         self.tab2.tabs.setFixedWidth(900)
-        self.tab2.tabs.resize(600,500)
+        self.tab2.tabs.resize(1500,600)
 
 
 
@@ -390,11 +416,50 @@ class PlotWindow(QWidget):
 
 
         def on_click(event):
-            if event.button is MouseButton.RIGHT:
-                #print(globals.peak_data)
-                print('disconnecting callback')
-                #plt.disconnect(binding_id)
 
+            if event.button is MouseButton.RIGHT:
+                x, y = event.xdata, event.ydata
+                if event.inaxes:
+                    ax = event.inaxes  # the axes instance
+                    default_peaks = [event.xdata]
+                    #print(globals.peak_data)
+                    print('disconnecting callback')
+                    #plt.disconnect(binding_id)
+                    print('start peak find', time.time())
+
+
+                    #default_peaks = [20.500]
+                    default_peaks = [event.xdata]
+
+                    # default_peaks = peaks_GE1
+                    default_sigma = [2.0] * len(default_peaks)
+
+                    self.tab1.label_Element2.setText('Possible transitions at '
+                                                    + "{:.1f}".format(default_peaks[0]) + ' +/- '
+                                                    + str(default_sigma[0]))
+
+                    input_data = list(zip(default_peaks, default_sigma))
+
+                    res = getmatch.getmatchesgammas(input_data)
+                    print('end peak find', time.time())
+                    print(res)
+                    if res == []:
+                        self.tab1.table_clickpeaks2.setItem(0, 0, QTableWidgetItem('No match'))
+                    else:
+                        i = 0
+                        for match in res:
+                            row = [match['Element'], match['Energy'], match['diff'],
+                                   match['Intensity'], match['lifetime']]
+
+
+
+                            self.tab1.table_clickpeaks2.setItem(i, 0, QTableWidgetItem(row[0]))
+                            self.tab1.table_clickpeaks2.setItem(i, 1, QTableWidgetItem(str(row[2])))
+                            self.tab1.table_clickpeaks2.setItem(i, 2, QTableWidgetItem("{:.2f}".format(float(row[3]))))
+
+                            i += 1
+
+                        self.tab1.table_clickpeaks2.setRowCount(i)
 
 
             if event.button is MouseButton.LEFT:
@@ -797,6 +862,25 @@ class MainWindow(QWidget):
     ldf.loadDatabaseFile()
     #for key, value in globals.peakdata.items():
         #print(key, ":", value)
+
+    print('loading gamma start',time.time())
+
+    lg.loadgamma()
+    print('loading gamma end',time.time())
+
+    #filter(lambda x: x[2] <= bmi <= x[3], bmi_ranges)
+
+    #print(filter(lambda x: x[2] <= lg.loadgamma() <= x[3], bmi_ranges))
+    print('start peak find',time.time())
+    default_peaks = [20.500]
+    # default_peaks = peaks_GE1
+    default_sigma = [2.0] * len(default_peaks)
+    input_data = list(zip(default_peaks, default_sigma))
+
+    getmatch.getmatchesgammas(input_data)
+    print('end peak find', time.time())
+
+    #print(globals.Full_Gammas)
 
 
     # Close welcome screen

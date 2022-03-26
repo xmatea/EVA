@@ -54,3 +54,28 @@ def get_matches(input_peaks):
     print('kkk')
     print(all_matches)
     return all_matches
+
+def getmatchesgammas(input_peaks):
+    #print('in find gammas')
+    #print('length of full_gamms', len(globals.Full_Gammas))
+    all_matches = []
+    i = 1
+    while i < len(globals.Full_Gammas)-1:
+        i += 1
+        raw_data = globals.Full_Gammas[i]
+        for peak, sigma in input_peaks:
+
+            if peak >= (float(raw_data[1]) - 3.0 * sigma) and peak <= (float(raw_data[1]) + 3.0 * sigma):
+                 #print('in print', peak, sigma, raw_data)
+                 data = {}
+                 data['Element'] = raw_data[0]
+                 data['Energy'] = raw_data[1]
+                 data['diff'] = peak - float(raw_data[1])
+                 #print(data['diff'])
+                 data['Intensity'] = raw_data[2]
+                 data['lifetime'] = raw_data[3]
+                 all_matches.append(data)
+
+    all_matches.sort(key = lambda x: abs(x['diff']))
+
+    return all_matches
