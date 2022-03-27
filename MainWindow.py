@@ -217,6 +217,9 @@ class PlotWindow(QWidget):
         self.tab1.table_clickpeaks.setMinimumSize(1050,350)
         #self.tab1.table_clickpeaks.
         self.tab1.table_clickpeaks.setHorizontalHeaderLabels(['Element', 'Transition','Error'])
+        self.tab1.table_clickpeaks.setColumnWidth(0, 250)
+        self.tab1.table_clickpeaks.setColumnWidth(1, 250)
+        self.tab1.table_clickpeaks.setColumnWidth(2, 250)
 
         self.tab1.table_clickpeaks.setFixedWidth(1050)
         self.tab1.table_clickpeaks.show()
@@ -234,7 +237,9 @@ class PlotWindow(QWidget):
         self.tab1.table_clickpeaks2.setMinimumSize(1050, 350)
         # self.tab1.table_clickpeaks.
         self.tab1.table_clickpeaks2.setHorizontalHeaderLabels(['Element', 'Error', 'Intensity', 'Lifetime'])
-        self.tab1.table_clickpeaks2.setColumnWidth(1, 400)
+        self.tab1.table_clickpeaks2.setColumnWidth(0, 150)
+        self.tab1.table_clickpeaks2.setColumnWidth(1, 150)
+        self.tab1.table_clickpeaks2.setColumnWidth(2, 150)
 
         self.tab1.table_clickpeaks2.setFixedWidth(1050)
         self.tab1.table_clickpeaks2.show()
@@ -454,9 +459,11 @@ class PlotWindow(QWidget):
 
 
 
-                            self.tab1.table_clickpeaks2.setItem(i, 0, QTableWidgetItem(row[0]))
-                            self.tab1.table_clickpeaks2.setItem(i, 1, QTableWidgetItem(str("{:.2f}".format(row[2]))))
-                            self.tab1.table_clickpeaks2.setItem(i, 2, QTableWidgetItem("{:.2f}".format(100.0*float(row[3]))))
+                            self.tab1.table_clickpeaks2.setItem(i, 0, QTableWidgetItem(row[0].strip()))
+                            self.tab1.table_clickpeaks2.setItem(i, 1, QTableWidgetItem(
+                                str("{:.2f}".format(row[2])).strip()))
+                            self.tab1.table_clickpeaks2.setItem(i, 2, QTableWidgetItem(
+                                "{:.2f}".format(100.0*float(row[3]))))
                             self.tab1.table_clickpeaks2.setItem(i, 3, QTableWidgetItem(row[4]))
 
                             i += 1
