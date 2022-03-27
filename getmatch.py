@@ -64,13 +64,14 @@ def getmatchesgammas(input_peaks):
         i += 1
         raw_data = globals.Full_Gammas[i]
         for peak, sigma in input_peaks:
+            raw_data_kev=float(raw_data[1])*1000
 
-            if peak >= (float(raw_data[1]) - 3.0 * sigma) and peak <= (float(raw_data[1]) + 3.0 * sigma):
+            if peak >= (raw_data_kev - 3.0 * sigma) and peak <= (raw_data_kev + 3.0 * sigma):
                  #print('in print', peak, sigma, raw_data)
                  data = {}
                  data['Element'] = raw_data[0]
-                 data['Energy'] = raw_data[1]
-                 data['diff'] = peak - float(raw_data[1])
+                 data['Energy'] = raw_data_kev
+                 data['diff'] = peak - float(raw_data_kev)
                  #print(data['diff'])
                  data['Intensity'] = raw_data[2]
                  data['lifetime'] = raw_data[3]

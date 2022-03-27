@@ -228,12 +228,13 @@ class PlotWindow(QWidget):
 
         self.tab1.table_clickpeaks2 = QTableWidget(self.tab1)
         self.tab1.table_clickpeaks2.setShowGrid(True)
-        self.tab1.table_clickpeaks2.setColumnCount(3)
+        self.tab1.table_clickpeaks2.setColumnCount(4)
         self.tab1.table_clickpeaks2.setRowCount(10)
         self.tab1.table_clickpeaks2.move(70, 570)
         self.tab1.table_clickpeaks2.setMinimumSize(1050, 350)
         # self.tab1.table_clickpeaks.
-        self.tab1.table_clickpeaks2.setHorizontalHeaderLabels(['Element', 'Error', 'Intensity'])
+        self.tab1.table_clickpeaks2.setHorizontalHeaderLabels(['Element', 'Error', 'Intensity', 'Lifetime'])
+        self.tab1.table_clickpeaks2.setColumnWidth(1, 400)
 
         self.tab1.table_clickpeaks2.setFixedWidth(1050)
         self.tab1.table_clickpeaks2.show()
@@ -454,8 +455,9 @@ class PlotWindow(QWidget):
 
 
                             self.tab1.table_clickpeaks2.setItem(i, 0, QTableWidgetItem(row[0]))
-                            self.tab1.table_clickpeaks2.setItem(i, 1, QTableWidgetItem(str(row[2])))
-                            self.tab1.table_clickpeaks2.setItem(i, 2, QTableWidgetItem("{:.2f}".format(float(row[3]))))
+                            self.tab1.table_clickpeaks2.setItem(i, 1, QTableWidgetItem(str("{:.2f}".format(row[2]))))
+                            self.tab1.table_clickpeaks2.setItem(i, 2, QTableWidgetItem("{:.2f}".format(100.0*float(row[3]))))
+                            self.tab1.table_clickpeaks2.setItem(i, 3, QTableWidgetItem(row[4]))
 
                             i += 1
 
