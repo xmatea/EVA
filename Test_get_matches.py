@@ -4,6 +4,7 @@ import globals
 import getmatch
 import loadcomment
 import loaddata
+import loadgamma as lg
 
 
 
@@ -32,7 +33,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_loadcomment(self):
         print('loadcomment test')
-        globals.workingdirectory='.'
+        globals.workingdirectory='./TestData/'
         RunNum=2630
         flag,rtnstr = loadcomment.loadcomment(RunNum)
         self.assertEqual(flag, 1, 'did return flag')
@@ -44,7 +45,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_loadcomment2(self):
         print('loadcomment2 test')
-        globals.workingdirectory='.'
+        globals.workingdirectory='./TestData/'
         RunNum=999
         flag,rtnstr = loadcomment.loadcomment(RunNum)
         self.assertEqual(flag, 0, 'did return flag')
@@ -53,7 +54,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_loadcomment3(self):
         print('loadcomment3 test')
-        globals.workingdirectory='../..'
+        globals.workingdirectory='./'
         RunNum=2631
         flag,rtnstr = loadcomment.loadcomment(RunNum)
         self.assertEqual(flag, 0, 'did return flag')
@@ -62,7 +63,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_loaddata(self):
         print('loadcdata test')
-        globals.workingdirectory = '.'
+        globals.workingdirectory = './TestData/'
         RunNum = 2630
         loaddata.loaddata(RunNum)
         self.assertEqual(globals.flag_d_GE1, 1,'didnt load ge1 data')
@@ -72,7 +73,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_loaddata2(self):
         print('loadcdata test')
-        globals.workingdirectory = '.'
+        globals.workingdirectory = './TestData/'
         RunNum = 999
         loaddata.loaddata(RunNum)
         self.assertEqual(globals.flag_d_GE1, 0,'didnt load ge1 data')
@@ -82,7 +83,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_loaddata3(self):
         print('loadcdata test')
-        globals.workingdirectory = '.'
+        globals.workingdirectory = './Testdata/'
         RunNum = 2630
         loaddata.loaddata(RunNum)
         self.assertEqual(globals.x_GE1[100], 99.5,'didnt load ge1 data')
@@ -93,6 +94,32 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(globals.y_GE3[100], 19.0,'didnt load ge2 data')
         self.assertEqual(globals.x_GE4[100], 12.4375 ,'didnt load ge1 data')
         self.assertEqual(globals.y_GE4[100], 20.0,'didnt load ge2 data')
+
+    def test_gammaload(self):
+        lg.loadgamma()
+        length = sum([len(sub_list) for sub_list in globals.Full_Gammas])
+        #print('length', length)
+        self.assertEqual(length,274570,'load gamma failed')
+
+    def test_gammaload2(self):
+        lg.loadgamma()
+        self.assertEqual(len(globals.Full_Gammas),119,'load gamma failed')
+
+
+    def test_gammamatch(self):
+        lg.loadgamma()
+        res=[{'Element': '140Eu', 'Energy': 20.5, 'diff': 0.0, 'Intensity': ' 0.000E+00', 'lifetime': '        '},
+             {'Element': '140Eu', 'Energy': 20.5, 'diff': 0.0, 'Intensity': ' 0.000E+00', 'lifetime': '        '},
+             {'Element': '140Eu', 'Energy': 20.5, 'diff': 0.0, 'Intensity': ' 0.000E+00', 'lifetime': '        '}]
+        default_peaks = [20.500]
+        default_sigma = [0.01] * len(default_peaks)
+        input_data = list(zip(default_peaks, default_sigma))
+        match=getmatch.getmatchesgammas(input_data)
+        print(res)
+        print(match)
+        self.assertEqual(match, res, 'load gamma failed')
+
+
 
 
 
@@ -106,6 +133,7 @@ if __name__ == '__main__':
     MyTestCase.test_loaddata()
     MyTestCase.test_loaddata2()
     MyTestCase.test_loaddata3()
+    MyTestCase.test_gammaload()
 
 
 

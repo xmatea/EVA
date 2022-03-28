@@ -990,37 +990,15 @@ class MainWindow(QWidget):
     # load settings file
     ls.loadsettings()
     print(ls.settings_info)
-    print('here')
 
     # load database file
     ldf.loadDatabaseFile()
-    #for key, value in globals.peakdata.items():
-        #print(key, ":", value)
 
     print('loading gamma start',time.time())
 
     lg.loadgamma()
     print('loading gamma end',time.time())
 
-    #filter(lambda x: x[2] <= bmi <= x[3], bmi_ranges)
-
-    #print(filter(lambda x: x[2] <= lg.loadgamma() <= x[3], bmi_ranges))
-    print('start peak find',time.time())
-    default_peaks = [20.500]
-    # default_peaks = peaks_GE1
-    default_sigma = [2.0] * len(default_peaks)
-    input_data = list(zip(default_peaks, default_sigma))
-
-    getmatch.getmatchesgammas(input_data)
-    print('end peak find', time.time())
-
-    #print(globals.Full_Gammas)
-
-
-    # Close welcome screen
-    print('hello')
-
-    print('dam')
 
 app = QApplication(sys.argv)
 mainWin = MainWindow()

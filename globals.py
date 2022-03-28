@@ -50,8 +50,12 @@ y_GE4_NEvents = arr.array('i', [])
 err_GE4_NEvents = arr.array('i', [])
 
 #Full_Gammas = (("Element","Energy","Intensity","Lifetime"))
-#Full_Gammas = arr.array('i',[])
-Full_Gammas = ()
+#Full_Gammas = arr.array('',[])
+Full_Gammas = []
+i = 0
+for i in range(119):
+    Full_Gammas.append([])
+#Full_Gammas[3].append(['sf','ad','tg','ref'])
 starttime_str = ''
 endtime_str = ''
 events_str = ''
