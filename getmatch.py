@@ -57,7 +57,7 @@ def get_matches(input_peaks):
 
 def getmatchesgammas(input_peaks):
     #print('in find gammas')
-    #print('length of full_gamms', len(globals.Full_Gammas))
+    print('length of full_gamms', len(globals.Full_Gammas))
     all_matches = []
     i = 1
     while i < len(globals.Full_Gammas)-1:

@@ -3,11 +3,12 @@ import globals
 import threading
 
 def loadgamma():
-    #loadgammascan(0,118)
+    print('hello again')
+    loadgammascan(0,117)
     # Create two threads as follows
     print('in load gamma')
 
-    t1=threading.Thread(target=loadgammascan, args=(0, 5,))
+    '''t1=threading.Thread(target=loadgammascan, args=(0, 5,))
     t2=threading.Thread(target=loadgammascan, args=(6, 9,))
     t3=threading.Thread(target=loadgammascan, args=(10, 12,))
     t4=threading.Thread(target=loadgammascan, args=(13, 15,))
@@ -122,28 +123,31 @@ def loadgamma():
     t311.join()
     t312.join()
     t49.join()
-    t410.join()
+    t410.join()'''
 
 
 def loadgammascan(minA,maxA):
-    #print('helo')
+    print('helo')
     str1 = './Databases/gammas/levels/z'
 
     for i in range(minA,maxA):
         A = i+1
-        #print(A, len(str(A)))
+        print(A, len(str(A)))
         if len(str(A)) == 1:
-            decodegammas(str1+'00'+str(A)+'.dat')
+            decodegammas(str1+'00'+str(A)+'.dat',A)
         if len(str(A)) == 2:
-            decodegammas(str1 + '0' + str(A) + '.dat')
+            decodegammas(str1 + '0' + str(A) + '.dat',A)
         if len(str(A)) == 3:
-            decodegammas(str1 + str(A) + '.dat')
+            decodegammas(str1 + str(A) + '.dat',A)
 
-    #print('gammas',globals.Full_Gammas)
+    print('gammas',globals.Full_Gammas)
 
 
-def decodegammas(filename):
+def decodegammas(filename, A):
+    print('A=',A)
+    print('filename',filename)
     f = open(filename,'r')
+    #print('f',f)
 
     record = namedtuple('Isotope',
                         'SYMB A Z Nol Nog Nmax Nc Sn Sp')
@@ -183,8 +187,8 @@ def decodegammas(filename):
 
                         temp1 = list(globals.Full_Gammas)
                         temp1.append((nucl.SYMB,gammas.Eg,gammas.Pg,level.T_half))
+                        #print('temp1',temp1)
                         globals.Full_Gammas = tuple(temp1)
-
-    #print(globals.Full_Gammas)
+                        #print(globals.Full_Gammas)
 
     f.close()

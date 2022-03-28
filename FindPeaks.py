@@ -29,9 +29,9 @@ def FindPeaks(x,y,h,t,d):
     return peaks, peak_pos
 
 def FindPeaksCwt(x,y,h,t,d):
-    print('here in Findpeaks')
+    print('here in Findpeakscwt')
     #peaks = find_peaks(y,height=h,threshold = t, distance = d)
-    peaks = find_peaks_cwt(y,[5])
+    peaks = find_peaks_cwt(y,[h])
     print(peaks)
     #height = peaks[1]['peak_heights']
     height = y[peaks]
@@ -52,4 +52,4 @@ def FindPeaksCwt(x,y,h,t,d):
     print('scatter')
     plt.show()
     print('returning')
-    return peaks, peak_pos
+    return [peaks], [peak_pos]
