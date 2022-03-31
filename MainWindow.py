@@ -181,8 +181,8 @@ class PlotWindow(QWidget):
         super(PlotWindow,self).__init__(parent)
         #label = QLabel("Plot Window ", self)
 
-        self.resize(1300, 1100)
-        self.setMinimumSize(1300,1100)
+        self.resize(500, 1100)
+        self.setMinimumSize(500,1100)
         self.setWindowTitle("Plot Window ")
 
         self.layout = QVBoxLayout(self)
@@ -213,15 +213,15 @@ class PlotWindow(QWidget):
         self.tab1.table_clickpeaks.setShowGrid(True)
         self.tab1.table_clickpeaks.setColumnCount(3)
         self.tab1.table_clickpeaks.setRowCount(10)
-        self.tab1.table_clickpeaks.move(70,120)
-        self.tab1.table_clickpeaks.setMinimumSize(1050,350)
+        self.tab1.table_clickpeaks.move(50,120)
+        self.tab1.table_clickpeaks.setMinimumSize(700,350)
         #self.tab1.table_clickpeaks.
         self.tab1.table_clickpeaks.setHorizontalHeaderLabels(['Element', 'Transition', 'Error'])
-        self.tab1.table_clickpeaks.setColumnWidth(0, 250)
-        self.tab1.table_clickpeaks.setColumnWidth(1, 250)
-        self.tab1.table_clickpeaks.setColumnWidth(2, 250)
+        self.tab1.table_clickpeaks.setColumnWidth(0, 150)
+        self.tab1.table_clickpeaks.setColumnWidth(1, 150)
+        self.tab1.table_clickpeaks.setColumnWidth(2, 150)
 
-        self.tab1.table_clickpeaks.setFixedWidth(1050)
+        #self.tab1.table_clickpeaks.setFixedWidth(700)
         self.tab1.table_clickpeaks.show()
 
         self.tab1.label_Element2 = QLabel("Possible Gamma Transition:                                            "
@@ -233,15 +233,15 @@ class PlotWindow(QWidget):
         self.tab1.table_clickpeaks2.setShowGrid(True)
         self.tab1.table_clickpeaks2.setColumnCount(4)
         self.tab1.table_clickpeaks2.setRowCount(10)
-        self.tab1.table_clickpeaks2.move(70, 570)
-        self.tab1.table_clickpeaks2.setMinimumSize(1050, 350)
+        self.tab1.table_clickpeaks2.move(50, 570)
+        self.tab1.table_clickpeaks2.setMinimumSize(700, 350)
         # self.tab1.table_clickpeaks.
         self.tab1.table_clickpeaks2.setHorizontalHeaderLabels(['Element', 'Error', 'Intensity', 'Lifetime'])
         self.tab1.table_clickpeaks2.setColumnWidth(0, 150)
         self.tab1.table_clickpeaks2.setColumnWidth(1, 150)
         self.tab1.table_clickpeaks2.setColumnWidth(2, 150)
 
-        self.tab1.table_clickpeaks2.setFixedWidth(1050)
+        #self.tab1.table_clickpeaks2.setFixedWidth(700)
         self.tab1.table_clickpeaks2.show()
 
         #self.tab1.setLayout(self.tab1.layout)
@@ -322,10 +322,10 @@ class PlotWindow(QWidget):
         self.tab2.table_peaks.setShowGrid(True)
         self.tab2.table_peaks.setColumnCount(2)
         self.tab2.table_peaks.setRowCount(4)
-        self.tab2.table_peaks.move(50,50)
-        self.tab2.table_peaks.setMinimumSize(1000,600)
+        self.tab2.table_peaks.move(20,50)
+        self.tab2.table_peaks.setMinimumSize(650,400)
         self.tab2.table_peaks.setHorizontalHeaderLabels(['Detector', 'Probable Elements'])
-        self.tab2.table_peaks.setColumnWidth(1,600)
+        self.tab2.table_peaks.setColumnWidth(1,420)
         #self.tab2.table_peaks.setFixedWidth(700)
         self.tab2.table_peaks.verticalScrollBar()
         self.tab2.table_peaks.horizontalScrollBar()
@@ -334,8 +334,8 @@ class PlotWindow(QWidget):
         self.tab2.tabs.addTab(self.tab2.tab2, "Transitions")
         #self.tab2.tabs.addTab(self.tab2.tab3, "Secondary")
 
-        self.tab2.tabs.move(70,220)
-        self.tab2.tabs.resize(1100,600)
+        self.tab2.tabs.move(50,220)
+        self.tab2.tabs.resize(700,600)
 
 
 
@@ -508,21 +508,8 @@ class PlotWindow(QWidget):
 
 
     def PlotSpectra(self):
-        print('plotting')
-        '''if globals.plot_GE1:
-            if globals.flag_d_GE1 == 1:
-                Plot_Spectra.Plot_Spectra(self,globals.x_GE1, globals.y_GE1)
-        if globals.plot_GE2:
-            if globals.flag_d_GE2 == 1:
-                Plot_Spectra.Plot_Spectra(self,globals.x_GE2, globals.y_GE2)
-        if globals.plot_GE3:
-            if globals.flag_d_GE3 == 1:
-                Plot_Spectra.Plot_Spectra(self,globals.x_GE3, globals.y_GE3)
-        if globals.plot_GE4:
-            if globals.flag_d_GE1 == 1:
-                Plot_Spectra.Plot_Spectra(self,globals.x_GE4, globals.y_GE4)'''
 
-        #Plot_Spectra.Plot_Spectra2()
+
         if globals.Normalise_do_not:
             fig,axs,plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1, globals.y_GE1,
                                        globals.x_GE2, globals.y_GE2,
@@ -549,11 +536,11 @@ class PlotWindow(QWidget):
         def on_click(event):
 
             if event.button is MouseButton.RIGHT:
+                #Find possible gamma peaks
                 x, y = event.xdata, event.ydata
                 if event.inaxes:
                     ax = event.inaxes  # the axes instance
                     default_peaks = [event.xdata]
-                    #print(globals.peak_data)
                     print('disconnecting callback')
                     #plt.disconnect(binding_id)
                     print('start peak find', time.time())
@@ -597,6 +584,7 @@ class PlotWindow(QWidget):
 
 
             if event.button is MouseButton.LEFT:
+                #find possible muonic X-ray peaks
                 x, y = event.xdata, event.ydata
                 if event.inaxes:
                     ax = event.inaxes  # the axes instance
@@ -630,7 +618,6 @@ class PlotWindow(QWidget):
 
                     self.show()
 
-        #binding_id = plt.connect('motion_notify_event', on_move)
         plt.connect('button_press_event', on_click)
 
 
@@ -940,10 +927,6 @@ class MainWindow(QWidget):
             print ('yeah!')
             self.label_RN.setText("Run Number:   " + str(RunNum))
 
-            #print(MainWindow.Show_Plot_Window.isVisble)
-
-
-
             self.Show_Plot_Window()
 
 
@@ -956,7 +939,7 @@ class MainWindow(QWidget):
         if self.wp is None:
             self.wp = PlotWindow()
             print('self,wp = none')
-            self.wp.resize(1200, 600)
+            self.wp.resize(850, 550)
             self.wp.setWindowTitle("Plot Window: "+globals.RunNum)
             self.wp.show()
 
@@ -964,7 +947,7 @@ class MainWindow(QWidget):
             print('window exists')
             self.wp = PlotWindow()
             print('self,wp = none')
-            self.wp.resize(1200, 600)
+            self.wp.resize(850, 550)
             self.wp.setWindowTitle("Plot Window"+globals.RunNum)
             self.wp.show()
 
