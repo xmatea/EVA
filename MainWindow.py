@@ -261,19 +261,11 @@ class PlotWindow(QWidget):
         self.tab2.find_peaks_button.clicked.connect(
             lambda: self.find_peaks_automatically())
 
-        '''self.tab2.id_peaks_button = QPushButton("Find Peaks", self.tab2)
-        self.tab2.id_peaks_button.move(70,70)
-        self.tab2.id_peaks_button.show()
-        self.tab2.id_peaks_button.clicked.connect(lambda: self.id_peaks())'''
-
-
-
         self.tab2.useDef_checkbox = QCheckBox("Use defaults",self.tab2)
         self.tab2.useDef_checkbox.move(70,160)
         self.tab2.useDef_checkbox.setChecked(True)
         self.tab2.useDef_checkbox.show()
         self.tab2.useDef_checkbox.toggled.connect(self.useDef_onClicked)
-
 
         self.tab2.peakfindroutine = QComboBox(self.tab2)
         self.tab2.peakfindroutine.move(330,70)
@@ -299,7 +291,6 @@ class PlotWindow(QWidget):
         self.tab2.lineedit_FindPeak_Thres.setFixedWidth(100)
         self.tab2.lineedit_FindPeak_Thres.hide()
 
-
         self.tab2.label_FindPeak_Dist = QLabel("Distance", self.tab2)
         self.tab2.label_FindPeak_Dist.move(730, 170)
         self.tab2.label_FindPeak_Dist.hide()
@@ -308,7 +299,6 @@ class PlotWindow(QWidget):
         self.tab2.lineedit_FindPeak_Dist.move(900, 170)
         self.tab2.lineedit_FindPeak_Dist.setFixedWidth(100)
         self.tab2.lineedit_FindPeak_Dist.hide()
-
 
         self.tab2.tabs = QTabWidget(self.tab2)
         self.tab2.tab1 = QWidget()
@@ -326,7 +316,6 @@ class PlotWindow(QWidget):
         self.tab2.table_peaks.setMinimumSize(650,400)
         self.tab2.table_peaks.setHorizontalHeaderLabels(['Detector', 'Probable Elements'])
         self.tab2.table_peaks.setColumnWidth(1,420)
-        #self.tab2.table_peaks.setFixedWidth(700)
         self.tab2.table_peaks.verticalScrollBar()
         self.tab2.table_peaks.horizontalScrollBar()
         self.tab2.table_peaks.show()
