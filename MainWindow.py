@@ -642,7 +642,7 @@ class MainWindow(QWidget):
         globals.we = None
 
 
-        self.resize(1200, 600)
+        self.resize(600, 500)
         self.setWindowTitle("Elemental Analysis")
 
         # setting up the menu bar'''
@@ -730,28 +730,28 @@ class MainWindow(QWidget):
 
         self.label_RN = QLabel(self)
         self.label_RN.setText("Run Number                                            ")
-        self.label_RN.move(100, 80)
+        self.label_RN.move(50, 80)
         self.label_RN.show()
 
         self.label_Com = QLabel(self)
         self.label_Com.setText("Comment " +
              "                                                                                                  ")
-        self.label_Com.move(100, 130)
+        self.label_Com.move(50, 130)
         self.label_Com.show()
 
         self.label_Events = QLabel(self)
         self.label_Events.setText("Events                                            ")
-        self.label_Events.move(100, 180)
+        self.label_Events.move(50, 180)
         self.label_Events.show()
 
         self.label_Start = QLabel(self)
         self.label_Start.setText("Start Time                                            ")
-        self.label_Start.move(100, 230)
+        self.label_Start.move(50, 230)
         self.label_Start.show()
 
         self.label_End = QLabel(self)
         self.label_End.setText("End Time                                             ")
-        self.label_End.move(100, 280)
+        self.label_End.move(50, 280)
         self.label_End.show()
 
         # setting up the buttons and run number
@@ -759,33 +759,33 @@ class MainWindow(QWidget):
         RunNum_Text = QLineEdit(self)
         RunNum_Text.setAlignment(Qt.AlignCenter)
         RunNum_Text.setText('2630')
-        RunNum_Text.move(370, 360)
+        RunNum_Text.move(200, 350)
 
 
         button_plus = QPushButton(self)
         button_plus.setText('+1')
-        button_plus.move(750, 350)
+        button_plus.move(410, 350)
         button_plus.clicked.connect(lambda: self.Incr_RunNum(RunNum_Text))
 
         button_plusandload = QPushButton(self)
         button_plusandload.setText('Load +1')
-        button_plusandload.move(750, 420)
+        button_plusandload.move(410, 420)
         button_plusandload.clicked.connect(lambda: self.Incr_RunNumandload(RunNum_Text.text(),RunNum_Text))
 
         button_minus = QPushButton(self)
         button_minus.setText('-1')
-        button_minus.move(100, 350)
+        button_minus.move(50, 350)
         button_minus.clicked.connect(lambda: self.Decr_RunNum(RunNum_Text))
 
         button_minusandload = QPushButton(self)
         button_minusandload.setText('Load -1')
-        button_minusandload.move(100, 420)
+        button_minusandload.move(50, 420)
         button_minusandload.clicked.connect(lambda: self.Decr_RunNumandload(RunNum_Text.text(),RunNum_Text))
 
 
         button_load = QPushButton(self)
         button_load.setText('Load')
-        button_load.move(420, 420)
+        button_load.move(230, 420)
         button_load.clicked.connect(lambda: self.loadrunandcom(
             RunNum_Text.text()))
 
