@@ -68,6 +68,7 @@ Normalise_spill = False
 Normalise_do_not = False
 
 we = None
+weff = None
 
 E_Corr_GE1_offset = 0.0
 E_Corr_GE1_gradient = 1.0
@@ -82,3 +83,27 @@ E_Corr_GE2_apply = False
 E_Corr_GE3_apply = False
 E_Corr_GE4_apply = False
 
+Eff_Corr_GE1_P0 = 93.2
+Eff_Corr_GE1_P1 = 59.2
+Eff_Corr_GE1_P2 = -13.6
+Eff_Corr_GE1_P3 = 1.35
+Eff_Corr_GE1_P4 = -0.049
+Eff_Corr_GE2_P0 = 0.0
+Eff_Corr_GE2_P1 = 1.0
+Eff_Corr_GE2_P2 = 0.0
+Eff_Corr_GE2_P3 = 1.0
+Eff_Corr_GE2_P4 = 1.0
+Eff_Corr_GE3_P0 = -1.79
+Eff_Corr_GE3_P1 = 0.805
+Eff_Corr_GE3_P2 = -0.0711
+Eff_Corr_GE3_P3 = 0.0
+Eff_Corr_GE3_P4 = 0.0
+Eff_Corr_GE4_P0 = 0.0
+Eff_Corr_GE4_P1 = 1.0
+Eff_Corr_GE4_P2 = 0.0
+Eff_Corr_GE4_P3 = 1.0
+Eff_Corr_GE4_P4 = 1.0
+Eff_Corr_GE1_apply = False
+Eff_Corr_GE2_apply = False
+Eff_Corr_GE3_apply = False
+Eff_Corr_GE4_apply = False

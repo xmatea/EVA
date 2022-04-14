@@ -5,7 +5,9 @@ import globals
 
 def loadcomment(RunNum):
     try:
-        commenttext = open(globals.workingdirectory + '/comment.dat', 'r').readlines()
+        fd = open(globals.workingdirectory + '/comment.dat', 'r')
+        #commenttext = open(globals.workingdirectory + '/comment.dat', 'r').readlines()
+        commenttext = fd.readlines()
 
         search_str = 'Run ' + str(RunNum)
         flag = 0
@@ -26,6 +28,7 @@ def loadcomment(RunNum):
             globals.events_str = commenttext[index+2]
             globals.comment_str = commenttext[index+4]
             rtn_str = [globals.starttime_str, globals.endtime_str, globals.events_str, globals.comment_str]
+            fd.close()
     except IOError:
         rtn_str = [" ", " ", " ", " "]
         flag = 0
