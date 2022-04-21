@@ -32,6 +32,7 @@ import Plot_Spectra
 import FindPeaks
 import SortMatch
 import time
+import globals
 
 class PlotWindow(QWidget):
     """
@@ -194,11 +195,14 @@ class PlotWindow(QWidget):
         #self.layout.addWidget(self.temp)
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
+        print('hello')
 
 
         self.show()
 
         self.PlotSpectra()
+
+        print('hu')
 
     def useDef_onClicked(self):
         print('hello ')
