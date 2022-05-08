@@ -134,6 +134,7 @@ class PlotWindow(QWidget):
         self.tab2.peakfindroutine.move(330,70)
         self.tab2.peakfindroutine.addItem('scipy.FindPeak')
         self.tab2.peakfindroutine.addItem('scipy.Find_Peak_Cwt')
+        self.tab2.peakfindroutine.addItem('find peaks (dev)')
         self.tab2.peakfindroutine.show()
 
         self.tab2.label_FindPeak_Height = QLabel("Height", self.tab2)
@@ -247,6 +248,25 @@ class PlotWindow(QWidget):
             #print(h,t,d)
 
         print(self.tab2.peakfindroutine.currentText())
+
+        if self.tab2.peakfindroutine.currentText() == "find peaks (dev)":
+            if globals.plot_GE1:
+                peaks_GE1, peak_pos_GE1 = FindPeaks.Findpeak_with_bck_removed(globals.x_GE1,globals.y_GE1)
+                default_peaks = peaks_GE1[0]
+                print('dp', default_peaks)
+                # default_peaks = peaks_GE1
+                default_sigma = [2.0] * len(default_peaks)
+                input_data = list(zip(default_peaks, default_sigma))
+                match_GE1 = getmatch.get_matches(input_data)
+
+                Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, globals.x_GE1, i)
+                # Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, peak_pos_GE1, i)
+
+                out = SortMatch.SortMatch(match_GE1)
+                self.tab2.table_peaks.setItem(i, 0, QTableWidgetItem("Detector 1"))
+                self.tab2.table_peaks.setItem(i, 1, QTableWidgetItem(str(dict(list(out.items())))))
+                print('after table_peaks')
+                i += 1
 
         if self.tab2.peakfindroutine.currentText() == "scipy.FindPeak":
 
