@@ -30,6 +30,8 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QPalette, QColor, QCloseEvent, QFont
 import sys
+
+import TRIM_Window
 import loaddata
 import loadcomment
 import globals
@@ -40,7 +42,8 @@ import ECorr_Window
 import Plot_Window
 import LoadDatabaseFile as ldf
 import loadgamma as lg
-#import RunTrimExample
+import RunTrimExample
+import TRIM_Window
 
 '''if hasattr(Qt, 'AA_EnableHighDpiScaling'):
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
@@ -149,6 +152,8 @@ class MainWindow(QWidget):
         TRIM = bar.addMenu('SRIM/TRIM')
         Trim_sim = TRIM.addAction('SRIM/TRIM Simulation')
         Trim_sim.triggered.connect(lambda: self.RunTrim())
+        Trim_sim_test = TRIM.addAction('SRIM/TRIM Simulation test')
+        Trim_sim_test.triggered.connect(lambda: self.RunTrimExample())
 
         # setting up the actions
 
@@ -226,10 +231,25 @@ class MainWindow(QWidget):
         button_load.clicked.connect(lambda: self.loadrunandcom(
             RunNum_Text.text()))
 
-    def RunTrim(self):
-        print('In TRIM')
-        #RunTrimExample.RunTRIM()
+    def RunTrimExample(self):
 
+        print('In TRIM')
+        print('going to TRIM')
+        RunTrimExample.RunTRIM_Start()
+
+    def RunTrim(self):
+        ''' Launch TRIM Window'''
+        print('in TRIM')
+        # self.show(Correction_Energy())
+        if globals.wTrim is None:
+            globals.wTrim = TRIM_Window.RunSimTRIMSRIM()
+            print('self,wp = none')
+            # self.we.resize(1200, 600)
+            # self.we.setWindowTitle("Plot Window: "+globals.RunNum)
+            globals.wTrim.show()
+
+        else:
+            print('window exists')
 
     def Corr_Eff(self):
         print('in Corr_Eff')

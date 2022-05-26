@@ -2,8 +2,13 @@ import os
 
 import globals
 
-
-def loadcomment(RunNum):
+# shows RunNum is integer and the output is int and a string (python typing)
+def loadcomment(RunNum:int) -> list[int, str]:
+    '''
+    This routine load the comments from comment.dat
+    needs input the run number (integer)
+    returns success flag and the string
+    '''
     try:
         fd = open(globals.workingdirectory + '/comment.dat', 'r')
         #commenttext = open(globals.workingdirectory + '/comment.dat', 'r').readlines()
@@ -35,4 +40,4 @@ def loadcomment(RunNum):
 
 
 
-    return flag,rtn_str
+    return flag, rtn_str

@@ -36,7 +36,7 @@ class MyTestCase(unittest.TestCase):
         #print('loadcomment test')
         globals.workingdirectory='./TestData/'
         RunNum=2630
-        flag,rtnstr = loadcomment.loadcomment(RunNum)
+        flag, rtnstr = loadcomment.loadcomment(RunNum)
         self.assertEqual(flag, 1, 'did return flag')
         self.assertEqual(rtnstr,['Start Time        :  Thu May 3 13:08:56 2018\n',
                                  'End   Time        :  Thu May 3 13:58:33 2018\n',
@@ -48,7 +48,7 @@ class MyTestCase(unittest.TestCase):
         #print('loadcomment2 test')
         globals.workingdirectory='./TestData/'
         RunNum=999
-        flag,rtnstr = loadcomment.loadcomment(RunNum)
+        flag, rtnstr = loadcomment.loadcomment(RunNum)
         self.assertEqual(flag, 0, 'did return flag')
         self.assertEqual(rtnstr,[" ", " ", " ", " "],
                          'didnt load comment file')
