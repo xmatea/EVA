@@ -209,10 +209,9 @@ class RunSimTRIMSRIM(QWidget):
             xposlist = RunSimTRIMSRIM.getxpos(self)
             comp = RunSimTRIMSRIM.getcomp(self, xposlist, 0)
             perlayer = RunSimTRIMSRIM.getperlayer(self, comp)
-            print('perlayer', perlayer)
             outstr = ''
             for index in range(len(globals.sample_layers)):
-                outstr += '[' + str(index + 1) + '] ' + str(round(perlayer[index], 2)) + ' '
+                outstr += '[' + str(index + 1) + '] ' + str(round(perlayer[index], 3)) + ' '
 
             self.tab2.table_PlotRes.setItem(0, 1, QTableWidgetItem(outstr))
 
@@ -459,23 +458,13 @@ class RunSimTRIMSRIM(QWidget):
             print('Number of Counts', NE)
 
             x1, y1, e1 = RunSimTRIMSRIM.RunTRIM(sample, TotalThickness,  muon_ion, NE, SRIMdirectory, output_directory)
-            print(x1)
-            print(y1)
-            print(i)
 
             if i == 0:
-                print('here')
-
                 yres =  y1
                 xres =  x1
             else:
-                print('here2')
                 for index in range (0, len (y1)):
                     yres[index] = yres[index] + y1[index]
-            print('xres', xres)
-            print('yres', yres)
-
-
 
         return xres, yres
 
@@ -493,10 +482,14 @@ class RunSimTRIMSRIM(QWidget):
     def getcomp(self, xposlist, MomIndex):
         ''' break the SRIM output into components'''
         comp = []
+        sum1 = 0.0
+        sum2 = 0.0
         for i in range(len(globals.sample_layers)):
             templist = []
+            sum1 += xposlist[i]
+            sum2 = sum1 + xposlist[i+1]
             for j in range(len(globals.TRIMRes_y[MomIndex])):
-                if globals.TRIMRes_x[MomIndex][j] > xposlist[i] and globals.TRIMRes_x[MomIndex][j] < xposlist[i + 1]:
+                if globals.TRIMRes_x[MomIndex][j] >= sum1 and globals.TRIMRes_x[MomIndex][j] < sum2 :
                     templist.append(globals.TRIMRes_y[MomIndex][j])
                 else:
                     templist.append(0.0)
