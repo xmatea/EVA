@@ -10,6 +10,9 @@ from PyQt5.QtWidgets import (
     QTableWidget,
     QTableWidgetItem,
     QApplication,
+    QMenu,
+    QMenuBar,
+    QFileDialog,
 )
 import PyQt5.QtGui
 import globals
@@ -22,11 +25,11 @@ import matplotlib.pyplot as plt
 class RunSimTRIMSRIM(QWidget):
 
     def __init__(self, parent = None):
-        print('here')
+        #print('here')
         super(RunSimTRIMSRIM, self).__init__(parent)
-        print('here')
+        #print('here')
 
-        self.resize(1400, 1400)
+        self.resize(1500, 1600)
         self.setMinimumSize(1400, 1400)
         self.setWindowTitle("TRIM Simulations")
 
@@ -46,7 +49,7 @@ class RunSimTRIMSRIM(QWidget):
                                     Stats,
                                     ))
 
-        print('done a button')
+        #print('done a button')
 
         # Setting up defaults (to add load from file)
         SampleName = QLineEdit('Cu')
@@ -65,9 +68,24 @@ class RunSimTRIMSRIM(QWidget):
         TRIMOutDir = QLineEdit('c:/SRIM2013/SRIM Outputs')
         Stats = QLineEdit('100')
 
+        bar = QMenuBar(self)
+        file = bar.addMenu('File')
+        bar.setFixedHeight(75)
+        file_load = file.addAction('Load SRIM Settings')
+        file_save = file.addAction('Save SRIM Settings')
+        file_save.triggered.connect(lambda: RunSimTRIMSRIM.file_save(self, SampleName, SimType, Momentum,
+                                                                     MomentumSpread, ScanType, MinMomentum,
+                                                                     MaxMomentum, StepMomentum, SRIMdir,
+                                                                     TRIMOutDir, Stats))
 
+        file_load.triggered.connect(lambda: RunSimTRIMSRIM.file_load(self, SampleName, SimType, Momentum,
+                                                                     MomentumSpread, ScanType, MinMomentum,
+                                                                     MaxMomentum, StepMomentum, SRIMdir,
+                                                                     TRIMOutDir, Stats))
+        bar.show()
 
         self.layout = QGridLayout()
+        self.layout.addWidget(QLabel(' '), 0, 0)
         self.layout.addWidget(QLabel('Sample Name'), 1, 0)
         self.layout.addWidget(QLabel('Simulation Type'), 2, 0)
         self.layout.addWidget(QLabel('Momentum'), 3, 0)
@@ -91,15 +109,15 @@ class RunSimTRIMSRIM(QWidget):
         self.layout.addWidget(SRIMdir, 9, 1)
         self.layout.addWidget(TRIMOutDir, 10, 1)
         self.layout.addWidget(Stats, 11, 1)
-        print(SampleName.text())
+        #print(SampleName.text())
 
 
         self.layout.addWidget(self.RunTrimSimulation, 12, 0)
 
-        print('done a button')
+        #print('done a button')
 
         # Initialize tab screen
-        print('initialising tabs')
+        #print('initialising tabs')
         self.tabs = QTabWidget()
         self.tab1 = QWidget()
         self.tab2 = QWidget()
@@ -113,7 +131,7 @@ class RunSimTRIMSRIM(QWidget):
         self.tabs.resize(1000, 1000)
 
         self.tab1.table_TRIMsetup = QTableWidget(self.tab1)
-        self.tab1.table_TRIMsetup.resize(1000,500)
+        self.tab1.table_TRIMsetup.resize(1100,600)
         self.tab1.table_TRIMsetup.setShowGrid(True)
         self.tab1.table_TRIMsetup.setColumnCount(3)
         self.tab1.table_TRIMsetup.setRowCount(10)
@@ -131,7 +149,7 @@ class RunSimTRIMSRIM(QWidget):
         self.tab1.table_TRIMsetup.setItem(3, 2, QTableWidgetItem('6.7'))
 
         self.tab2.table_PlotRes = QTableWidget(self.tab2)
-        self.tab2.table_PlotRes.resize(1000,500)
+        self.tab2.table_PlotRes.resize(1100,600)
         self.tab2.table_PlotRes.setShowGrid(True)
         self.tab2.table_PlotRes.setColumnCount(4)
         self.tab2.table_PlotRes.setRowCount(100)
@@ -309,9 +327,9 @@ class RunSimTRIMSRIM(QWidget):
                     print(Sample_layer)
                 else:
                     sampledensity = float(self.tab1.table_TRIMsetup.item(i, 2).text())
-                    samplethickness = float(self.tab1.table_TRIMsetup.item(i, 1).text())
+                    LayerThickness = float(self.tab1.table_TRIMsetup.item(i, 1).text())
                     TotalThickness = + LayerThickness
-                    thislayer = Layer.from_formula(sampleName, density=sampledensity, width=samplethickness * 1e7,
+                    thislayer = Layer.from_formula(sampleName, density=sampledensity, width=LayerThickness * 1e7,
                                                           phase=0)
 
                     Sample_layer.append(thislayer)  # 0.016 mm = 160000Athick sample holder
@@ -323,6 +341,7 @@ class RunSimTRIMSRIM(QWidget):
            print('error in setting up the table')
 
         globals.sample_layers = Sample_layer
+        #print('Sample Layer', globals.sample_layers[1])
 
         return Sample_layer, TotalThickness
 
@@ -340,6 +359,9 @@ class RunSimTRIMSRIM(QWidget):
         # corresponding SRIM muon ion definitions
         muon_ion = Ion('H', Ek * 1e6,
                        muMA)  # define muon as Hydrogen ion with mass of muon, with a given kinetic energy
+
+        print('muon_ion', muon_ion, muMA)
+
 
         return muon_ion
 
@@ -472,11 +494,13 @@ class RunSimTRIMSRIM(QWidget):
         '''gets xpos from layers must be an easier way'''
         xposlist = []
         xposlist.append(0.0)
+        #print(globals.sample_layers)
         for i in range(len(globals.sample_layers)):
             temp = globals.sample_layers[i]
             loc = str(temp).find('width:')
             xpos = float(str(temp)[loc + 6:].strip('>')) / 1e7
             xposlist.append(xpos)
+        #print('xposlist', xposlist)
         return xposlist
 
     def getcomp(self, xposlist, MomIndex):
@@ -484,6 +508,8 @@ class RunSimTRIMSRIM(QWidget):
         comp = []
         sum1 = 0.0
         sum2 = 0.0
+        print('globals.TRIMRes_x', globals.TRIMRes_x)
+        print('globals.TRIMRes_y', globals.TRIMRes_y)
         for i in range(len(globals.sample_layers)):
             templist = []
             sum1 += xposlist[i]
@@ -494,6 +520,7 @@ class RunSimTRIMSRIM(QWidget):
                 else:
                     templist.append(0.0)
             comp.append(templist)
+        print('comp', comp)
         return comp
 
     def getperlayer(self,comp):
@@ -508,8 +535,112 @@ class RunSimTRIMSRIM(QWidget):
 
         for index in range(len(globals.sample_layers)):
             perlayer[index] = perlayer[index] / totalsumlayer
+        print('perlayer', perlayer)
 
         return perlayer
+
+    def file_save(self,SampleName, SimType, Momentum, MomentumSpread, ScanType, MinMomentum, MaxMomentum,
+                   StepMomentum, SRIMdir, TRIMOutDir, Stats):
+        print('in save file')
+        save_file = QFileDialog.getSaveFileName(self, caption = "Save TRIM/SRIM Settings")
+        print(save_file[0])
+        file2 = open(save_file[0], "w")
+        file2.writelines('Sample Name\n')
+        out = SampleName.text()+'\n'
+        file2.writelines(out)
+        file2.writelines('SimType\n')
+        out = SimType.currentText()+'\n'
+        file2.writelines(out)
+        file2.writelines('Momentum\n')
+        out = Momentum.text()+'\n'
+        file2.writelines(out)
+        file2.writelines('Momentum Spread\n')
+        out = MomentumSpread.text()+'\n'
+        file2.writelines(out)
+        file2.writelines('Scan Momentum\n')
+        out = ScanType.currentText()+'\n'
+        file2.writelines(out)
+        file2.writelines('Min Momentum\n')
+        out = MinMomentum.text()+'\n'
+        file2.writelines(out)
+        file2.writelines('Max Momentum\n')
+        out = MaxMomentum.text()+'\n'
+        file2.writelines(out)
+        file2.writelines('Momentum Step\n')
+        out = StepMomentum.text()+'\n'
+        file2.writelines(out)
+        file2.writelines('SRIM.exe dir\n')
+        out = SRIMdir.text()+'\n'
+        file2.writelines(out)
+        file2.writelines('Output dir\n')
+        out = TRIMOutDir.text()+'\n'
+        file2.writelines(out)
+        file2.writelines('Stats\n')
+        out = Stats.text()+'\n'
+        file2.writelines(out)
+        file2.writelines('Sample\n')
+
+        for j in range(10):
+            line = ''
+            for i in range(5):
+                print(j,i)
+                try:
+                    line += self.tab1.table_TRIMsetup.item(j, i).text()+','
+                except:
+                    line +=','
+
+            file2.writelines(line+'\n')
+
+
+        file2.close()
+
+    def file_load(self,SampleName, SimType, Momentum, MomentumSpread, ScanType, MinMomentum, MaxMomentum,
+                   StepMomentum, SRIMdir, TRIMOutDir, Stats):
+        print('in load file')
+        load_file = QFileDialog.getOpenFileName(self, caption = "Load TRIM/SRIM Settings")
+        print(load_file[0])
+        file2 = open(load_file[0], "r")
+        ignore = file2.readline()
+        print(ignore)
+        SampleName.setText(file2.readline().strip())
+        print(SampleName.text())
+        ignore = file2.readline()
+        SimType.setCurrentText(file2.readline().strip())
+        ignore = file2.readline()
+        Momentum.setText(file2.readline().strip())
+        ignore = file2.readline()
+        MomentumSpread.setText(file2.readline().strip())
+        ignore = file2.readline()
+        ScanType.setCurrentText(file2.readline().strip())
+        ignore = file2.readline()
+        MinMomentum.setText(file2.readline().strip())
+        ignore = file2.readline()
+        MaxMomentum.setText(file2.readline().strip())
+        ignore = file2.readline()
+        StepMomentum.setText(file2.readline().strip())
+        ignore = file2.readline()
+        SRIMdir.setText(file2.readline().strip())
+        ignore = file2.readline()
+        TRIMOutDir.setText(file2.readline().strip())
+        ignore = file2.readline()
+        Stats.setText(file2.readline().strip())
+        ignore = file2.readline()
+
+        line = []
+
+        for j in range(10):
+            line = file2.readline().split(',')
+            print(line)
+            for i in range(5):
+                print(j,i)
+                try:
+                    self.tab1.table_TRIMsetup.setItem(j, i, QTableWidgetItem(line[i]))
+                except:
+                    print('load finished')
+
+
+
+        file2.close()
 
 
 
