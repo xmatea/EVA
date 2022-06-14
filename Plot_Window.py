@@ -243,20 +243,14 @@ class PlotWindow(QWidget):
         self.tab2.tabs.move(50,220)
         self.tab2.tabs.resize(700,600)
 
-
-
         # Add tabs to widget
-        #self.layout.addWidget(self.temp)
+
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
-        #print('hello')
-
 
         self.show()
 
         self.PlotSpectra()
-
-        print('hu')
 
     def useDef_onClicked(self):
         print('hello ')
