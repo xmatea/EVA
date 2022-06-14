@@ -49,7 +49,7 @@ def Findpeak_with_bck_removed(x,y):
     peaks = find_peaks(bg_removed, height=PEAK_THRESH)
     print('pos',peaks)
     #print('params',params)
-    '''strong_pos, params = signal.find_peaks(bg_removed, height=10)
+    '''strong_pos, params = find_peaks(bg_removed, height=10)
     peaks = np.zeros(shape=len(spectrum))
     peaks[pos] = 30
     strong_peaks = np.zeros(shape=len(spectrum))

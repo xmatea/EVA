@@ -3,9 +3,12 @@ import globals
 
 def get_matches(input_peaks):
     all_matches = []
+    Primary_matches = []
+    Secondary_matches = []
     for x in globals.peak_data:
         print('x=' + x)
         raw_data = globals.peak_data[x]
+        print('raw_data at x', raw_data)
         matches = []
         for peak, sigma in input_peaks:
             for element in raw_data:
@@ -48,12 +51,19 @@ def get_matches(input_peaks):
                         data['transition'] = transition
                         data['diff'] = abs(peak - energy)
                         matches.append(data)
-        matches = sorted(matches, key=lambda x: x['diff'])
+
+        matches = sorted(matches, key=lambda o: o['diff'])
         print(matches)
+        if x == 'Primary energy':
+            Primary_matches = matches
+        if x == 'Secondary energy':
+            Secondary_matches = matches
+    print('PM', Primary_matches)
+    print('SM', Secondary_matches)
     all_matches.append(matches)
     print('kkk')
     print(all_matches)
-    return all_matches
+    return all_matches, Primary_matches, Secondary_matches
 
 def getmatchesgammas(input_peaks):
     print('length of full_gamms', len(globals.Full_Gammas))

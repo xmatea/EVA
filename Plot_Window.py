@@ -44,8 +44,8 @@ class PlotWindow(QWidget):
         super(PlotWindow,self).__init__(parent)
         #label = QLabel("Plot Window ", self)
 
-        self.resize(500, 1100)
-        self.setMinimumSize(500,1100)
+        self.resize(1200, 1100)
+        self.setMinimumSize(1200,1100)
         self.setWindowTitle("Plot Window ")
 
         self.layout = QVBoxLayout(self)
@@ -58,7 +58,7 @@ class PlotWindow(QWidget):
         self.tabs = QTabWidget()
         self.tab1 = QWidget()
         self.tab2 = QWidget()
-        self.tabs.resize(200, 300)
+        self.tabs.resize(200, 500)
         self.tabs.move(500,500)
 
         # Add tabs
@@ -69,23 +69,75 @@ class PlotWindow(QWidget):
 
         self.tab1.label_Element = QLabel("Possible Muonic X-ray Transition:                                            "
                                          , self.tab1)
-        self.tab1.label_Element.move(30, 50)
+        self.tab1.label_Element.move(30, 10)
         self.tab1.label_Element.show()
 
-        self.tab1.table_clickpeaks = QTableWidget(self.tab1)
+        self.tab1.tab_clicked_elements = QTabWidget(self.tab1)
+        self.tab1.tab1 = QWidget()
+        self.tab1.tab2 = QWidget()
+        self.tab1.tab3 = QWidget()
+        self.tab1.tab_clicked_elements.move(50,50)
+        self.tab1.tab_clicked_elements.setMinimumSize(1000,450)
+
+        self.tab1.tab_clicked_elements.addTab(self.tab1.tab1, "All Peaks")
+        self.tab1.tab_clicked_elements.addTab(self.tab1.tab2, "Primary")
+        self.tab1.tab_clicked_elements.addTab(self.tab1.tab3, "Secondary")
+        self.tab1.tab_clicked_elements.show()
+
+        # table for all peaks
+
+        self.tab1.table_clickpeaks = QTableWidget(self.tab1.tab1)
         self.tab1.table_clickpeaks.setShowGrid(True)
         self.tab1.table_clickpeaks.setColumnCount(3)
         self.tab1.table_clickpeaks.setRowCount(10)
-        self.tab1.table_clickpeaks.move(50,120)
-        self.tab1.table_clickpeaks.setMinimumSize(700,350)
+        self.tab1.table_clickpeaks.move(10,10)
+        self.tab1.table_clickpeaks.setMinimumSize(1000,350)
+        self.tab1.table_clickpeaks.verticalScrollBar()
         #self.tab1.table_clickpeaks.
         self.tab1.table_clickpeaks.setHorizontalHeaderLabels(['Element', 'Transition', 'Error'])
-        self.tab1.table_clickpeaks.setColumnWidth(0, 150)
-        self.tab1.table_clickpeaks.setColumnWidth(1, 150)
-        self.tab1.table_clickpeaks.setColumnWidth(2, 150)
+        self.tab1.table_clickpeaks.setColumnWidth(0, 175)
+        self.tab1.table_clickpeaks.setColumnWidth(1, 205)
+        self.tab1.table_clickpeaks.setColumnWidth(2, 175)
 
-        #self.tab1.table_clickpeaks.setFixedWidth(700)
         self.tab1.table_clickpeaks.show()
+
+        # table for primary peaks
+
+        self.tab1.table_clickpeaks_prim = QTableWidget(self.tab1.tab2)
+        self.tab1.table_clickpeaks_prim.setShowGrid(True)
+        self.tab1.table_clickpeaks_prim.setColumnCount(3)
+        self.tab1.table_clickpeaks_prim.setRowCount(10)
+        self.tab1.table_clickpeaks_prim.move(10,10)
+        self.tab1.table_clickpeaks_prim.setMinimumSize(1000,350)
+        self.tab1.table_clickpeaks_prim.verticalScrollBar()
+        #self.tab1.table_clickpeaks.
+        self.tab1.table_clickpeaks_prim.setHorizontalHeaderLabels(['Element', 'Transition', 'Error'])
+        self.tab1.table_clickpeaks_prim.setColumnWidth(0, 175)
+        self.tab1.table_clickpeaks_prim.setColumnWidth(1, 205)
+        self.tab1.table_clickpeaks_prim.setColumnWidth(2, 175)
+
+        self.tab1.table_clickpeaks_prim.show()
+
+        # table for secondary peaks
+
+        self.tab1.table_clickpeaks_sec = QTableWidget(self.tab1.tab3)
+        self.tab1.table_clickpeaks_sec.setShowGrid(True)
+        self.tab1.table_clickpeaks_sec.setColumnCount(3)
+        self.tab1.table_clickpeaks_sec.setRowCount(10)
+        self.tab1.table_clickpeaks_sec.move(10,10)
+        self.tab1.table_clickpeaks_sec.setMinimumSize(1000,350)
+        self.tab1.table_clickpeaks_sec.verticalScrollBar()
+        #self.tab1.table_clickpeaks.
+        self.tab1.table_clickpeaks_sec.setHorizontalHeaderLabels(['Element', 'Transition', 'Error'])
+        self.tab1.table_clickpeaks_sec.setColumnWidth(0, 175)
+        self.tab1.table_clickpeaks_sec.setColumnWidth(1, 205)
+        self.tab1.table_clickpeaks_sec.setColumnWidth(2, 175)
+
+        self.tab1.table_clickpeaks_sec.show()
+
+
+
+
 
         self.tab1.label_Element2 = QLabel("Possible Gamma Transition:                                            "
                                          , self.tab1)
@@ -97,12 +149,13 @@ class PlotWindow(QWidget):
         self.tab1.table_clickpeaks2.setColumnCount(4)
         self.tab1.table_clickpeaks2.setRowCount(10)
         self.tab1.table_clickpeaks2.move(50, 570)
-        self.tab1.table_clickpeaks2.setMinimumSize(700, 350)
+        self.tab1.table_clickpeaks2.setMinimumSize(1000, 350)
         # self.tab1.table_clickpeaks.
         self.tab1.table_clickpeaks2.setHorizontalHeaderLabels(['Element', 'Error', 'Intensity', 'Lifetime'])
-        self.tab1.table_clickpeaks2.setColumnWidth(0, 150)
-        self.tab1.table_clickpeaks2.setColumnWidth(1, 150)
-        self.tab1.table_clickpeaks2.setColumnWidth(2, 150)
+        self.tab1.table_clickpeaks2.setColumnWidth(0, 175)
+        self.tab1.table_clickpeaks2.setColumnWidth(1, 175)
+        self.tab1.table_clickpeaks2.setColumnWidth(2, 175)
+        self.tab1.table_clickpeaks2.setColumnWidth(3, 175)
 
         #self.tab1.table_clickpeaks2.setFixedWidth(700)
         self.tab1.table_clickpeaks2.show()
@@ -196,7 +249,7 @@ class PlotWindow(QWidget):
         #self.layout.addWidget(self.temp)
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
-        print('hello')
+        #print('hello')
 
 
         self.show()
@@ -257,7 +310,7 @@ class PlotWindow(QWidget):
                 # default_peaks = peaks_GE1
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
-                match_GE1 = getmatch.get_matches(input_data)
+                match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
 
                 Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, globals.x_GE1, i)
                 # Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, peak_pos_GE1, i)
@@ -265,7 +318,7 @@ class PlotWindow(QWidget):
                 out = SortMatch.SortMatch(match_GE1)
                 self.tab2.table_peaks.setItem(i, 0, QTableWidgetItem("Detector 1"))
                 self.tab2.table_peaks.setItem(i, 1, QTableWidgetItem(str(dict(list(out.items())))))
-                print('after table_peaks')
+                #print('after table_peaks')
                 i += 1
 
         if self.tab2.peakfindroutine.currentText() == "scipy.FindPeak":
@@ -278,7 +331,7 @@ class PlotWindow(QWidget):
                 #default_peaks = peaks_GE1
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
-                match_GE1 = getmatch.get_matches(input_data)
+                match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
 
 
                 Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, globals.x_GE1,i)
@@ -287,7 +340,7 @@ class PlotWindow(QWidget):
                 out = SortMatch.SortMatch(match_GE1)
                 self.tab2.table_peaks.setItem(i, 0, QTableWidgetItem("Detector 1"))
                 self.tab2.table_peaks.setItem(i, 1, QTableWidgetItem(str(dict(list(out.items())))))
-                print('after table_peaks')
+                #print('after table_peaks')
                 i += 1
 
             if globals.plot_GE2:
@@ -295,10 +348,10 @@ class PlotWindow(QWidget):
                 default_peaks = peaks_GE2[0]
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
-                match_GE2 = getmatch.get_matches(input_data)
+                match_GE2, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE2', match_GE2)
                 Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE2, globals.x_GE2,i)
-                i+=1
+                i += 1
 
 
             if globals.plot_GE3:
@@ -306,20 +359,20 @@ class PlotWindow(QWidget):
                 default_peaks = peaks_GE3[0]
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
-                match_GE3 = getmatch.get_matches(input_data)
+                match_GE3, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE3',match_GE3)
                 Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE3, globals.x_GE3,i)
-                i+=1
+                i += 1
 
             if globals.plot_GE4:
                 peaks_GE4, peak_pos_GE4 = FindPeaks.FindPeaks(globals.x_GE4,globals.y_GE4,h,t,d)
                 default_peaks = peaks_GE4[0]
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
-                match_GE4 = getmatch.get_matches(input_data)
+                match_GE4, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE4',match_GE4)
                 Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE4, globals.x_GE4,i)
-                i+=1
+                i += 1
 
             pltpeak.show()
 
@@ -328,18 +381,18 @@ class PlotWindow(QWidget):
                 peaks_GE1, peak_pos_GE1 = FindPeaks.FindPeaksCwt(globals.x_GE1,globals.y_GE1,h,t,d)
 
                 default_peaks = peaks_GE1[0]
-                print('dpcwt',default_peaks)
+                #print('dpcwt',default_peaks)
                 #default_peaks = peaks_GE1
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
-                match_GE1 = getmatch.get_matches(input_data)
+                match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
 
-                print('after match')
+                #print('after match')
 
 
                 Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, globals.x_GE1,i)
                 #Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, peak_pos_GE1, i)
-                print('here')
+                #print('here')
 
                 out = SortMatch.SortMatch(match_GE1)
                 print('after out')
@@ -353,7 +406,7 @@ class PlotWindow(QWidget):
                 default_peaks = peaks_GE2[0]
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
-                match_GE2 = getmatch.get_matches(input_data)
+                match_GE2, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE2', match_GE2)
                 Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE2, globals.x_GE2,i)
                 i+=1
@@ -364,17 +417,17 @@ class PlotWindow(QWidget):
                 default_peaks = peaks_GE3[0]
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
-                match_GE3 = getmatch.get_matches(input_data)
+                match_GE3, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE3',match_GE3)
                 Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE3, globals.x_GE3,i)
-                i+=1
+                i += 1
 
             if globals.plot_GE4:
                 peaks_GE4, peak_pos_GE4 = FindPeaks.FindPeaksCwt(globals.x_GE4,globals.y_GE4,h,t,d)
                 default_peaks = peaks_GE4[0]
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
-                match_GE4 = getmatch.get_matches(input_data)
+                match_GE4, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE4',match_GE4)
                 Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE4, globals.x_GE4,i)
                 i+=1
@@ -466,11 +519,13 @@ class PlotWindow(QWidget):
                                                + "{:.1f}".format(default_peaks[0]) +' +/- '
                                                + str(default_sigma[0]))
                     input_data = list(zip(default_peaks, default_sigma))
-                    res = getmatch.get_matches(input_data)
+                    res, res_PM, res_SM = getmatch.get_matches(input_data)
+                    print('res',res)
+                    print('res_PM',res_PM)
+                    print('res_SM',res_SM)
 
                     temp = res[0]
                     i = 0
-                    print(len(res[0]))
                     self.tab1.table_clickpeaks.setRowCount(len(res[0]))
                     for match in temp:
 
@@ -479,13 +534,60 @@ class PlotWindow(QWidget):
 
                         self.tab1.table_clickpeaks.setItem(i, 0, QTableWidgetItem(row[2]))
                         self.tab1.table_clickpeaks.setItem(i, 1, QTableWidgetItem(row[3]))
-                        print(row[4])
-                        print(row[5])
                         self.tab1.table_clickpeaks.setItem(i, 2, QTableWidgetItem("{:.2f}".format(row[5])))
 
                         i += 1
 
                     self.tab1.table_clickpeaks.setRowCount(i)
+
+                    temp = res_PM
+                    i = 0
+                    print('res_PM',res_PM)
+                    if len(res_PM) != 0:
+                        self.tab1.table_clickpeaks_prim.setRowCount(len(res_PM))
+
+                        print('temp prim', temp)
+
+                        for match in temp:
+
+                            row_PM = [match['peak_centre'], match['energy'], match['element'],
+                                      match['transition'], match['error'], match['diff']]
+
+                            self.tab1.table_clickpeaks_prim.setItem(i, 0, QTableWidgetItem(row_PM[2]))
+                            self.tab1.table_clickpeaks_prim.setItem(i, 1, QTableWidgetItem(row_PM[3]))
+                            self.tab1.table_clickpeaks_prim.setItem(i, 2, QTableWidgetItem("{:.2f}".format(row_PM[5])))
+
+                            i += 1
+
+                        self.tab1.table_clickpeaks_prim.setRowCount(i)
+                    else:
+                        self.tab1.table_clickpeaks_prim.setRowCount(0)
+
+                    self.show()
+
+                    temp = res_SM
+                    i = 0
+                    print(len(res_SM))
+                    if len(res_PM) != 0:
+
+                        self.tab1.table_clickpeaks_sec.setRowCount(len(res_SM))
+                        for match in temp:
+
+                            row = [match['peak_centre'], match['energy'], match['element'],
+                                   match['transition'], match['error'], match['diff']]
+
+
+                            self.tab1.table_clickpeaks_sec.setItem(i, 0, QTableWidgetItem(row[2]))
+                            self.tab1.table_clickpeaks_sec.setItem(i, 1, QTableWidgetItem(row[3]))
+                            self.tab1.table_clickpeaks_sec.setItem(i, 2, QTableWidgetItem("{:.2f}".format(row[5])))
+
+                            i += 1
+
+                        self.tab1.table_clickpeaks_sec.setRowCount(i)
+                        self.show()
+                    else:
+                        self.tab1.table_clickpeaks_sec.setRowCount(0)
+                        self.show()
 
                     self.show()
 
