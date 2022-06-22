@@ -40,6 +40,7 @@ import loadsettings as ls
 import Eff_Window
 import ECorr_Window
 import Plot_Window
+import MultiPlotWindow
 import LoadDatabaseFile as ldf
 import loadgamma as lg
 import RunTrimExample
@@ -89,6 +90,7 @@ class MainWindow(QWidget):
         plot = bar.addMenu('Plot')
         plot_set = plot.addAction('Plot Settings')
         plot_det = plot.addMenu('Select detectors')
+        plot_multi = plot.addAction('Multi-Run Plot')
 
         plot_which_det_GE1 = plot_det.addAction('GE1')
         plot_which_det_GE1.setCheckable(True)
@@ -111,6 +113,8 @@ class MainWindow(QWidget):
         plot_which_det_GE4.setCheckable(True)
         plot_which_det_GE4.setChecked(globals.plot_GE4)
         plot_which_det_GE4.setShortcut("Alt+4")
+
+        plot_multi.triggered.connect(lambda: self.multiplot())
 
         Normalise = bar.addMenu('Normalisation')
         Normalise_do_not = Normalise.addAction('Use Raw Data')
@@ -230,6 +234,10 @@ class MainWindow(QWidget):
         button_load.move(350, 420)
         button_load.clicked.connect(lambda: self.loadrunandcom(
             RunNum_Text.text()))
+
+    def multiplot(self):
+        print('hello in multiplot')
+        MultiPlotWindow.MultiPlotWindow()
 
     def RunTrimExample(self):
 

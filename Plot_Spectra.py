@@ -25,11 +25,23 @@ def Plot_Peak_Location(fig,axs,plt,peaks,x,i):
 
 
 def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4):
+    #plots spectra as defined by the plot spectra
+
     numplots=How_many_plot()
-    print('numplot', numplots)
+    print('numplots', numplots)
     print(globals.Normalise_spill,globals.Normalise_counts)
 
-    fig, axs = plt.subplots(numplots,figsize=(16,7))
+    if numplots > 1:
+        print('more than one plot')
+        fig, axs = plt.subplots(nrows=numplots, figsize=(16,7))
+    else:
+        #annoying matplotlib fix for one figure in a subplot
+        print('only one plot')
+        fig, temp = plt.subplots(nrows=1, figsize=(16, 7), squeeze=False)
+        axs = [temp[0][0]]
+
+    print(axs)
+    #print(axs[0][0])
 
     fig.suptitle("Run Number: " + str(globals.RunNum) + "  " + globals.comment_str)
     fig.supxlabel("Energy (keV)")
@@ -39,22 +51,26 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4):
         fig.supylabel("Intensity Normalised to Counts (10^5)")
     elif globals.Normalise_spill:
         fig.supylabel("Intensity Normalised to Spills (10^5)")
-    i=0
+    i = 0
     if globals.plot_GE1:
-        axs[i].fill_between(x1, y1,step='mid',color='yellow')
-        axs[i].step(x1,y1,where='mid',color='black')
+        print('1',i)
+        axs[i].fill_between(x1, y1, step='mid', color='yellow')
+        axs[i].step(x1, y1, where='mid', color='black')
         axs[i].set_ylim(0.0)
         axs[i].set_xlim(0.0)
         axs[i].set_title('2099')
-        i+=1
+        i += 1
+        print('here plot GE1')
     if globals.plot_GE2:
+        print('2',i)
         axs[i].fill_between(x2, y2,step='mid',color='yellow')
         axs[i].step(x2,y2,where='mid',color='black')
         axs[i].set_ylim(0.0)
         axs[i].set_xlim(0.0)
         axs[i].set_title('3099')
-        i+=1
+        i += 1
     if globals.plot_GE3:
+        print('3',i)
         axs[i].fill_between(x3, y3,step='mid',color='yellow')
         axs[i].step(x3,y3,where='mid',color='black')
         axs[i].set_ylim(0.0)
@@ -62,6 +78,7 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4):
         axs[i].set_title('4099')
         i+=1
     if globals.plot_GE4:
+        print('4',i)
         axs[i].fill_between(x4, y4,step='mid',color='yellow')
         axs[i].step(x4,y4,where='mid',color='black')
         axs[i].set_ylim(0.0)
@@ -71,12 +88,13 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4):
 
     plt.rc('font',size=16)
     plt.tight_layout()
+    print('here')
 
     #plt.show()
 
     return fig, axs, plt
 
-def Plot_Spectra2():
+'''def Plot_Spectra2():
     numplots=How_many_plot()
     print('numplot', numplots)
 
@@ -172,3 +190,4 @@ def Plot_Spectra(self,x,y):
                 self.table_clickpeaks.setRowCount(i)
 
                 self.show()
+                '''
