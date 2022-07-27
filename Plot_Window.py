@@ -281,7 +281,7 @@ class PlotWindow(QWidget):
         figpeak, axspeak, pltpeak = Plot_Spectra.Plot_Spectra3(globals.x_GE1, globals.y_GE1,
                                                    globals.x_GE2, globals.y_GE2,
                                                    globals.x_GE3, globals.y_GE3,
-                                                   globals.x_GE4, globals.y_GE4)
+                                                   globals.x_GE4, globals.y_GE4, "Automatic peak finding")
         i = 0
 
         if self.tab2.useDef_checkbox.isChecked():
@@ -436,19 +436,22 @@ class PlotWindow(QWidget):
             fig,axs,plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1, globals.y_GE1,
                                        globals.x_GE2, globals.y_GE2,
                                        globals.x_GE3, globals.y_GE3,
-                                       globals.x_GE4, globals.y_GE4)
+                                       globals.x_GE4, globals.y_GE4,
+                                                     "Plot of Data: "+str(globals.RunNum))
             plt.show()
         elif globals.Normalise_counts:
             fig,axs,plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1_Ncounts, globals.y_GE1_Ncounts,
                                        globals.x_GE2_Ncounts, globals.y_GE2_Ncounts,
                                        globals.x_GE3_Ncounts, globals.y_GE3_Ncounts,
-                                       globals.x_GE4_Ncounts, globals.y_GE4_Ncounts)
+                                       globals.x_GE4_Ncounts, globals.y_GE4_Ncounts,
+                                                     "Plot of Data: "+str(globals.RunNum))
             plt.show()
         elif globals.Normalise_spill:
             fig,axs,plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1_NEvents, globals.y_GE1_NEvents,
                                        globals.x_GE2_NEvents, globals.y_GE2_NEvents,
                                        globals.x_GE3_NEvents, globals.y_GE3_NEvents,
-                                       globals.x_GE4_NEvents, globals.y_GE4_NEvents)
+                                       globals.x_GE4_NEvents, globals.y_GE4_NEvents,
+                                                     "Plot of Data: "+ str(globals.RunNum))
             plt.show()
 
         def on_click(event):

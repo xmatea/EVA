@@ -3,6 +3,10 @@ from matplotlib.backend_bases import MouseButton
 import globals
 
 def How_many_plot():
+    """
+    Determines how many plots in each plot
+
+    """
     numplots = 0
     if globals.plot_GE1:
         numplots += 1
@@ -15,29 +19,37 @@ def How_many_plot():
     return numplots
 
 def Plot_Peak_Location(fig,axs,plt,peaks,x,i):
+    """
+    Plots the location of the peaks
+    """
 
     height = peaks[1]['peak_heights']
-    print('height',height)
+    #print('height',height)
     peak_pos = x[peaks[0]]
-    print('peak_pos',peak_pos)
+    #print('peak_pos',peak_pos)
     axs[i].scatter(peak_pos, height, color='r', s=20, marker='X', label='peaks')
     #axs[i].scatter(x, peaks, color='r', s=20, marker='X', label='peaks')
 
 
-def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4):
+def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4,title_lab):
     #plots spectra as defined by the plot spectra
 
     numplots=How_many_plot()
     print('numplots', numplots)
     print(globals.Normalise_spill,globals.Normalise_counts)
+    print(x1)
 
     if numplots > 1:
-        print('more than one plot')
+        #print('more than one plot')
         fig, axs = plt.subplots(nrows=numplots, figsize=(16,7))
+        fig.canvas.manager.set_window_title(title_lab)
+
     else:
         #annoying matplotlib fix for one figure in a subplot
         print('only one plot')
         fig, temp = plt.subplots(nrows=1, figsize=(16, 7), squeeze=False)
+        fig.canvas.manager.set_window_title(title_lab)
+
         axs = [temp[0][0]]
 
     print(axs)
@@ -45,6 +57,8 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4):
 
     fig.suptitle("Run Number: " + str(globals.RunNum) + "  " + globals.comment_str)
     fig.supxlabel("Energy (keV)")
+
+    # sets the correct labels
     if globals.Normalise_do_not:
         fig.supylabel("Intensity")
     elif globals.Normalise_counts:
@@ -52,8 +66,9 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4):
     elif globals.Normalise_spill:
         fig.supylabel("Intensity Normalised to Spills (10^5)")
     i = 0
+    print('i=', i)
     if globals.plot_GE1:
-        print('1',i)
+        print('1', i)
         axs[i].fill_between(x1, y1, step='mid', color='yellow')
         axs[i].step(x1, y1, where='mid', color='black')
         axs[i].set_ylim(0.0)
@@ -62,7 +77,7 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4):
         i += 1
         print('here plot GE1')
     if globals.plot_GE2:
-        print('2',i)
+        #print('2',i)
         axs[i].fill_between(x2, y2,step='mid',color='yellow')
         axs[i].step(x2,y2,where='mid',color='black')
         axs[i].set_ylim(0.0)
@@ -70,27 +85,24 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4):
         axs[i].set_title('3099')
         i += 1
     if globals.plot_GE3:
-        print('3',i)
+        #print('3',i)
         axs[i].fill_between(x3, y3,step='mid',color='yellow')
         axs[i].step(x3,y3,where='mid',color='black')
         axs[i].set_ylim(0.0)
         axs[i].set_xlim(0.0)
         axs[i].set_title('4099')
-        i+=1
+        i += 1
     if globals.plot_GE4:
-        print('4',i)
+        #print('4',i)
         axs[i].fill_between(x4, y4,step='mid',color='yellow')
         axs[i].step(x4,y4,where='mid',color='black')
         axs[i].set_ylim(0.0)
         axs[i].set_xlim(0.0)
         axs[i].set_title('5099')
-        i+=1
+        i += 1
 
     plt.rc('font',size=16)
     plt.tight_layout()
-    print('here')
-
-    #plt.show()
 
     return fig, axs, plt
 

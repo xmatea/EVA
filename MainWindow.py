@@ -31,7 +31,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QPalette, QColor, QCloseEvent, QFont
 import sys
 
-import TRIM_Window
+import PeakFit
 import loaddata
 import loadcomment
 import globals
@@ -46,12 +46,6 @@ import loadgamma as lg
 import RunTrimExample
 import TRIM_Window
 
-'''if hasattr(Qt, 'AA_EnableHighDpiScaling'):
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-
-if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
-    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
-'''
 
 
 class Color(QWidget):
@@ -87,6 +81,7 @@ class MainWindow(QWidget):
         file_loaddef = file.addAction('Load Default Setting')
         file_browse_dir = file.addAction('Browse to Data Directory')
         file_exit = file.addAction('Exit')
+
         plot = bar.addMenu('Plot')
         plot_set = plot.addAction('Plot Settings')
         plot_det = plot.addMenu('Select detectors')
@@ -152,6 +147,22 @@ class MainWindow(QWidget):
 
         #Corr_Abs = plot.addAction('Absorption Correction')
 
+        self.Analysis = bar.addMenu('Analysis')
+        self.PeakFit_menu = self.Analysis.addMenu('Peak Fitting')
+        #self.PeakFit_menu.triggered.connect(lambda: self.PeakFit())
+        self.PeakFit_menu.setDisabled(True)
+
+        self.Ana_GE1 = self.PeakFit_menu.addAction('GE1')
+        self.Ana_GE1.triggered.connect(lambda: self.PeakFit_GE1())
+
+        self.Ana_GE2 = self.PeakFit_menu.addAction('GE2')
+        self.Ana_GE2.triggered.connect(lambda: self.PeakFit_GE2())
+
+        self.Ana_GE3 = self.PeakFit_menu.addAction('GE3')
+        self.Ana_GE3.triggered.connect(lambda: self.PeakFit_GE3())
+
+        self.Ana_GE4 = self.PeakFit_menu.addAction('GE4')
+        self.Ana_GE4.triggered.connect(lambda: self.PeakFit_GE4())
 
         TRIM = bar.addMenu('SRIM/TRIM')
         Trim_sim = TRIM.addAction('SRIM/TRIM Simulation')
@@ -234,6 +245,34 @@ class MainWindow(QWidget):
         button_load.move(350, 420)
         button_load.clicked.connect(lambda: self.loadrunandcom(
             RunNum_Text.text()))
+
+    def PeakFit(self):
+        print('hello in PeakFit')
+        globals.whichdet = 'All'
+        PeakFit.PeakFit()
+
+    def PeakFit_GE1(self):
+        print('hello in PeakFit ge1')
+        globals.whichdet = 'GE1'
+
+        PeakFit.PeakFit()
+
+    def PeakFit_GE2(self):
+        print('hello in PeakFit ge2')
+        globals.whichdet = 'GE2'
+        PeakFit.PeakFit()
+
+    def PeakFit_GE3(self):
+        print('hello in PeakFitge 3')
+        globals.whichdet = 'GE3'
+
+        PeakFit.PeakFit()
+
+    def PeakFit_GE4(self):
+        print('hello in PeakFit ge4')
+        globals.whichdet = 'GE4'
+
+        PeakFit.PeakFit()
 
     def multiplot(self):
         print('hello in multiplot')
@@ -423,6 +462,7 @@ class MainWindow(QWidget):
             self.label_RN.setText("Run Number:   " + str(RunNum))
 
             self.Show_Plot_Window()
+            self.PeakFit_menu.setDisabled(False)
 
 
 
