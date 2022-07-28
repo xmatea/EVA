@@ -585,47 +585,48 @@ class PeakFit(QWidget):
         mod = mod + backgrd
 
 
-        result = mod.fit(datay,x=datax)
+        result = mod.fit(datay, x=datax, weights=1.0/np.sqrt(datay))
 
         print('results',result)
         print(result.fit_report())
-
-
-
-
-
-
+        print(result.best_values["f0_amplitude"])
+        print(result.best_values["f0_amplitude"])
+        print(result.chisqr)
+        print(result.covar)
+        print('values',result.values)
+        print('best values',result.best_values)
+        print('error',result.params)
+        print(f'{result.params["f0_amplitude"].value:11.5f} {result.params["f0_amplitude"].stderr:11.5f}')
 
         #calc chisq
 
-        '''r = datay - multiGaussianFunc(datax, *popt)
+        r = datay - result.best_fit
         chisq = sum((r / np.sqrt(datay)) ** 2)/len(datax)
         print('Chisq=',chisq)
 
         #write results to GUI
         for i in range(0, pp_len):
             try:
-                pos = i*3
-                self.tab1.table_clickpeaks.setItem(i, 0, QTableWidgetItem(str(popt[pos])))
-                self.tab1.table_clickpeaks.setItem(i, 2, QTableWidgetItem(str(popt[pos+1])))
-                self.tab1.table_clickpeaks.setItem(i, 4, QTableWidgetItem(str(popt[pos+2])))
+                pref = "f{0}_".format(i)
+                self.tab1.table_clickpeaks.setItem(i, 0, QTableWidgetItem(
+                    str("{:.3f}".format(result.best_values[pref+"center"]))))
+                self.tab1.table_clickpeaks.setItem(i, 2, QTableWidgetItem(
+                    str("{:.2f}".format(result.best_values[pref+"amplitude"]))))
+                self.tab1.table_clickpeaks.setItem(i, 4, QTableWidgetItem(
+                    str("{:.3f}".format(result.best_values[pref+"sigma"]))))
 
-                self.tab1.table_clickpeaks.setItem(i, 1, QTableWidgetItem(str(perr[pos])))
-                self.tab1.table_clickpeaks.setItem(i, 3, QTableWidgetItem(str(perr[pos+1])))
-                self.tab1.table_clickpeaks.setItem(i, 5, QTableWidgetItem(str(perr[pos+2])))
+                self.tab1.table_clickpeaks.setItem(i, 1, QTableWidgetItem(
+                    str("{:.3f}".format(result.params[pref+"center"].stderr))))
+                self.tab1.table_clickpeaks.setItem(i, 3, QTableWidgetItem(
+                    str("{:.1f}".format(result.params[pref+"amplitude"].stderr))))
+                self.tab1.table_clickpeaks.setItem(i, 5, QTableWidgetItem(
+                    str("{:.3f}".format(result.params[pref+"sigma"].stderr))))
 
 
 
             except:
                 temp = 1
-        para_len = len(popt)
-        print(para_len)
-        self.tab1.table_poly.setItem(0, 0, QTableWidgetItem(str(popt[para_len - 3])))
-        self.tab1.table_poly.setItem(0, 2, QTableWidgetItem(str(popt[para_len - 2])))
-        self.tab1.table_poly.setItem(0, 4, QTableWidgetItem(str(popt[para_len - 1])))
-        self.tab1.table_poly.setItem(0, 1, QTableWidgetItem(str(perr[para_len - 3])))
-        self.tab1.table_poly.setItem(0, 3, QTableWidgetItem(str(perr[para_len - 2])))
-        self.tab1.table_poly.setItem(0, 5, QTableWidgetItem(str(perr[para_len - 1])))'''
+
 
         #plot results
 
