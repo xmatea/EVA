@@ -2,6 +2,8 @@ import math
 
 import Trimdata
 import peakfit_bounds_define
+from lmfit import Parameters, Model
+from lmfit.models import GaussianModel, QuadraticModel
 
 import matplotlib.pyplot as plt
 from matplotlib.backend_bases import MouseButton
@@ -113,7 +115,9 @@ class PeakFit(QWidget):
         plot_fit.setText('Fit Currently loaded Spectra')
         plot_fit.move(100,100)
         plot_fit.clicked.connect(
-            lambda: self.fit_spectra())
+            lambda: self.fit_spectra_lmfit())
+        '''plot_fit.clicked.connect(
+            lambda: self.fit_spectra())'''
 
         # Initialize tab screen
         print('initialising tabs')
@@ -232,12 +236,13 @@ class PeakFit(QWidget):
                                                    self.data_x_GE3, self.data_y_GE3,
                                                    self.data_x_GE4, self.data_y_GE4, title_lab)
 
-        print("return", self.val_fit_XMin.text())
-        print(self.axs_ana)
         self.plt_ana.show()
-        # dodgy work around that will crash need to think on the process here!
-        self.axs_ana[0].set_xlim([float(self.val_fit_XMin.text())-5.0, float(self.val_fit_XMax.text())+5.0])
-        #axs[1].set_xlim([float(self.val_fit_XMin.text()), float(self.val_fit_XMax.text())])
+
+        # changes the xlimits of each subplot
+        i = 0
+        for i in range(len(self.axs_ana)):
+            self.axs_ana[i].set_xlim([float(self.val_fit_XMin.text())-5.0, float(self.val_fit_XMax.text())+5.0])
+            i += 1
 
         self.plt_ana.show()
 
@@ -443,6 +448,211 @@ class PeakFit(QWidget):
             self.plt_ana.legend()
             self.plt_ana.show()
             self.fig_ana.canvas.draw()
+
+
+            # Generate function
+            # Guassians
+
+
+    def fit_spectra_lmfit(self):
+
+        def gaussian(x, mu, sigma, a, c):
+            return a / sigma / np.sqrt(2 * np.pi) * np.exp(-(x - mu) ** 2 / 2 / sigma ** 2) + c
+
+        def gaussian2(x, mu, sigma, a, c):
+            return a / sigma / np.sqrt(2 * np.pi) * np.exp(-(x - mu) ** 2 / 2 / sigma ** 2) + c
+
+
+        def multiGaussianFunc(x, *params):
+            y = np.zeros_like(x)
+            for i in range(0, len(params)-3, 3):
+                ctr = params[i]
+                amp = params[i+1]
+                wid = params[i+2]
+                y = y + amp / wid / np.sqrt(2 * np.pi) * np.exp(-((x - ctr) / 2/ wid) ** 2)
+            a = params[len(params)-3]
+            b = params[len(params)-2]
+            c = params[len(params)-1]
+            y = y + a + b * x + c * x * x
+            return y
+
+        def multiGaussianFunc_lmfit(x, *params):
+            y = np.zeros_like(x)
+            print('hello')
+            print('params',params)
+            print('len of params',len(params))
+            for i in range(0, len(params)-3, 3):
+                ctr = params[i]
+                amp = params[i+1]
+                wid = params[i+2]
+                y = y + amp / wid / np.sqrt(2 * np.pi) * np.exp(-((x - ctr) / 2/ wid) ** 2)
+            a = params[len(params)-3]
+            '''b = params[len(params)-2]
+            c = params[len(params)-1]'''
+            y = y + a #+ b * x + c * x * x
+            return y
+
+
+        para = Parameters()
+        para.add('mu',value=190,vary=True,min=180,max=220)
+        para.add('a', value=200, vary=True, min=0)
+        para.add('sigma', value= 1.5,vary=True,min=0.1,max=3.0)
+        '''para.add('a',value=1,vary=True,min=0)
+        para.add('b',value=1,vary=True,min=0)'''
+        para.add('c',value=1,vary=True,min=0)
+
+
+        # get information from the table and store in arrays
+        pp = []
+        ph = []
+        pw = []
+        EMin = float(self.val_fit_XMin.text())
+        EMax = float(self.val_fit_XMax.text())
+        pp_len = 0
+        for i in range(int(self.tab1.table_clickpeaks.rowCount())):
+            try:
+                print(self.tab1.table_clickpeaks.item(i, 0).text())
+                pp.append(float(self.tab1.table_clickpeaks.item(i, 0).text()))
+                pp_len += 1
+            except:
+                #print('end of line',i)
+                temp = 1
+
+        #checks reading the table
+
+        if pp_len == 0:
+            # pop up box to say no peaks in the table
+            error_message = QErrorMessage(self)
+            error_message.setWindowTitle("Peak Setup Error")
+            error_message.showMessage("Error: No peaks in the peak table")
+
+        else:
+            # fitting bit
+            for i in range(pp_len+1):
+                try:
+                    ph.append(float(self.tab1.table_clickpeaks.item(i, 2).text()))
+                    pw.append(float(self.tab1.table_clickpeaks.item(i, 4).text()))
+                except:
+                    temp = 1
+
+            #get backgorund info
+            back = []
+            try:
+                back.append(float(self.tab1.table_poly.item(0, 0).text()))
+                back.append(float(self.tab1.table_poly.item(0, 2).text()))
+                back.append(float(self.tab1.table_poly.item(0, 4).text()))
+            except:
+                temp = 1
+
+
+        # get and trim the correct data
+
+        if globals.whichdet == 'GE1':
+            datax, datay = Trimdata.Trimdata(self.data_x_GE1,self.data_y_GE1, EMin, EMax)
+        elif globals.whichdet == 'GE2':
+            datax, datay = Trimdata.Trimdata(self.data_x_GE2, self.data_y_GE2, EMin, EMax)
+        elif globals.whichdet == 'GE3':
+            datax, datay = Trimdata.Trimdata(self.data_x_GE3, self.data_y_GE3, EMin, EMax)
+        elif globals.whichdet == 'GE4':
+            datax, datay = Trimdata.Trimdata(self.data_x_GE4, self.data_y_GE4, EMin, EMax)
+
+        print('data trimmed')
+
+        def make_model(pp_len, pp, ph, pw, num, EMin, EMax):
+            pref = "f{0}_".format(num)
+            model = GaussianModel(prefix = pref)
+            model.set_param_hint(pref+'amplitude', value=ph[num], min =0)
+            model.set_param_hint(pref+'center', value=pp[num], min = EMin, max = EMax)
+            model.set_param_hint(pref+'sigma', value=pw[num], min = 0.01, max = 3.0)
+            return model
+
+        mod = None
+
+
+        for i in range(pp_len):
+            this_mod = make_model(pp_len, pp, ph, pw, i, EMin, EMax)
+            if mod is None:
+                mod = this_mod
+            else:
+                mod = mod + this_mod
+
+
+        backgrd = QuadraticModel()
+        backgrd.set_param_hint('a', value = back[2])
+        backgrd.set_param_hint('b', value = back[1])
+        backgrd.set_param_hint('c', value = back[0])
+
+        mod = mod + backgrd
+
+
+        result = mod.fit(datay,x=datax)
+
+        print('results',result)
+        print(result.fit_report())
+
+
+
+
+
+
+
+        #calc chisq
+
+        '''r = datay - multiGaussianFunc(datax, *popt)
+        chisq = sum((r / np.sqrt(datay)) ** 2)/len(datax)
+        print('Chisq=',chisq)
+
+        #write results to GUI
+        for i in range(0, pp_len):
+            try:
+                pos = i*3
+                self.tab1.table_clickpeaks.setItem(i, 0, QTableWidgetItem(str(popt[pos])))
+                self.tab1.table_clickpeaks.setItem(i, 2, QTableWidgetItem(str(popt[pos+1])))
+                self.tab1.table_clickpeaks.setItem(i, 4, QTableWidgetItem(str(popt[pos+2])))
+
+                self.tab1.table_clickpeaks.setItem(i, 1, QTableWidgetItem(str(perr[pos])))
+                self.tab1.table_clickpeaks.setItem(i, 3, QTableWidgetItem(str(perr[pos+1])))
+                self.tab1.table_clickpeaks.setItem(i, 5, QTableWidgetItem(str(perr[pos+2])))
+
+
+
+            except:
+                temp = 1
+        para_len = len(popt)
+        print(para_len)
+        self.tab1.table_poly.setItem(0, 0, QTableWidgetItem(str(popt[para_len - 3])))
+        self.tab1.table_poly.setItem(0, 2, QTableWidgetItem(str(popt[para_len - 2])))
+        self.tab1.table_poly.setItem(0, 4, QTableWidgetItem(str(popt[para_len - 1])))
+        self.tab1.table_poly.setItem(0, 1, QTableWidgetItem(str(perr[para_len - 3])))
+        self.tab1.table_poly.setItem(0, 3, QTableWidgetItem(str(perr[para_len - 2])))
+        self.tab1.table_poly.setItem(0, 5, QTableWidgetItem(str(perr[para_len - 1])))'''
+
+        #plot results
+
+        # removes previous plot if it exists
+        try:
+            self.ln.remove()
+            self.lnr.remove()
+            self.ln, = self.plt_ana.plot(datax, result.best_fit, label="best fit")
+            self.lnr, = self.plt_ana.plot(datax, datay - result.best_fit, label='Residual')
+        except:
+            self.ln, = self.plt_ana.plot(datax, result.best_fit, label="best fit")
+            self.lnr, = self.plt_ana.plot(datax, datay - result.best_fit, label='Residual')
+
+        self.plt_ana.draw()
+        #print(np.min(datay-result.best_fit))
+        if np.max(datay)> np.max(result.best_fit):
+            maxy = np.max(datay)+0.05*np.max(datay)
+        else:
+            maxy = np.max(result.best_fit)+0.05*np.max(result.best_fit)
+
+        self.axs_ana[0].set_ylim(
+            [np.min(datay-result.best_fit)-0.05*(np.min(datay-result.best_fit)), maxy])
+        self.plt_ana.axvline(EMin, color='red', linestyle='--')
+        self.plt_ana.axvline(EMax, color='red', linestyle='--')
+        self.plt_ana.legend()
+        self.plt_ana.show()
+        self.fig_ana.canvas.draw()
 
 
             # Generate function

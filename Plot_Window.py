@@ -453,6 +453,7 @@ class PlotWindow(QWidget):
                                        globals.x_GE4_NEvents, globals.y_GE4_NEvents,
                                                      "Plot of Data: "+ str(globals.RunNum))
             plt.show()
+        print('axs', len(axs))
 
         def on_click(event):
 
