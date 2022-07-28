@@ -456,41 +456,7 @@ class PeakFit(QWidget):
 
     def fit_spectra_lmfit(self):
 
-        def gaussian(x, mu, sigma, a, c):
-            return a / sigma / np.sqrt(2 * np.pi) * np.exp(-(x - mu) ** 2 / 2 / sigma ** 2) + c
 
-        def gaussian2(x, mu, sigma, a, c):
-            return a / sigma / np.sqrt(2 * np.pi) * np.exp(-(x - mu) ** 2 / 2 / sigma ** 2) + c
-
-
-        def multiGaussianFunc(x, *params):
-            y = np.zeros_like(x)
-            for i in range(0, len(params)-3, 3):
-                ctr = params[i]
-                amp = params[i+1]
-                wid = params[i+2]
-                y = y + amp / wid / np.sqrt(2 * np.pi) * np.exp(-((x - ctr) / 2/ wid) ** 2)
-            a = params[len(params)-3]
-            b = params[len(params)-2]
-            c = params[len(params)-1]
-            y = y + a + b * x + c * x * x
-            return y
-
-        def multiGaussianFunc_lmfit(x, *params):
-            y = np.zeros_like(x)
-            print('hello')
-            print('params',params)
-            print('len of params',len(params))
-            for i in range(0, len(params)-3, 3):
-                ctr = params[i]
-                amp = params[i+1]
-                wid = params[i+2]
-                y = y + amp / wid / np.sqrt(2 * np.pi) * np.exp(-((x - ctr) / 2/ wid) ** 2)
-            a = params[len(params)-3]
-            '''b = params[len(params)-2]
-            c = params[len(params)-1]'''
-            y = y + a #+ b * x + c * x * x
-            return y
 
 
         para = Parameters()
@@ -627,6 +593,18 @@ class PeakFit(QWidget):
             except:
                 temp = 1
 
+        self.tab1.table_poly.setItem(0, 0, QTableWidgetItem(
+            str("{:.2f}".format(result.best_values["c"]))))
+        self.tab1.table_poly.setItem(0, 2, QTableWidgetItem(
+            str("{:.2f}".format(result.best_values["b"]))))
+        self.tab1.table_poly.setItem(0, 4, QTableWidgetItem(
+            str("{:.3f}".format(result.best_values["a"]))))
+        self.tab1.table_poly.setItem(0, 1, QTableWidgetItem(
+            str("{:.2f}".format(result.params["c"].stderr))))
+        self.tab1.table_poly.setItem(0, 3, QTableWidgetItem(
+            str("{:.2f}".format(result.params["b"].stderr))))
+        self.tab1.table_poly.setItem(0, 5, QTableWidgetItem(
+            str("{:.3f}".format(result.params["a"].stderr))))
 
         #plot results
 
