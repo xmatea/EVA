@@ -634,8 +634,40 @@ class PeakFit(QWidget):
         self.fig_ana.canvas.draw()
 
 
-            # Generate function
-            # Guassians
+        # write results to file
+
+        # Summary output
+
+        fname = globals.workingdirectory+'/'+str(globals.RunNum)+'_'+globals.whichdet+'.sum'
+        print(fname)
+
+        with open(fname, 'w') as f:
+            f.write('Analysis Summary')
+            f.write(result.fit_report())
+            f.writelines(" " + "\n")
+            f.writelines(" " + "\n")
+            f.write("Best fit results" + "\n")
+            norows = len(datax)
+            for i in range(norows):
+                line = str(datax[i]) + ' ' + str(result.best_fit[i]) + "\n"
+                f.writelines(line)
+
+        f.close()
+
+        # writing fit results to a separate file
+
+        fname = globals.workingdirectory+'/'+str(globals.RunNum)+'_'+globals.whichdet+'.fit'
+        print(fname)
+        with open(fname, 'w') as f:
+            import csv
+            norows = len(datax)
+            for i in range(norows):
+                line = str(datax[i])+' '+str(result.best_fit[i])+"\n"
+                f.writelines(line)
+        f.close()
+
+
+
 
 
 
