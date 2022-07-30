@@ -1,5 +1,44 @@
 import globals
 
+def get_matches_Element_PrimorSec(input_element, PrimorSec):
+    print(input_element)
+    matches = []
+    Primary_matches = []
+    Secondary_matches = []
+
+
+    for x in globals.peak_data:
+
+        print('x',x)
+        raw_data = globals.peak_data[x]
+        for element in raw_data:
+            if element == input_element:
+                for transition, energy in raw_data[element].items():
+                    data = {}
+                    data['element'] = element
+                    data['energy'] = energy
+                    data['transition'] = transition
+                    matches.append(data)
+        if x == 'Primary energy':
+            print('PrimE')
+            Primary_matches = matches
+            matches = []
+        if x == 'Secondary energy':
+            print('SecE')
+            Secondary_matches = matches
+            matches = []
+    if PrimorSec == 'Primary':
+        print('Primmatch')
+        rtn_matches = Primary_matches
+    elif PrimorSec == 'Secondary':
+        print('Secmatch')
+        rtn_matches = Secondary_matches
+
+    print(rtn_matches)
+
+    return rtn_matches
+
+
 def get_matches_Trans(input_element, input_trans):
     print(input_element)
     matches = []
@@ -15,7 +54,6 @@ def get_matches_Trans(input_element, input_trans):
                         data['transition'] = transition
                         matches.append(data)
 
-    print(matches)
 
     return matches
 
