@@ -1,5 +1,46 @@
 import globals
 
+def get_matches_Trans(input_element, input_trans):
+    print(input_element)
+    matches = []
+    for x in globals.peak_data:
+        raw_data = globals.peak_data[x]
+        for element in raw_data:
+            if element == input_element:
+                for transition, energy in raw_data[element].items():
+                    if transition == input_trans:
+                        data = {}
+                        data['element'] = element
+                        data['energy'] = energy
+                        data['transition'] = transition
+                        matches.append(data)
+
+    print(matches)
+
+    return matches
+
+
+
+def get_matches_Element(input_element):
+    print(input_element)
+    matches = []
+    for x in globals.peak_data:
+        raw_data = globals.peak_data[x]
+        for element in raw_data:
+            if element == input_element:
+                for transition, energy in raw_data[element].items():
+                    data = {}
+                    data['element'] = element
+                    data['energy'] = energy
+                    data['transition'] = transition
+                    matches.append(data)
+
+    print(matches)
+
+    return matches
+
+
+
 
 def get_matches(input_peaks):
     all_matches = []

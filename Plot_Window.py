@@ -76,13 +76,30 @@ class PlotWindow(QWidget):
         self.tab1.tab1 = QWidget()
         self.tab1.tab2 = QWidget()
         self.tab1.tab3 = QWidget()
+        self.tab1.tab4 = QWidget()
         self.tab1.tab_clicked_elements.move(50,50)
         self.tab1.tab_clicked_elements.setMinimumSize(1000,450)
 
         self.tab1.tab_clicked_elements.addTab(self.tab1.tab1, "All Peaks")
         self.tab1.tab_clicked_elements.addTab(self.tab1.tab2, "Primary")
         self.tab1.tab_clicked_elements.addTab(self.tab1.tab3, "Secondary")
-        self.tab1.tab_clicked_elements.show()
+        self.tab1.tab_clicked_elements.addTab(self.tab1.tab4, "Remove Plot lines")
+
+        self.tab1.table_plotted_lines = QTableWidget(self.tab1.tab4)
+        self.tab1.table_plotted_lines.setShowGrid(True)
+        self.tab1.table_plotted_lines.setColumnCount(2)
+        self.tab1.table_plotted_lines.setRowCount(10)
+        self.tab1.table_plotted_lines.move(10,10)
+        self.tab1.table_plotted_lines.setMinimumSize(1000,350)
+        self.tab1.table_plotted_lines.verticalScrollBar()
+        #self.tab1.table_clickpeaks.
+        self.tab1.table_plotted_lines.setHorizontalHeaderLabels(['Muonic X-ray', 'Gamma'])
+        self.tab1.table_plotted_lines.setColumnWidth(0, 250)
+        self.tab1.table_plotted_lines.setColumnWidth(1, 205)
+        self.tab1.table_plotted_lines.cellClicked.connect(self.remove_line)
+
+
+        self.tab1.table_plotted_lines.show()
 
         # table for all peaks
 
@@ -98,6 +115,9 @@ class PlotWindow(QWidget):
         self.tab1.table_clickpeaks.setColumnWidth(0, 175)
         self.tab1.table_clickpeaks.setColumnWidth(1, 205)
         self.tab1.table_clickpeaks.setColumnWidth(2, 175)
+        self.tab1.table_clickpeaks.cellClicked.connect(self.tab1_table_clickpeaks)
+
+
 
         self.tab1.table_clickpeaks.show()
 
@@ -251,6 +271,74 @@ class PlotWindow(QWidget):
         self.show()
 
         self.PlotSpectra()
+
+        self.numoflines = 0
+        self.linenum = []
+        self.lines= []
+        self.elementline = []
+
+    def remove_line(self, row, col):
+        print('row col', row, col)
+
+        Ele = self.tab1.table_plotted_lines.item(row,col).text()
+        print('Ele', Ele)
+
+        for i in range(len(self.axs)):
+            print(i)
+            line = [line for line in self.axs[i].lines if line.get_label() == Ele]
+
+            print(line)
+            for j in range(len(line)):
+                self.axs[i].lines.remove(line[j])
+            self.fig.canvas.draw()
+
+    def tab1_table_clickpeaks(self, row, col):
+        print('hello')
+        print(row,col)
+        # get Element
+        Ele = self.tab1.table_clickpeaks.item(row,0).text()
+        Trans = self.tab1.table_clickpeaks.item(row, 1).text()
+
+        print('Ele', Ele)
+        if col == 0: # plot all the lines from an element
+            # find all peaks for this element and plt vertical lines
+            res = getmatch.get_matches_Element(Ele)
+            print('res',res)
+            for match in res:
+                print('match', match)
+                rowres = [match['element'], match['energy'], match['transition']]
+                print('rowres[1]',rowres[1])
+                print(len(self.axs))
+                for i in range(len(self.axs)):
+                    print(i)
+                    self.axs[i].axvline(
+                            float(rowres[1]), color='red', linestyle='--', label=Ele)
+
+
+            self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
+            self.numoflines += 1
+            print('self.numoflines', self.numoflines)
+
+
+        if col == 1: # plots just one transition
+            res = getmatch.get_matches_Trans(Ele,Trans)
+            print(res)
+            for match in res:
+                print('match', match)
+                rowres = [match['element'], match['energy'], match['transition']]
+                print('rowres[1]',rowres[1])
+                for i in range(len(self.axs)):
+                    print(i)
+                    self.axs[i].axvline(
+                        float(rowres[1]), color='red', linestyle='--')
+            self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
+            self.numoflines += 1
+
+        # add search for peaks in col 0
+        # plot of one peak if col 1
+
+        print()
+        self.fig.canvas.draw()
 
     def useDef_onClicked(self):
         print('hello ')
@@ -433,27 +521,27 @@ class PlotWindow(QWidget):
 
 
         if globals.Normalise_do_not:
-            fig,axs,plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1, globals.y_GE1,
+            self.fig,self.axs,self.plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1, globals.y_GE1,
                                        globals.x_GE2, globals.y_GE2,
                                        globals.x_GE3, globals.y_GE3,
                                        globals.x_GE4, globals.y_GE4,
                                                      "Plot of Data: "+str(globals.RunNum))
             plt.show()
         elif globals.Normalise_counts:
-            fig,axs,plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1_Ncounts, globals.y_GE1_Ncounts,
+            self.fig,self.axs,self.plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1_Ncounts, globals.y_GE1_Ncounts,
                                        globals.x_GE2_Ncounts, globals.y_GE2_Ncounts,
                                        globals.x_GE3_Ncounts, globals.y_GE3_Ncounts,
                                        globals.x_GE4_Ncounts, globals.y_GE4_Ncounts,
                                                      "Plot of Data: "+str(globals.RunNum))
             plt.show()
         elif globals.Normalise_spill:
-            fig,axs,plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1_NEvents, globals.y_GE1_NEvents,
+            self.fig,self.axs,self.plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1_NEvents, globals.y_GE1_NEvents,
                                        globals.x_GE2_NEvents, globals.y_GE2_NEvents,
                                        globals.x_GE3_NEvents, globals.y_GE3_NEvents,
                                        globals.x_GE4_NEvents, globals.y_GE4_NEvents,
                                                      "Plot of Data: "+ str(globals.RunNum))
             plt.show()
-        print('axs', len(axs))
+        print('axs', len(self.axs))
 
         def on_click(event):
 
