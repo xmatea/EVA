@@ -76,7 +76,7 @@ class PlotWindow(QWidget):
         self.tab1.table_plotted_lines.setColumnCount(2)
         self.tab1.table_plotted_lines.setRowCount(10)
         self.tab1.table_plotted_lines.move(10,10)
-        self.tab1.table_plotted_lines.setMinimumSize(1000,350)
+        self.tab1.table_plotted_lines.setMinimumSize(1000, 350)
         self.tab1.table_plotted_lines.verticalScrollBar()
         #self.tab1.table_clickpeaks.
         self.tab1.table_plotted_lines.setHorizontalHeaderLabels(['Muonic X-ray', 'Gamma'])

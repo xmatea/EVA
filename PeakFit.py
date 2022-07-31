@@ -156,6 +156,10 @@ class PeakFit(QWidget):
         self.tab1.table_clickpeaks.setColumnWidth(3, 50)
         self.tab1.table_clickpeaks.setColumnWidth(4, 150)
         self.tab1.table_clickpeaks.setColumnWidth(5, 50)
+        self.tab1.table_clickpeaks.cellClicked.connect(self.settinggaussian)
+
+
+
 
         self.tab1.table_clickpeaks.show()
 
@@ -182,6 +186,7 @@ class PeakFit(QWidget):
         self.tab1.table_poly.setItem(0,0, QTableWidgetItem(str(25)))
         self.tab1.table_poly.setItem(0, 2, QTableWidgetItem(str(0.001)))
         self.tab1.table_poly.setItem(0, 4, QTableWidgetItem(str(0.0)))
+        self.tab1.table_poly.cellClicked.connect(self.settingploy)
 
         self.tab1.table_clickpeaks.show()
 
@@ -196,6 +201,49 @@ class PeakFit(QWidget):
         print("return")
 
         self.show()
+
+    def settinggaussian(self, row, col):
+        try:
+            print('row, col', row, col)
+            # get info from table
+            if col == 1 or col == 3 or col == 5:
+                print('error column')
+                try:
+                    errorcontents = self.tab1.table_clickpeaks.item(row,col).text()
+                except:
+                    errorcontents = '1.0'
+                if errorcontents == 'fixed':
+                    self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('1.0'))
+                else:
+                    self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('fixed'))
+
+
+        except:
+            temp = 1
+
+        return
+
+
+    def settingploy(self, row, col):
+        try:
+            print('row, col', row, col)
+            # get info from table
+            if col == 1 or col == 3 or col == 5:
+                print('error column')
+                try:
+                    errorcontents = self.tab1.table_poly.item(row,col).text()
+                except:
+                    errorcontents = '1.0'
+                if errorcontents == 'fixed':
+                    self.tab1.table_poly.setItem(row, col, QTableWidgetItem('1.0'))
+                else:
+                    self.tab1.table_poly.setItem(row, col, QTableWidgetItem('fixed'))
+
+
+        except:
+            temp = 1
+
+        return
 
     def PlotAnalysisSpectra(self,title_lab):
 
@@ -456,18 +504,6 @@ class PeakFit(QWidget):
 
     def fit_spectra_lmfit(self):
 
-
-
-
-        para = Parameters()
-        para.add('mu',value=190,vary=True,min=180,max=220)
-        para.add('a', value=200, vary=True, min=0)
-        para.add('sigma', value= 1.5,vary=True,min=0.1,max=3.0)
-        '''para.add('a',value=1,vary=True,min=0)
-        para.add('b',value=1,vary=True,min=0)'''
-        para.add('c',value=1,vary=True,min=0)
-
-
         # get information from the table and store in arrays
         pp = []
         ph = []
@@ -526,14 +562,13 @@ class PeakFit(QWidget):
 
         def make_model(pp_len, pp, ph, pw, num, EMin, EMax):
             pref = "f{0}_".format(num)
-            model = GaussianModel(prefix = pref)
+            model = GaussianModel(prefix=pref)
             model.set_param_hint(pref+'amplitude', value=ph[num], min =0)
             model.set_param_hint(pref+'center', value=pp[num], min = EMin, max = EMax)
             model.set_param_hint(pref+'sigma', value=pw[num], min = 0.01, max = 3.0)
             return model
 
         mod = None
-
 
         for i in range(pp_len):
             this_mod = make_model(pp_len, pp, ph, pw, i, EMin, EMax)
@@ -542,11 +577,10 @@ class PeakFit(QWidget):
             else:
                 mod = mod + this_mod
 
-
         backgrd = QuadraticModel()
-        backgrd.set_param_hint('a', value = back[2])
-        backgrd.set_param_hint('b', value = back[1])
-        backgrd.set_param_hint('c', value = back[0])
+        backgrd.set_param_hint('a', value=back[2])
+        backgrd.set_param_hint('b', value=back[1])
+        backgrd.set_param_hint('c', value=back[0])
 
         mod = mod + backgrd
 
