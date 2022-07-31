@@ -169,16 +169,18 @@ class PlotWindow(QWidget):
 
         self.tab1.table_clickpeaks2 = QTableWidget(self.tab1)
         self.tab1.table_clickpeaks2.setShowGrid(True)
-        self.tab1.table_clickpeaks2.setColumnCount(4)
+        self.tab1.table_clickpeaks2.setColumnCount(5)
         self.tab1.table_clickpeaks2.setRowCount(10)
         self.tab1.table_clickpeaks2.move(50, 570)
         self.tab1.table_clickpeaks2.setMinimumSize(1000, 350)
         # self.tab1.table_clickpeaks.
-        self.tab1.table_clickpeaks2.setHorizontalHeaderLabels(['Element', 'Error', 'Intensity', 'Lifetime'])
+        self.tab1.table_clickpeaks2.setHorizontalHeaderLabels(['Element', 'Energy','Error', 'Intensity', 'Lifetime'])
         self.tab1.table_clickpeaks2.setColumnWidth(0, 175)
         self.tab1.table_clickpeaks2.setColumnWidth(1, 175)
         self.tab1.table_clickpeaks2.setColumnWidth(2, 175)
         self.tab1.table_clickpeaks2.setColumnWidth(3, 175)
+        self.tab1.table_clickpeaks2.setColumnWidth(4, 175)
+        self.tab1.table_clickpeaks2.cellClicked.connect(self.tab1_table_clickpeaks_gamma)
 
         #self.tab1.table_clickpeaks2.setFixedWidth(700)
         self.tab1.table_clickpeaks2.show()
@@ -280,6 +282,56 @@ class PlotWindow(QWidget):
         self.lines= []
         self.elementline = []
 
+    def tab1_table_clickpeaks_gamma(self, row, col):
+        print('in clickpeaks')
+        print(row, col)
+        # get Element
+        Ele = self.tab1.table_clickpeaks2.item(row, 0).text()
+        En = self.tab1.table_clickpeaks2.item(row, 1).text()
+
+        print('Ele', Ele)
+
+        if col == 0:  # plot all the lines from an element
+            print('ere')
+            # find all peaks for this element and plt vertical lines
+            res = getmatch.getmatchesgammas_clicked(Ele)
+            next_color = self.axs[0]._get_lines.get_next_color()
+            print('res', res)
+            for match in res:
+                print('match', match)
+                rowres = [match['Element'], match['Energy'], match['Intensity'],match['lifetime']]
+                print('rowres',rowres)
+                # print(len(self.axs))
+                for i in range(len(self.axs)):
+                    # print(i)
+                    self.axs[i].axvline(
+                        float(rowres[1]), color=next_color, linestyle='--', label=str(Ele))
+
+            self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
+            self.numoflines += 1
+            print('self.numoflines', self.numoflines)
+
+        if col == 1:  # plots just one transition
+            res = getmatch.getmatchesgammastrans_clicked(Ele,En)
+            #print('res',res)
+            for match in res:
+                #print('match', match)
+                rowres = [match['Element'], match['Energy'], match['Intensity'],match['lifetime']]
+                #print('rowres', rowres)
+                #print('rowres[1]', rowres[1])
+                for i in range(len(self.axs)):
+                    #print(i)
+                    self.axs[i].axvline(
+                        float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--')
+            self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
+            self.numoflines += 1
+
+        # add search for peaks in col 0
+        # plot of one peak if col 1
+
+        print()
+        self.fig.canvas.draw()
+
     def tab1_table_clickpeaks_sec(self, row, col):
         print('hello')
         print(row,col)
@@ -293,6 +345,7 @@ class PlotWindow(QWidget):
             # find all peaks for this element and plt vertical lines
             res = getmatch.get_matches_Element_PrimorSec(Ele,'Secondary')
             print('res',res)
+            next_color = self.axs[0]._get_lines.get_next_color()
             for match in res:
                 print('match', match)
                 rowres = [match['element'], match['energy'], match['transition']]
@@ -301,7 +354,7 @@ class PlotWindow(QWidget):
                 for i in range(len(self.axs)):
                     #print(i)
                     self.axs[i].axvline(
-                            float(rowres[1]), color='red', linestyle='--', label=Ele)
+                            float(rowres[1]), color=next_color, linestyle='--', label=Ele)
 
 
             self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
@@ -319,7 +372,7 @@ class PlotWindow(QWidget):
                 for i in range(len(self.axs)):
                     print(i)
                     self.axs[i].axvline(
-                        float(rowres[1]), color='red', linestyle='--')
+                        float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--')
             self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
             self.numoflines += 1
 
@@ -347,12 +400,13 @@ class PlotWindow(QWidget):
             for match in res:
                 print('match', match)
                 rowres = [match['element'], match['energy'], match['transition']]
+                next_color = self.axs[0]._get_lines.get_next_color()
                 #print('rowres[1]',rowres[1])
                 #print(len(self.axs))
                 for i in range(len(self.axs)):
                     #print(i)
                     self.axs[i].axvline(
-                            float(rowres[1]), color='red', linestyle='--', label=Ele)
+                            float(rowres[1]), color=next_color, linestyle='--', label=Ele)
 
 
             self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
@@ -370,7 +424,7 @@ class PlotWindow(QWidget):
                 for i in range(len(self.axs)):
                     print(i)
                     self.axs[i].axvline(
-                        float(rowres[1]), color='red', linestyle='--')
+                        float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--')
             self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
             self.numoflines += 1
 
@@ -414,16 +468,17 @@ class PlotWindow(QWidget):
         if col == 0: # plot all the lines from an element
             # find all peaks for this element and plt vertical lines
             res = getmatch.get_matches_Element(Ele)
-            print('res',res)
+            #print('res',res)
             for match in res:
-                print('match', match)
+                #print('match', match)
                 rowres = [match['element'], match['energy'], match['transition']]
-                print('rowres[1]',rowres[1])
-                print(len(self.axs))
+                #print('rowres[1]',rowres[1])
+                #print(len(self.axs))
+                next_color = self.axs[0]._get_lines.get_next_color()
                 for i in range(len(self.axs)):
-                    print(i)
+                    #print(i)
                     self.axs[i].axvline(
-                            float(rowres[1]), color='red', linestyle='--', label=Ele)
+                            float(rowres[1]), color=next_color, linestyle='--', label=Ele)
 
 
             self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
@@ -441,7 +496,7 @@ class PlotWindow(QWidget):
                 for i in range(len(self.axs)):
                     print(i)
                     self.axs[i].axvline(
-                        float(rowres[1]), color='red', linestyle='--')
+                        float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--')
             self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
             self.numoflines += 1
 
@@ -694,10 +749,13 @@ class PlotWindow(QWidget):
 
                             self.tab1.table_clickpeaks2.setItem(i, 0, QTableWidgetItem(row[0].strip()))
                             self.tab1.table_clickpeaks2.setItem(i, 1, QTableWidgetItem(
-                                str("{:.2f}".format(row[2])).strip()))
+                                str("{:.2f}".format(row[1])).strip()))
+
                             self.tab1.table_clickpeaks2.setItem(i, 2, QTableWidgetItem(
+                                str("{:.2f}".format(row[2])).strip()))
+                            self.tab1.table_clickpeaks2.setItem(i, 3, QTableWidgetItem(
                                 "{:.2f}".format(100.0*float(row[3]))))
-                            self.tab1.table_clickpeaks2.setItem(i, 3, QTableWidgetItem(row[4]))
+                            self.tab1.table_clickpeaks2.setItem(i, 4, QTableWidgetItem(row[4]))
 
                             i += 1
 
