@@ -1,32 +1,17 @@
 import matplotlib.pyplot as plt
-#from ui_EfficiencyUI import Ui_EfficienyCorrection
 from matplotlib.backend_bases import MouseButton
-from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtWidgets import (
-    QAction,
-    QApplication,
     QCheckBox,
     QLabel,
-    QMainWindow,
-    QStatusBar,
-    QToolBar,
     QPushButton,
-    QStackedLayout,
     QVBoxLayout,
     QWidget,
-    QMenuBar,
-    QMenu,
-    QHBoxLayout,
     QLineEdit,
-    QFileDialog,
-    QMessageBox,
     QTableWidget,
     QTableWidgetItem,
     QTabWidget,
     QComboBox,
-    QGridLayout,
 )
-from PyQt5.QtGui import QPalette, QColor, QCloseEvent, QFont
 import getmatch
 import Plot_Spectra
 import FindPeaks
@@ -34,15 +19,16 @@ import SortMatch
 import time
 import globals
 
+
 class PlotWindow(QWidget):
     """
         This "window" is a QWidget. If it has no parent, it
         will appear as a free-floating window as we want.
         """
 
-    def __init__(self, parent = None):
-        super(PlotWindow,self).__init__(parent)
-        #label = QLabel("Plot Window ", self)
+    def __init__(self, parent=None):
+        super(PlotWindow, self).__init__(parent)
+        # label = QLabel("Plot Window ", self)
 
         self.resize(1200, 1100)
         self.setMinimumSize(1200,1100)
@@ -505,32 +491,30 @@ class PlotWindow(QWidget):
                 self.numoflines += 1
                 print('self.numoflines', self.numoflines)
                 self.plt.legend()
+
+            if col == 1: # plots just one transition
+                res = getmatch.get_matches_Trans(Ele,Trans)
+                print(res)
+                for match in res:
+                    print('match', match)
+                    rowres = [match['element'], match['energy'], match['transition']]
+                    print('rowres[1]',rowres[1])
+                    for i in range(len(self.axs)):
+                        print(i)
+                        self.axs[i].axvline(
+                            float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
+                self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
+                self.numoflines += 1
+
+            # add search for peaks in col 0
+            # plot of one peak if col 1
+
+            print()
+            self.fig.canvas.draw()
         except:
             temp = 1
         return
 
-
-
-
-        if col == 1: # plots just one transition
-            res = getmatch.get_matches_Trans(Ele,Trans)
-            print(res)
-            for match in res:
-                print('match', match)
-                rowres = [match['element'], match['energy'], match['transition']]
-                print('rowres[1]',rowres[1])
-                for i in range(len(self.axs)):
-                    print(i)
-                    self.axs[i].axvline(
-                        float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
-            self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
-            self.numoflines += 1
-
-        # add search for peaks in col 0
-        # plot of one peak if col 1
-
-        print()
-        self.fig.canvas.draw()
 
     def useDef_onClicked(self):
         print('hello ')
