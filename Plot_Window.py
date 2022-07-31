@@ -283,207 +283,233 @@ class PlotWindow(QWidget):
         self.elementline = []
 
     def tab1_table_clickpeaks_gamma(self, row, col):
-        print('in clickpeaks')
-        print(row, col)
-        # get Element
-        Ele = self.tab1.table_clickpeaks2.item(row, 0).text()
-        En = self.tab1.table_clickpeaks2.item(row, 1).text()
 
-        print('Ele', Ele)
+        try:
+            print('in clickpeaks')
+            print(row, col)
+            # get Element
+            Ele = self.tab1.table_clickpeaks2.item(row, 0).text()
+            En = self.tab1.table_clickpeaks2.item(row, 1).text()
 
-        if col == 0:  # plot all the lines from an element
-            print('ere')
-            # find all peaks for this element and plt vertical lines
-            res = getmatch.getmatchesgammas_clicked(Ele)
-            next_color = self.axs[0]._get_lines.get_next_color()
-            print('res', res)
-            for match in res:
-                print('match', match)
-                rowres = [match['Element'], match['Energy'], match['Intensity'],match['lifetime']]
-                print('rowres',rowres)
-                # print(len(self.axs))
-                for i in range(len(self.axs)):
-                    # print(i)
-                    self.axs[i].axvline(
-                        float(rowres[1]), color=next_color, linestyle='--', label=str(Ele))
+            print('Ele', Ele)
 
-            self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
-            self.numoflines += 1
-            print('self.numoflines', self.numoflines)
+            if col == 0:  # plot all the lines from an element
+                print('ere')
+                # find all peaks for this element and plt vertical lines
+                res = getmatch.getmatchesgammas_clicked(Ele)
+                next_color = self.axs[0]._get_lines.get_next_color()
+                print('res', res)
+                for match in res:
+                    print('match', match)
+                    rowres = [match['Element'], match['Energy'], match['Intensity'],match['lifetime']]
+                    print('rowres',rowres)
+                    # print(len(self.axs))
+                    for i in range(len(self.axs)):
+                        # print(i)
+                        self.axs[i].axvline(
+                            float(rowres[1]), color=next_color, linestyle='--', label=str(Ele))
 
-        if col == 1:  # plots just one transition
-            res = getmatch.getmatchesgammastrans_clicked(Ele,En)
-            #print('res',res)
-            for match in res:
-                #print('match', match)
-                rowres = [match['Element'], match['Energy'], match['Intensity'],match['lifetime']]
-                #print('rowres', rowres)
-                #print('rowres[1]', rowres[1])
-                for i in range(len(self.axs)):
-                    #print(i)
-                    self.axs[i].axvline(
-                        float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
-            self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
-            self.numoflines += 1
+                self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
+                self.numoflines += 1
+                print('self.numoflines', self.numoflines)
 
-        # add search for peaks in col 0
-        # plot of one peak if col 1
+            if col == 1:  # plots just one transition
+                res = getmatch.getmatchesgammastrans_clicked(Ele,En)
+                #print('res',res)
+                for match in res:
+                    #print('match', match)
+                    rowres = [match['Element'], match['Energy'], match['Intensity'],match['lifetime']]
+                    #print('rowres', rowres)
+                    #print('rowres[1]', rowres[1])
+                    for i in range(len(self.axs)):
+                        #print(i)
+                        self.axs[i].axvline(
+                            float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
+                self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
+                self.numoflines += 1
 
-        print()
-        self.fig.canvas.draw()
+            # add search for peaks in col 0
+            # plot of one peak if col 1
+
+            print()
+            self.fig.canvas.draw()
+        except:
+            temp=1
+
+        return
 
     def tab1_table_clickpeaks_sec(self, row, col):
-        print('hello')
-        print(row,col)
-        # get Element
-        Ele = self.tab1.table_clickpeaks_sec.item(row,0).text()
-        Trans = self.tab1.table_clickpeaks_sec.item(row, 1).text()
 
-        print('Ele', Ele)
-        if col == 0: # plot all the lines from an element
-            print('ere')
-            # find all peaks for this element and plt vertical lines
-            res = getmatch.get_matches_Element_PrimorSec(Ele,'Secondary')
-            print('res',res)
-            next_color = self.axs[0]._get_lines.get_next_color()
-            for match in res:
-                print('match', match)
-                rowres = [match['element'], match['energy'], match['transition']]
-                #print('rowres[1]',rowres[1])
-                #print(len(self.axs))
-                for i in range(len(self.axs)):
-                    #print(i)
-                    self.axs[i].axvline(
-                            float(rowres[1]), color=next_color, linestyle='--', label=Ele)
+        try:
+            print('hello')
+            print(row,col)
+            # get Element
+            Ele = self.tab1.table_clickpeaks_sec.item(row,0).text()
+            Trans = self.tab1.table_clickpeaks_sec.item(row, 1).text()
 
-
-            self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
-            self.numoflines += 1
-            print('self.numoflines', self.numoflines)
+            print('Ele', Ele)
+            if col == 0: # plot all the lines from an element
+                print('ere')
+                # find all peaks for this element and plt vertical lines
+                res = getmatch.get_matches_Element_PrimorSec(Ele,'Secondary')
+                print('res',res)
+                next_color = self.axs[0]._get_lines.get_next_color()
+                for match in res:
+                    print('match', match)
+                    rowres = [match['element'], match['energy'], match['transition']]
+                    #print('rowres[1]',rowres[1])
+                    #print(len(self.axs))
+                    for i in range(len(self.axs)):
+                        #print(i)
+                        self.axs[i].axvline(
+                                float(rowres[1]), color=next_color, linestyle='--', label=Ele)
 
 
-        if col == 1: # plots just one transition
-            res = getmatch.get_matches_Trans(Ele,Trans)
-            print(res)
-            for match in res:
-                print('match', match)
-                rowres = [match['element'], match['energy'], match['transition']]
-                print('rowres[1]',rowres[1])
-                for i in range(len(self.axs)):
-                    print(i)
-                    self.axs[i].axvline(
-                        float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--', label = Ele)
-            self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
-            self.numoflines += 1
+                self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
+                self.numoflines += 1
+                print('self.numoflines', self.numoflines)
 
-        # add search for peaks in col 0
-        # plot of one peak if col 1
 
-        print()
-        self.fig.canvas.draw()
+            if col == 1: # plots just one transition
+                res = getmatch.get_matches_Trans(Ele,Trans)
+                print(res)
+                for match in res:
+                    print('match', match)
+                    rowres = [match['element'], match['energy'], match['transition']]
+                    print('rowres[1]',rowres[1])
+                    for i in range(len(self.axs)):
+                        print(i)
+                        self.axs[i].axvline(
+                            float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--', label = Ele)
+                self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
+                self.numoflines += 1
+
+            # add search for peaks in col 0
+            # plot of one peak if col 1
+
+            print()
+            self.fig.canvas.draw()
+        except:
+            temp = 1
+        return
 
 
 
     def tab1_table_clickpeaks_prim(self, row, col):
-        print('hello')
-        print(row,col)
-        # get Element
-        Ele = self.tab1.table_clickpeaks_prim.item(row,0).text()
-        Trans = self.tab1.table_clickpeaks_prim.item(row, 1).text()
+        try:
 
-        print('Ele', Ele)
-        if col == 0: # plot all the lines from an element
-            print('ere')
-            # find all peaks for this element and plt vertical lines
-            res = getmatch.get_matches_Element_PrimorSec(Ele,'Primary')
-            print('res',res)
-            for match in res:
-                print('match', match)
-                rowres = [match['element'], match['energy'], match['transition']]
-                next_color = self.axs[0]._get_lines.get_next_color()
-                #print('rowres[1]',rowres[1])
-                #print(len(self.axs))
-                for i in range(len(self.axs)):
-                    #print(i)
-                    self.axs[i].axvline(
-                            float(rowres[1]), color=next_color, linestyle='--', label=Ele)
+            print('hello')
+            print(row,col)
+            # get Element
+            Ele = self.tab1.table_clickpeaks_prim.item(row,0).text()
+            Trans = self.tab1.table_clickpeaks_prim.item(row, 1).text()
 
-
-            self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
-            self.numoflines += 1
-            print('self.numoflines', self.numoflines)
+            print('Ele', Ele)
+            if col == 0: # plot all the lines from an element
+                print('ere')
+                # find all peaks for this element and plt vertical lines
+                res = getmatch.get_matches_Element_PrimorSec(Ele,'Primary')
+                print('res',res)
+                for match in res:
+                    print('match', match)
+                    rowres = [match['element'], match['energy'], match['transition']]
+                    next_color = self.axs[0]._get_lines.get_next_color()
+                    #print('rowres[1]',rowres[1])
+                    #print(len(self.axs))
+                    for i in range(len(self.axs)):
+                        #print(i)
+                        self.axs[i].axvline(
+                                float(rowres[1]), color=next_color, linestyle='--', label=Ele)
 
 
-        if col == 1: # plots just one transition
-            res = getmatch.get_matches_Trans(Ele,Trans)
-            print(res)
-            for match in res:
-                print('match', match)
-                rowres = [match['element'], match['energy'], match['transition']]
-                print('rowres[1]',rowres[1])
-                for i in range(len(self.axs)):
-                    print(i)
-                    self.axs[i].axvline(
-                        float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--', label= Ele)
-            self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
-            self.numoflines += 1
+                self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
+                self.numoflines += 1
+                print('self.numoflines', self.numoflines)
 
-        # add search for peaks in col 0
-        # plot of one peak if col 1
 
-        print()
-        self.fig.canvas.draw()
+            if col == 1: # plots just one transition
+                res = getmatch.get_matches_Trans(Ele,Trans)
+                print(res)
+                for match in res:
+                    print('match', match)
+                    rowres = [match['element'], match['energy'], match['transition']]
+                    print('rowres[1]',rowres[1])
+                    for i in range(len(self.axs)):
+                        print(i)
+                        self.axs[i].axvline(
+                            float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--', label= Ele)
+                self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
+                self.numoflines += 1
+
+            # add search for peaks in col 0
+            # plot of one peak if col 1
+
+            print()
+            self.fig.canvas.draw()
+        except:
+            temp = 1
+        return
 
 
 
     def remove_line(self, row, col):
-        print('row col', row, col)
+        try:
+            print('row col', row, col)
 
-        Ele = self.tab1.table_plotted_lines.item(row,col).text()
-        print('Ele', Ele)
-        print('0',len(self.axs[0].lines))
-        print('1',len(self.axs[1].lines))
+            Ele = self.tab1.table_plotted_lines.item(row,col).text()
+            print('Ele', Ele)
+            print('0',len(self.axs[0].lines))
+            print('1',len(self.axs[1].lines))
 
-        for i in range(len(self.axs)):
-            #print(i)
-            line = [line for line in self.axs[i].lines if line.get_label() == Ele]
+            for i in range(len(self.axs)):
+                #print(i)
+                line = [line for line in self.axs[i].lines if line.get_label() == Ele]
 
-            #print(line)
-            for j in range(len(line)):
-                self.axs[i].lines.remove(line[j])
-            self.fig.canvas.draw()
-        print('0',len(self.axs[0].lines))
-        print('1',len(self.axs[1].lines))
+                #print(line)
+                for j in range(len(line)):
+                    self.axs[i].lines.remove(line[j])
+                self.fig.canvas.draw()
+            print('0',len(self.axs[0].lines))
+            print('1',len(self.axs[1].lines))
+        except:
+            temp=1
         return
 
 
     def tab1_table_clickpeaks(self, row, col):
-        print('hello')
-        print(row,col)
-        # get Element
-        Ele = self.tab1.table_clickpeaks.item(row,0).text()
-        Trans = self.tab1.table_clickpeaks.item(row, 1).text()
+        try:
+            print('hello')
+            print(row,col)
+            # get Element
+            Ele = self.tab1.table_clickpeaks.item(row,0).text()
+            Trans = self.tab1.table_clickpeaks.item(row, 1).text()
 
-        print('Ele', Ele)
-        if col == 0: # plot all the lines from an element
-            # find all peaks for this element and plt vertical lines
-            res = getmatch.get_matches_Element(Ele)
-            #print('res',res)
-            for match in res:
-                #print('match', match)
-                rowres = [match['element'], match['energy'], match['transition']]
-                #print('rowres[1]',rowres[1])
-                #print(len(self.axs))
+            print('Ele', Ele)
+            if col == 0: # plot all the lines from an element
+                # find all peaks for this element and plt vertical lines
+                res = getmatch.get_matches_Element(Ele)
+                #print('res',res)
                 next_color = self.axs[0]._get_lines.get_next_color()
-                for i in range(len(self.axs)):
-                    #print(i)
-                    self.axs[i].axvline(
-                            float(rowres[1]), color=next_color, linestyle='--', label=Ele)
+                for match in res:
+                    #print('match', match)
+                    rowres = [match['element'], match['energy'], match['transition']]
+                    #print('rowres[1]',rowres[1])
+                    #print(len(self.axs))
+                    for i in range(len(self.axs)):
+                        #print(i)
+                        self.axs[i].axvline(
+                                float(rowres[1]), color=next_color, linestyle='--', label=Ele)
 
 
-            self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
-            self.numoflines += 1
-            print('self.numoflines', self.numoflines)
+                self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
+                self.numoflines += 1
+                print('self.numoflines', self.numoflines)
+                self.plt.legend()
+        except:
+            temp = 1
+        return
+
+
 
 
         if col == 1: # plots just one transition
