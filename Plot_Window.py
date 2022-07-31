@@ -322,7 +322,7 @@ class PlotWindow(QWidget):
                 for i in range(len(self.axs)):
                     #print(i)
                     self.axs[i].axvline(
-                        float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--')
+                        float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
             self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
             self.numoflines += 1
 
@@ -372,7 +372,7 @@ class PlotWindow(QWidget):
                 for i in range(len(self.axs)):
                     print(i)
                     self.axs[i].axvline(
-                        float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--')
+                        float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--', label = Ele)
             self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
             self.numoflines += 1
 
@@ -424,7 +424,7 @@ class PlotWindow(QWidget):
                 for i in range(len(self.axs)):
                     print(i)
                     self.axs[i].axvline(
-                        float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--')
+                        float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--', label= Ele)
             self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
             self.numoflines += 1
 
@@ -496,7 +496,7 @@ class PlotWindow(QWidget):
                 for i in range(len(self.axs)):
                     print(i)
                     self.axs[i].axvline(
-                        float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--')
+                        float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
             self.tab1.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
             self.numoflines += 1
 
