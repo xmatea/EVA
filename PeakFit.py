@@ -209,15 +209,24 @@ class PeakFit(QWidget):
             if col == 1 or col == 3 or col == 5:
                 print('error column')
                 try:
-                    errorcontents = self.tab1.table_clickpeaks.item(row,col).text()
+                    temp = self.tab1.table_clickpeaks.item(row, col-1).text()
+                    try:
+                        errorcontents = self.tab1.table_clickpeaks.item(row, col).text()
+                        if errorcontents == 'fixed' and row >= 1 and col == 5:
+                            self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('shared'))
+                        elif errorcontents == 'shared':
+                            self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('1.0'))
+                        else:
+                            self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('fixed'))
+                        if errorcontents == 'fixed' and col == 1:
+                            self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('1.0'))
+                        if errorcontents == 'fixed' and col ==3:
+                            self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('1.0'))
+
+                    except:
+                        self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('1.0'))
                 except:
-                    errorcontents = '1.0'
-                if errorcontents == 'fixed':
-                    self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('1.0'))
-                else:
-                    self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('fixed'))
-
-
+                    temp = 1
         except:
             temp = 1
 
@@ -578,9 +587,34 @@ class PeakFit(QWidget):
                 mod = mod + this_mod
 
         backgrd = QuadraticModel()
-        backgrd.set_param_hint('a', value=back[2])
-        backgrd.set_param_hint('b', value=back[1])
-        backgrd.set_param_hint('c', value=back[0])
+        # get fixed or not
+        try:
+            if self.tab1.table_poly.item(0,1).text() == 'fixed':
+                avary = False
+            else:
+                avary = True
+        except:
+            avary = True
+
+        try:
+            if self.tab1.table_poly.item(0, 3).text() == 'fixed':
+                bvary = False
+            else:
+                bvary = True
+        except:
+            avary = True
+
+        try:
+            if self.tab1.table_poly.item(0, 5).text() == 'fixed':
+                cvary = False
+            else:
+                cvary = True
+        except:
+            cvary = True
+
+        backgrd.set_param_hint('a', value=back[2], vary=avary)
+        backgrd.set_param_hint('b', value=back[1], vary=bvary)
+        backgrd.set_param_hint('c', value=back[0], vary=cvary)
 
         mod = mod + backgrd
 
@@ -633,12 +667,26 @@ class PeakFit(QWidget):
             str("{:.2f}".format(result.best_values["b"]))))
         self.tab1.table_poly.setItem(0, 4, QTableWidgetItem(
             str("{:.3f}".format(result.best_values["a"]))))
-        self.tab1.table_poly.setItem(0, 1, QTableWidgetItem(
-            str("{:.2f}".format(result.params["c"].stderr))))
-        self.tab1.table_poly.setItem(0, 3, QTableWidgetItem(
-            str("{:.2f}".format(result.params["b"].stderr))))
-        self.tab1.table_poly.setItem(0, 5, QTableWidgetItem(
-            str("{:.3f}".format(result.params["a"].stderr))))
+        if cvary:
+            try:
+                self.tab1.table_poly.setItem(0, 1, QTableWidgetItem(
+                    str("{:.2f}".format(result.params["c"].stderr))))
+            except:
+                temp =1
+        if bvary:
+            try:
+                self.tab1.table_poly.setItem(0, 3, QTableWidgetItem(
+                    str("{:.2f}".format(result.params["b"].stderr))))
+            except:
+                temp = 1
+
+        if avary:
+            try:
+                self.tab1.table_poly.setItem(0, 5, QTableWidgetItem(
+                    str("{:.3f}".format(result.params["a"].stderr))))
+            except:
+                temp = 1
+
 
         #plot results
 
