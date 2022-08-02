@@ -212,19 +212,34 @@ class PeakFit(QWidget):
                     temp = self.tab1.table_clickpeaks.item(row, col-1).text()
                     try:
                         errorcontents = self.tab1.table_clickpeaks.item(row, col).text()
+
+                        # Toggle peak width between shared, fixed and free
                         if errorcontents == 'fixed' and row >= 1 and col == 5:
                             self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('shared'))
-                        elif errorcontents == 'shared':
+                        elif errorcontents == 'shared' and row >= 1 and col == 5:
                             self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('1.0'))
-                        else:
+                        elif errorcontents != 'fixed' and errorcontents != 'shared' and row >= 1 and col == 5:
                             self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('fixed'))
+
+                        if errorcontents == 'fixed' and row == 0 and col == 5:
+                            self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('1.0'))
+                        elif errorcontents != 'fixed' and row == 0 and col == 5:
+                            self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('fixed'))
+
+                        #Toggle peak position and peak height between fixed and free
+
                         if errorcontents == 'fixed' and col == 1:
                             self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('1.0'))
-                        if errorcontents == 'fixed' and col ==3:
+                        elif errorcontents != 'fixed' and col == 1:
+                            self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('fixed'))
+                        if errorcontents == 'fixed' and col == 3:
                             self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('1.0'))
+                        elif errorcontents != 'fixed' and col == 3:
+                            self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('fixed'))
 
                     except:
-                        self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('1.0'))
+                        print('ummm')
+                        self.tab1.table_clickpeaks.setItem(row, col, QTableWidgetItem('fixed'))
                 except:
                     temp = 1
         except:
@@ -515,8 +530,11 @@ class PeakFit(QWidget):
 
         # get information from the table and store in arrays
         pp = []
+        pp_status = []
         ph = []
+        ph_status = []
         pw = []
+        pw_status = []
         EMin = float(self.val_fit_XMin.text())
         EMax = float(self.val_fit_XMax.text())
         pp_len = 0
@@ -524,6 +542,15 @@ class PeakFit(QWidget):
             try:
                 print(self.tab1.table_clickpeaks.item(i, 0).text())
                 pp.append(float(self.tab1.table_clickpeaks.item(i, 0).text()))
+                try:
+                    if self.tab1.table_clickpeaks.item(i,1).text() == 'fixed':
+                        pp_status.append(False)
+                    else:
+                        pp_status.append(True)
+                except:
+                    pp_status.append(True)
+
+
                 pp_len += 1
             except:
                 #print('end of line',i)
@@ -542,7 +569,25 @@ class PeakFit(QWidget):
             for i in range(pp_len+1):
                 try:
                     ph.append(float(self.tab1.table_clickpeaks.item(i, 2).text()))
+                    try:
+                        if self.tab1.table_clickpeaks.item(i, 3).text() == 'fixed':
+                            ph_status.append(False)
+                        else:
+                            ph_status.append(True)
+                    except:
+                        ph_status.append(True)
+
                     pw.append(float(self.tab1.table_clickpeaks.item(i, 4).text()))
+                    try:
+                        if self.tab1.table_clickpeaks.item(i, 5).text() == 'fixed':
+                            pw_status.append(False)
+                        elif self.tab1.table_clickpeaks.item(i,5).text() == 'shared':
+                            pw_status.append('shared')
+                        else:
+                            pw_status.append(True)
+                    except:
+                        pw_status.append(True)
+
                 except:
                     temp = 1
 
@@ -569,22 +614,48 @@ class PeakFit(QWidget):
 
         print('data trimmed')
 
-        def make_model(pp_len, pp, ph, pw, num, EMin, EMax):
+        def make_model(pp_len, pp, ph, pw, num, EMin, EMax, pp_status, ph_status, pw_status):
             pref = "f{0}_".format(num)
             model = GaussianModel(prefix=pref)
-            model.set_param_hint(pref+'amplitude', value=ph[num], min =0)
-            model.set_param_hint(pref+'center', value=pp[num], min = EMin, max = EMax)
-            model.set_param_hint(pref+'sigma', value=pw[num], min = 0.01, max = 3.0)
+            print(ph_status)
+            print(ph_status[num])
+            print(pp_status)
+            print(pp_status[num])
+            print(pw_status)
+            print(pw_status[num])
+
+            model.set_param_hint(pref+'amplitude', value=ph[num], min=0, vary=ph_status[num])
+            print('here')
+            model.set_param_hint(pref+'center', value=pp[num], min = EMin, max=EMax, vary=pp_status[num])
+            print('here2')
+            if pw_status[num] == True:
+                print('vary pw')
+                model.set_param_hint(pref+'sigma', value=pw[num], min = 0.01, max = 3.0 ,vary=True)
+            elif pw_status[num] == 'shared':
+                # need to add sharing
+                #model.set_param_hint(pref+'sigma', value=pw[num], min = 0.01, max = 3.0, vary=True)
+                print('sharing pw')
+                model.set_param_hint(pref+'sigma', expr='f0_sigma')
+            elif pw_status[num] == False:
+                print('fixing pw')
+                model.set_param_hint(pref+'sigma', value=pw[num], min = 0.01, max = 3.0, vary=False)
+
+
+            print('all good')
             return model
+
+        print('makin model')
 
         mod = None
 
         for i in range(pp_len):
-            this_mod = make_model(pp_len, pp, ph, pw, i, EMin, EMax)
+            this_mod = make_model(pp_len, pp, ph, pw, i, EMin, EMax, pp_status, ph_status, pw_status)
             if mod is None:
                 mod = this_mod
             else:
                 mod = mod + this_mod
+
+        print('made G')
 
         backgrd = QuadraticModel()
         # get fixed or not
@@ -602,7 +673,7 @@ class PeakFit(QWidget):
             else:
                 bvary = True
         except:
-            avary = True
+            bvary = True
 
         try:
             if self.tab1.table_poly.item(0, 5).text() == 'fixed':
@@ -616,7 +687,10 @@ class PeakFit(QWidget):
         backgrd.set_param_hint('b', value=back[1], vary=bvary)
         backgrd.set_param_hint('c', value=back[0], vary=cvary)
 
+        print('made back')
+
         mod = mod + backgrd
+        print('off to fit')
 
 
         result = mod.fit(datay, x=datax, weights=1.0/np.sqrt(datay))
@@ -649,14 +723,18 @@ class PeakFit(QWidget):
                 self.tab1.table_clickpeaks.setItem(i, 4, QTableWidgetItem(
                     str("{:.3f}".format(result.best_values[pref+"sigma"]))))
 
-                self.tab1.table_clickpeaks.setItem(i, 1, QTableWidgetItem(
-                    str("{:.3f}".format(result.params[pref+"center"].stderr))))
-                self.tab1.table_clickpeaks.setItem(i, 3, QTableWidgetItem(
-                    str("{:.1f}".format(result.params[pref+"amplitude"].stderr))))
-                self.tab1.table_clickpeaks.setItem(i, 5, QTableWidgetItem(
-                    str("{:.3f}".format(result.params[pref+"sigma"].stderr))))
 
+                if pp_status[i] == True:
+                    self.tab1.table_clickpeaks.setItem(i, 1, QTableWidgetItem(
+                        str("{:.3f}".format(result.params[pref+"center"].stderr))))
 
+                if ph_status[i] == True:
+                    self.tab1.table_clickpeaks.setItem(i, 3, QTableWidgetItem(
+                        str("{:.1f}".format(result.params[pref+"amplitude"].stderr))))
+
+                if pw_status[i] == True:
+                    self.tab1.table_clickpeaks.setItem(i, 5, QTableWidgetItem(
+                        str("{:.3f}".format(result.params[pref + "sigma"].stderr))))
 
             except:
                 temp = 1
