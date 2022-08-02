@@ -629,25 +629,18 @@ class PeakFit(QWidget):
             model.set_param_hint(pref+'center', value=pp[num], min = EMin, max=EMax, vary=pp_status[num])
             print('here2')
             if pw_status[num] == True:
-                print('vary pw')
                 model.set_param_hint(pref+'sigma', value=pw[num], min = 0.01, max = 3.0 ,vary=True)
             elif pw_status[num] == 'shared':
                 # need to add sharing
                 #model.set_param_hint(pref+'sigma', value=pw[num], min = 0.01, max = 3.0, vary=True)
-                print('sharing pw')
                 model.set_param_hint(pref+'sigma', expr='f0_sigma')
             elif pw_status[num] == False:
-                print('fixing pw')
                 model.set_param_hint(pref+'sigma', value=pw[num], min = 0.01, max = 3.0, vary=False)
-
-
-            print('all good')
             return model
 
-        print('makin model')
+        # setting up the model
 
         mod = None
-
         for i in range(pp_len):
             this_mod = make_model(pp_len, pp, ph, pw, i, EMin, EMax, pp_status, ph_status, pw_status)
             if mod is None:
@@ -655,7 +648,6 @@ class PeakFit(QWidget):
             else:
                 mod = mod + this_mod
 
-        print('made G')
 
         backgrd = QuadraticModel()
         # get fixed or not
@@ -687,11 +679,11 @@ class PeakFit(QWidget):
         backgrd.set_param_hint('b', value=back[1], vary=bvary)
         backgrd.set_param_hint('c', value=back[0], vary=cvary)
 
-        print('made back')
+        # final model
 
         mod = mod + backgrd
-        print('off to fit')
 
+        # fitting
 
         result = mod.fit(datay, x=datax, weights=1.0/np.sqrt(datay))
 
@@ -750,7 +742,7 @@ class PeakFit(QWidget):
                 self.tab1.table_poly.setItem(0, 1, QTableWidgetItem(
                     str("{:.2f}".format(result.params["c"].stderr))))
             except:
-                temp =1
+                temp = 1
         if bvary:
             try:
                 self.tab1.table_poly.setItem(0, 3, QTableWidgetItem(
