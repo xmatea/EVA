@@ -17,6 +17,7 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QTabWidget,
     QErrorMessage,
+    QFileDialog,
 )
 
 import globals
@@ -190,6 +191,21 @@ class PeakFit(QWidget):
 
         self.tab1.table_clickpeaks.show()
 
+        self.tab1.savebut = QPushButton(self.tab1)
+        self.tab1.savebut.setText('Save As')
+        self.tab1.savebut.move(150, 875)
+
+        self.tab1.savebut.clicked.connect(lambda: self.savefunction())
+        self.tab1.savebut.show()
+
+        self.tab1.loadbut = QPushButton(self.tab1)
+        self.tab1.loadbut.setText('Load')
+        self.tab1.loadbut.move(450, 875)
+        self.tab1.loadbut.clicked.connect(lambda : self.loadfunction())
+        self.tab1.loadbut.show()
+
+
+
 
 
         print('here')
@@ -201,6 +217,190 @@ class PeakFit(QWidget):
         print("return")
 
         self.show()
+
+    def loadfunction(self):
+        print('in load')
+        name = QFileDialog.getOpenFileName(self, 'Open a file', globals.workingdirectory,'All Files (*.*)')
+
+        print('here')
+        if name != ('', ''):
+            print("File path :", name[0])
+            file = open(name[0], 'r')
+            temp = file.readline()
+            print(temp)
+            EMin, EMax = file.readline().split(' ')
+            self.val_fit_XMin.setText(EMin)
+            self.val_fit_XMax.setText(EMax)
+            print(EMin,EMax)
+            temp = file.readline()
+            print(temp)
+            noguass = file.readline()
+            print(noguass)
+            temp = file.readline()
+            print(temp)
+            for i in range(int(noguass)):
+                pp, pp_status, ph, ph_status, pw, pw_status = file.readline().split(' ')
+                self.tab1.table_clickpeaks.setItem(i, 0, QTableWidgetItem(pp))
+
+                if pp_status == 'vary':
+                    self.tab1.table_clickpeaks.setItem(i, 1, QTableWidgetItem('1.0'))
+                else:
+                    self.tab1.table_clickpeaks.setItem(i, 1, QTableWidgetItem(pp_status))
+
+                self.tab1.table_clickpeaks.setItem(i, 2, QTableWidgetItem(ph))
+
+                if ph_status == 'vary':
+                    self.tab1.table_clickpeaks.setItem(i, 3, QTableWidgetItem('1.0'))
+                else:
+                    self.tab1.table_clickpeaks.setItem(i, 3, QTableWidgetItem(ph_status))
+
+                self.tab1.table_clickpeaks.setItem(i, 4, QTableWidgetItem(pw))
+
+                if pw_status == 'vary':
+                    self.tab1.table_clickpeaks.setItem(i, 5, QTableWidgetItem('1.0'))
+                else:
+                    self.tab1.table_clickpeaks.setItem(i, 5, QTableWidgetItem(pw_status))
+
+            temp = file.readline()
+            print(temp)
+            for i in range(3):
+                back, backstatus = file.readline().split()
+                print(back, backstatus)
+                self.tab1.table_poly.setItem(0, 2*i, QTableWidgetItem(back))
+                if backstatus == 'vary':
+                    self.tab1.table_poly.setItem(0, 2 * i+1, QTableWidgetItem('1.0'))
+                else:
+                    self.tab1.table_poly.setItem(0, 2 * i + 1, QTableWidgetItem('fixed'))
+
+            file.close()
+
+
+
+
+
+    def savefunction(self):
+        print('in save function')
+        name = QFileDialog.getSaveFileName(self, 'Save File', directory=globals.workingdirectory)
+
+        if name != ('', ''):
+            pp = []
+            pp_status = []
+            ph = []
+            ph_status = []
+            pw = []
+            pw_status = []
+            EMin = float(self.val_fit_XMin.text())
+            EMax = float(self.val_fit_XMax.text())
+            pp_len = 0
+            for i in range(int(self.tab1.table_clickpeaks.rowCount())):
+                try:
+                    print(self.tab1.table_clickpeaks.item(i, 0).text())
+                    pp.append(float(self.tab1.table_clickpeaks.item(i, 0).text()))
+                    try:
+                        if self.tab1.table_clickpeaks.item(i,1).text() == 'fixed':
+                            pp_status.append('fixed')
+                        else:
+                            pp_status.append('vary')
+                    except:
+                        pp_status.append('vary')
+
+
+                    pp_len += 1
+                except:
+                    #print('end of line',i)
+                    temp = 1
+
+            #checks reading the table
+
+            if pp_len == 0:
+                # pop up box to say no peaks in the table
+                error_message = QErrorMessage(self)
+                error_message.setWindowTitle("Peak Setup Error")
+                error_message.showMessage("Error: No peaks in the peak table")
+
+            else:
+                # fitting bit
+                for i in range(pp_len+1):
+                    try:
+                        ph.append(float(self.tab1.table_clickpeaks.item(i, 2).text()))
+                        try:
+                            if self.tab1.table_clickpeaks.item(i, 3).text() == 'fixed':
+                                ph_status.append('fixed')
+                            else:
+                                ph_status.append('vary')
+                        except:
+                            ph_status.append('vary')
+
+                        pw.append(float(self.tab1.table_clickpeaks.item(i, 4).text()))
+                        try:
+                            if self.tab1.table_clickpeaks.item(i, 5).text() == 'fixed':
+                                pw_status.append('fixed')
+                            elif self.tab1.table_clickpeaks.item(i,5).text() == 'shared':
+                                pw_status.append('shared')
+                            else:
+                                pw_status.append('vary')
+                        except:
+                            pw_status.append('vary')
+
+                    except:
+                        temp = 1
+
+                #get backgorund info
+                back = []
+                try:
+                    back.append(float(self.tab1.table_poly.item(0, 0).text()))
+                    back.append(float(self.tab1.table_poly.item(0, 2).text()))
+                    back.append(float(self.tab1.table_poly.item(0, 4).text()))
+                except:
+                    temp = 1
+
+            try:
+                if self.tab1.table_poly.item(0,1).text() == 'fixed':
+                    avary = 'fixed'
+                else:
+                    avary = 'vary'
+            except:
+                avary = 'vary'
+
+            try:
+                if self.tab1.table_poly.item(0, 3).text() == 'fixed':
+                    bvary = 'fixed'
+                else:
+                    bvary = 'vary'
+            except:
+                bvary = 'vary'
+
+            try:
+                if self.tab1.table_poly.item(0, 5).text() == 'fixed':
+                    cvary = 'fixed'
+                else:
+                    cvary = 'vary'
+            except:
+                cvary = 'vary'
+
+            print('got info')
+
+
+
+            print(name)
+            print(name[0])
+            print(globals.workingdirectory)
+            file = open(name[0], 'w')
+
+            file.write('Energy Range\n')
+            file.write(str(EMin)+' '+str(EMax)+'\n')
+            file.write('Number of Guassians\n')
+            file.write(str(pp_len)+'\n')
+            file.write('Gaussian Parameters\n')
+            for i in range(pp_len):
+                file.write(str(pp[i])+' '+str(pp_status[i] +
+                                              ' '+str(ph[i])+' '+str(ph_status[i]) +
+                                              ' '+str(pw[i])+' '+str(pw_status[i])+'\n'))
+            file.write('Background\n')
+            file.write(str(back[0])+' '+ avary+'\n')
+            file.write(str(back[1])+' '+ bvary+'\n')
+            file.write(str(back[2])+' '+ cvary+'\n')
+            file.close()
 
     def settinggaussian(self, row, col):
         try:
