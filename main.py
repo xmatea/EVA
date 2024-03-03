@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMainWindow
 import sys
 
 
-import WelcomeScreen as WS
+#import WelcomeScreen as WS
 import MainWindow as MW
 
 import loadsettings as ls
