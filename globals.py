@@ -1,5 +1,6 @@
 import array as arr
-workingdirectory='C:/Users/adh37/OneDrive - Science and Technology Facilities Council/Data/Negative Muons/Experiments/Wallace Steel'
+scn_res = 2 # 1 high res 2 normal
+workingdirectory = 'C:/Users/adh37/OneDrive - Science and Technology Facilities Council/Data/Negative Muons/Experiments/Wallace Steel'
 dataset_GE1 = arr.array('i',[])
 dataset_GE2 = arr.array('i',[])
 dataset_GE3 = arr.array('i',[])

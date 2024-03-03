@@ -70,11 +70,18 @@ class MainWindow(QWidget):
         self.wp = None
         globals.we = None
 
+        if globals.scn_res == 1:
+            self.resize(1000, 500)
+        elif globals.scn_res == 2:
+            self.resize(700, 300)
+        else:
+            self.resize(1000,500)
 
-        self.resize(1000, 500)
+
         self.setWindowTitle("Elemental Analysis")
 
         # setting up the menu bar'''
+
 
         bar = QMenuBar(self)
         file = bar.addMenu('File')
@@ -183,66 +190,135 @@ class MainWindow(QWidget):
 
         self.label_RN = QLabel(self)
         self.label_RN.setText("Run Number                                            ")
-        self.label_RN.move(50, 80)
+        if globals.scn_res == 1:
+            self.label_RN.move(50, 80)
+        elif globals.scn_res == 2:
+            self.label_RN.move(20, 50)
+        else:
+            self.label_RN.move(50, 80)
+
         self.label_RN.show()
 
         self.label_Com = QLabel(self)
         self.label_Com.setText("Comment " +
              "                                                                                                  ")
-        self.label_Com.move(50, 130)
+        if globals.scn_res == 1:
+            self.label_Com.move(50, 130)
+        elif globals.scn_res == 2:
+            self.label_Com.move(20, 75)
+        else:
+            self.label_Com.move(50, 130)
         self.label_Com.show()
 
         self.label_Events = QLabel(self)
         self.label_Events.setText("Events                                            ")
-        self.label_Events.move(50, 180)
+        if globals.scn_res == 1:
+            self.label_Events.move(50, 180)
+        elif globals.scn_res == 2:
+            self.label_Events.move(20, 100)
+        else:
+            self.label_Events.move(50, 180)
+
         self.label_Events.show()
 
         self.label_Start = QLabel(self)
         self.label_Start.setText("Start Time                                            ")
-        self.label_Start.move(50, 230)
+        if globals.scn_res == 1:
+            self.label_Start.move(50, 230)
+        elif globals.scn_res == 2:
+            self.label_Start.move(20, 125)
+        else:
+            self.label_Start.move(50, 230)
+
         self.label_Start.show()
 
         self.label_End = QLabel(self)
         self.label_End.setText("End Time                                             ")
-        self.label_End.move(50, 280)
+        if globals.scn_res == 1:
+            self.label_End.move(50, 280)
+        elif globals.scn_res == 2:
+            self.label_End.move(20, 150)
+        else:
+            self.label_End.move(50, 280)
+
         self.label_End.show()
 
         # setting up the buttons and run number
 
         RunNum_Text = QLineEdit(self)
         RunNum_Text.setAlignment(Qt.AlignCenter)
-        RunNum_Text.resize(220,70)
         font = QFont()
         font.setPointSize(12)
         RunNum_Text.setFont(font)
         RunNum_Text.setText('2630')
-        RunNum_Text.move(350, 350)
+        if globals.scn_res == 1:
+            RunNum_Text.resize(220, 70)
+            RunNum_Text.move(350, 350)
+        elif globals.scn_res == 2:
+            RunNum_Text.resize(120, 35)
+            RunNum_Text.move(200, 200)
+        else:
+            RunNum_Text.resize(220, 70)
+            RunNum_Text.move(350, 350)
+
 
 
         button_plus = QPushButton(self)
         button_plus.setText('+1')
         button_plus.move(650, 350)
+        if globals.scn_res == 1:
+            button_plus.move(650, 350)
+        elif globals.scn_res == 2:
+            button_plus.move(350, 200)
+        else:
+            button_plus.move(650, 350)
+
         button_plus.clicked.connect(lambda: self.Incr_RunNum(RunNum_Text))
 
         button_plusandload = QPushButton(self)
         button_plusandload.setText('Load +1')
-        button_plusandload.move(650, 420)
+        if globals.scn_res == 1:
+            button_plusandload.move(650,420)
+        elif globals.scn_res == 2:
+            button_plusandload.move(350,250)
+        else:
+            button_plusandload.move(650,420)
+
         button_plusandload.clicked.connect(lambda: self.Incr_RunNumandload(RunNum_Text.text(),RunNum_Text))
 
         button_minus = QPushButton(self)
         button_minus.setText('-1')
-        button_minus.move(50, 350)
+        if globals.scn_res == 1:
+            button_minus.move(50, 350)
+        elif globals.scn_res == 2:
+            button_minus.move(50, 200)
+
+        else:
+            button_minus.move(50, 350)
+
         button_minus.clicked.connect(lambda: self.Decr_RunNum(RunNum_Text))
 
         button_minusandload = QPushButton(self)
         button_minusandload.setText('Load -1')
-        button_minusandload.move(50, 420)
+        if globals.scn_res == 1:
+            button_minusandload.move(50, 420)
+        elif globals.scn_res == 2:
+            button_minusandload.move(50, 250)
+        else:
+            button_minusandload.move(50, 420)
+
         button_minusandload.clicked.connect(lambda: self.Decr_RunNumandload(RunNum_Text.text(),RunNum_Text))
 
 
         button_load = QPushButton(self)
         button_load.setText('Load')
-        button_load.move(350, 420)
+        if globals.scn_res == 1:
+            button_load.move(350, 420)
+        elif globals.scn_res == 2:
+            button_load.move(200, 250)
+        else:
+            button_load.move(350, 420)
+
         button_load.clicked.connect(lambda: self.loadrunandcom(
             RunNum_Text.text()))
 
