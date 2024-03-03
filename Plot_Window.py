@@ -30,8 +30,16 @@ class PlotWindow(QWidget):
         super(PlotWindow, self).__init__(parent)
         # label = QLabel("Plot Window ", self)
 
-        self.resize(1200, 1100)
-        self.setMinimumSize(1200,1100)
+        if globals.scn_res == 1:
+            self.resize(1200, 1100)
+            self.setMinimumSize(1200, 1100)
+        elif globals.scn_res == 2:
+            self.resize(800, 900)
+            self.setMinimumSize(800, 1000)
+        else:
+            self.resize(1200, 1100)
+            self.setMinimumSize(1200, 1100)
+
         self.setWindowTitle("Plot Window ")
 
         self.layout = QVBoxLayout(self)
@@ -64,7 +72,12 @@ class PlotWindow(QWidget):
         self.tab1.tab3 = QWidget()
         self.tab1.tab4 = QWidget()
         self.tab1.tab_clicked_elements.move(50,50)
-        self.tab1.tab_clicked_elements.setMinimumSize(1000,450)
+        if globals.scn_res == 1:
+            self.tab1.tab_clicked_elements.setMinimumSize(1000, 450)
+        elif globals.scn_res == 2:
+            self.tab1.tab_clicked_elements.setMinimumSize(600, 450)
+        else:
+            self.tab1.tab_clicked_elements.setMinimumSize(1000, 450)
 
         self.tab1.tab_clicked_elements.addTab(self.tab1.tab1, "All Peaks")
         self.tab1.tab_clicked_elements.addTab(self.tab1.tab2, "Primary")
@@ -76,7 +89,13 @@ class PlotWindow(QWidget):
         self.tab1.table_plotted_lines.setColumnCount(2)
         self.tab1.table_plotted_lines.setRowCount(10)
         self.tab1.table_plotted_lines.move(10,10)
-        self.tab1.table_plotted_lines.setMinimumSize(1000, 350)
+        if globals.scn_res == 1:
+            self.tab1.table_plotted_lines.setMinimumSize(1000, 350)
+        elif globals.scn_res == 2:
+            self.tab1.table_plotted_lines.setMinimumSize(550, 350)
+        else:
+            self.tab1.table_plotted_lines.setMinimumSize(1000, 350)
+
         self.tab1.table_plotted_lines.verticalScrollBar()
         #self.tab1.table_clickpeaks.
         self.tab1.table_plotted_lines.setHorizontalHeaderLabels(['Muonic X-ray', 'Gamma'])
@@ -94,13 +113,30 @@ class PlotWindow(QWidget):
         self.tab1.table_clickpeaks.setColumnCount(3)
         self.tab1.table_clickpeaks.setRowCount(10)
         self.tab1.table_clickpeaks.move(10,10)
-        self.tab1.table_clickpeaks.setMinimumSize(1000,350)
+        if globals.scn_res == 1:
+            self.tab1.table_clickpeaks.setMinimumSize(1000, 350)
+        elif globals.scn_res == 2:
+            self.tab1.table_clickpeaks.setMinimumSize(550, 350)
+        else:
+            self.tab1.table_clickpeaks.setMinimumSize(1000, 350)
+
         self.tab1.table_clickpeaks.verticalScrollBar()
         #self.tab1.table_clickpeaks.
         self.tab1.table_clickpeaks.setHorizontalHeaderLabels(['Element', 'Transition', 'Error'])
-        self.tab1.table_clickpeaks.setColumnWidth(0, 175)
-        self.tab1.table_clickpeaks.setColumnWidth(1, 205)
-        self.tab1.table_clickpeaks.setColumnWidth(2, 175)
+
+        if globals.scn_res == 1:
+            self.tab1.table_clickpeaks.setColumnWidth(0, 175)
+            self.tab1.table_clickpeaks.setColumnWidth(1, 205)
+            self.tab1.table_clickpeaks.setColumnWidth(2, 175)
+        elif globals.scn_res == 2:
+            self.tab1.table_clickpeaks.setColumnWidth(0, 100)
+            self.tab1.table_clickpeaks.setColumnWidth(1, 150)
+            self.tab1.table_clickpeaks.setColumnWidth(2, 150)
+        else:
+            self.tab1.table_clickpeaks.setColumnWidth(0, 175)
+            self.tab1.table_clickpeaks.setColumnWidth(1, 205)
+            self.tab1.table_clickpeaks.setColumnWidth(2, 175)
+
         self.tab1.table_clickpeaks.cellClicked.connect(self.tab1_table_clickpeaks)
 
 
@@ -114,13 +150,29 @@ class PlotWindow(QWidget):
         self.tab1.table_clickpeaks_prim.setColumnCount(3)
         self.tab1.table_clickpeaks_prim.setRowCount(10)
         self.tab1.table_clickpeaks_prim.move(10,10)
-        self.tab1.table_clickpeaks_prim.setMinimumSize(1000,350)
+        if globals.scn_res == 1:
+            self.tab1.table_clickpeaks_prim.setMinimumSize(1000, 350)
+        elif globals.scn_res == 2:
+            self.tab1.table_clickpeaks_prim.setMinimumSize(550, 350)
+        else:
+            self.tab1.table_clickpeaks_prim.setMinimumSize(1000, 350)
         self.tab1.table_clickpeaks_prim.verticalScrollBar()
         #self.tab1.table_clickpeaks.
         self.tab1.table_clickpeaks_prim.setHorizontalHeaderLabels(['Element', 'Transition', 'Error'])
-        self.tab1.table_clickpeaks_prim.setColumnWidth(0, 175)
-        self.tab1.table_clickpeaks_prim.setColumnWidth(1, 205)
-        self.tab1.table_clickpeaks_prim.setColumnWidth(2, 175)
+
+        if globals.scn_res == 1:
+            self.tab1.table_clickpeaks_prim.setColumnWidth(0, 175)
+            self.tab1.table_clickpeaks_prim.setColumnWidth(1, 205)
+            self.tab1.table_clickpeaks_prim.setColumnWidth(2, 175)
+        elif globals.scn_res == 2:
+            self.tab1.table_clickpeaks_prim.setColumnWidth(0, 100)
+            self.tab1.table_clickpeaks_prim.setColumnWidth(1, 150)
+            self.tab1.table_clickpeaks_prim.setColumnWidth(2, 150)
+        else:
+            self.tab1.table_clickpeaks_prim.setColumnWidth(0, 175)
+            self.tab1.table_clickpeaks_prim.setColumnWidth(1, 205)
+            self.tab1.table_clickpeaks_prim.setColumnWidth(2, 175)
+
         self.tab1.table_clickpeaks_prim.cellClicked.connect(self.tab1_table_clickpeaks_prim)
 
         self.tab1.table_clickpeaks_prim.show()
@@ -132,13 +184,29 @@ class PlotWindow(QWidget):
         self.tab1.table_clickpeaks_sec.setColumnCount(3)
         self.tab1.table_clickpeaks_sec.setRowCount(10)
         self.tab1.table_clickpeaks_sec.move(10,10)
-        self.tab1.table_clickpeaks_sec.setMinimumSize(1000,350)
+        if globals.scn_res == 1:
+            self.tab1.table_clickpeaks_sec.setMinimumSize(1000, 350)
+        elif globals.scn_res == 2:
+            self.tab1.table_clickpeaks_sec.setMinimumSize(550, 350)
+        else:
+            self.tab1.table_clickpeaks_sec.setMinimumSize(1000, 350)
         self.tab1.table_clickpeaks_sec.verticalScrollBar()
         #self.tab1.table_clickpeaks.
         self.tab1.table_clickpeaks_sec.setHorizontalHeaderLabels(['Element', 'Transition', 'Error'])
-        self.tab1.table_clickpeaks_sec.setColumnWidth(0, 175)
-        self.tab1.table_clickpeaks_sec.setColumnWidth(1, 205)
-        self.tab1.table_clickpeaks_sec.setColumnWidth(2, 175)
+        if globals.scn_res == 1:
+            self.tab1.table_clickpeaks_sec.setColumnWidth(0, 175)
+            self.tab1.table_clickpeaks_sec.setColumnWidth(1, 205)
+            self.tab1.table_clickpeaks_sec.setColumnWidth(2, 175)
+        elif globals.scn_res == 2:
+            self.tab1.table_clickpeaks_sec.setColumnWidth(0, 100)
+            self.tab1.table_clickpeaks_sec.setColumnWidth(1, 150)
+            self.tab1.table_clickpeaks_sec.setColumnWidth(2, 150)
+        else:
+            self.tab1.table_clickpeaks_sec.setColumnWidth(0, 175)
+            self.tab1.table_clickpeaks_sec.setColumnWidth(1, 205)
+            self.tab1.table_clickpeaks_sec.setColumnWidth(2, 175)
+
+
         self.tab1.table_clickpeaks_sec.cellClicked.connect(self.tab1_table_clickpeaks_sec)
 
 
@@ -158,14 +226,35 @@ class PlotWindow(QWidget):
         self.tab1.table_clickpeaks2.setColumnCount(5)
         self.tab1.table_clickpeaks2.setRowCount(10)
         self.tab1.table_clickpeaks2.move(50, 570)
-        self.tab1.table_clickpeaks2.setMinimumSize(1000, 350)
+
+        if globals.scn_res == 1:
+            self.tab1.table_clickpeaks2.setMinimumSize(1000, 350)
+        elif globals.scn_res == 2:
+            self.tab1.table_clickpeaks2.setMinimumSize(600, 350)
+        else:
+            self.tab1.table_clickpeaks2.setMinimumSize(1000, 350)
         # self.tab1.table_clickpeaks.
         self.tab1.table_clickpeaks2.setHorizontalHeaderLabels(['Element', 'Energy','Error', 'Intensity', 'Lifetime'])
-        self.tab1.table_clickpeaks2.setColumnWidth(0, 175)
-        self.tab1.table_clickpeaks2.setColumnWidth(1, 175)
-        self.tab1.table_clickpeaks2.setColumnWidth(2, 175)
-        self.tab1.table_clickpeaks2.setColumnWidth(3, 175)
-        self.tab1.table_clickpeaks2.setColumnWidth(4, 175)
+        if globals.scn_res == 1:
+            self.tab1.table_clickpeaks2.setColumnWidth(0, 175)
+            self.tab1.table_clickpeaks2.setColumnWidth(1, 175)
+            self.tab1.table_clickpeaks2.setColumnWidth(2, 175)
+            self.tab1.table_clickpeaks2.setColumnWidth(3, 175)
+            self.tab1.table_clickpeaks2.setColumnWidth(4, 175)
+        elif globals.scn_res == 2:
+            self.tab1.table_clickpeaks2.setColumnWidth(0, 100)
+            self.tab1.table_clickpeaks2.setColumnWidth(1, 100)
+            self.tab1.table_clickpeaks2.setColumnWidth(2, 100)
+            self.tab1.table_clickpeaks2.setColumnWidth(3, 100)
+            self.tab1.table_clickpeaks2.setColumnWidth(4, 100)
+        else:
+            self.tab1.table_clickpeaks2.setColumnWidth(0, 175)
+            self.tab1.table_clickpeaks2.setColumnWidth(1, 175)
+            self.tab1.table_clickpeaks2.setColumnWidth(2, 175)
+            self.tab1.table_clickpeaks2.setColumnWidth(3, 175)
+            self.tab1.table_clickpeaks2.setColumnWidth(4, 175)
+
+
         self.tab1.table_clickpeaks2.cellClicked.connect(self.tab1_table_clickpeaks_gamma)
 
         #self.tab1.table_clickpeaks2.setFixedWidth(700)
@@ -738,7 +827,7 @@ class PlotWindow(QWidget):
                     # default_peaks = peaks_GE1
                     default_sigma = [2.0] * len(default_peaks)
 
-                    self.tab1.label_Element2.setText('Possible transitions at '
+                    self.tab1.label_Element2.setText('Possible Gamma transitions at '
                                                     + "{:.1f}".format(default_peaks[0]) + ' +/- '
                                                     + str(default_sigma[0]))
 
@@ -780,7 +869,7 @@ class PlotWindow(QWidget):
                     default_peaks=[event.xdata]
                     default_sigma = [0.5]*len(default_peaks)
                     "{:.1f}".format(45.34531)
-                    self.tab1.label_Element.setText('Possible transitions at '
+                    self.tab1.label_Element.setText('Possible Muonic X-ray transitions at '
                                                + "{:.1f}".format(default_peaks[0]) +' +/- '
                                                + str(default_sigma[0]))
                     input_data = list(zip(default_peaks, default_sigma))
