@@ -198,6 +198,8 @@ class RunSimTRIMSRIM(QWidget):
         # Get Sample information
         Sample_layer, TotalThickness = RunSimTRIMSRIM.SetupSample(self)
 
+        print('Sample_layer', Sample_layer)
+
         targetsample = Target(Sample_layer)
 
         globals.TRIMRes_x = []
@@ -369,6 +371,10 @@ class RunSimTRIMSRIM(QWidget):
         '''Run TRIM and output results in x1, y1, e1'''
         print('in runtrim')
 
+        print(muon_ion)
+        print(number_muon)
+        print('dir', SRIMdirectory)
+
         trimsim = TRIM(target, muon_ion, number_ions=number_muon, calculation=1)
 
         trimdataoutput = trimsim.run(SRIMdirectory)  # Simulation run by executing SRIM.exe in directory
@@ -443,6 +449,7 @@ class RunSimTRIMSRIM(QWidget):
 
                     plt.axvline(x=sumdis, color='k', linestyle='--')
                     plt.text(sumdis, 0, globals.sample_name[i], horizontalalignment='left', rotation='vertical')
+                    print('sample_layers',globals.sample_layers[i])
 
                 plt.show()
 
