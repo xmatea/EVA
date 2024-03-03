@@ -328,7 +328,7 @@ class MainWindow(QWidget):
         PeakFit.PeakFit()
 
     def PeakFit_GE1(self):
-        print('hello in PeakFit ge1 ')
+        print('hello in PeakFit ge1')
         globals.whichdet = 'GE1'
 
         PeakFit.PeakFit()
