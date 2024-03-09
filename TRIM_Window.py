@@ -151,21 +151,28 @@ class RunSimTRIMSRIM(QWidget):
         self.tab2.table_PlotRes = QTableWidget(self.tab2)
         self.tab2.table_PlotRes.resize(1100,600)
         self.tab2.table_PlotRes.setShowGrid(True)
-        self.tab2.table_PlotRes.setColumnCount(4)
+        self.tab2.table_PlotRes.setColumnCount(5)
         self.tab2.table_PlotRes.setRowCount(100)
 
 
         self.tab2.table_PlotRes.setHorizontalHeaderLabels(
-            ['Momentum', '% Component', 'Plot Results (Com)', 'Plot Results2'])
+            ['Momentum', '% Component', 'Plot Results (Com)', 'Plot Results2',' Save Results'])
 
         for index in range(self.tab2.table_PlotRes.rowCount()):
-            for col in range(2):
+            for col in range(3):
                 btn = QPushButton()
-                btn.clicked.connect(lambda _, r=index, c= col+2: RunSimTRIMSRIM.PlotSim(self, r, c))
+                if col == 2:
+                    print('hello')
+                    btn.clicked.connect(lambda _, r=index, c= col+2: RunSimTRIMSRIM.WriteSim(self, r, c))
+
+                else:
+                    btn.clicked.connect(lambda _, r=index, c=col + 2: RunSimTRIMSRIM.PlotSim(self, r, c))
                 if col == 0:
                     btn.setText('Plot Com' + str(index + 1))
-                else:
+                elif col == 1:
                     btn.setText('Plot Whole' + str(index + 1))
+                else:
+                    btn.setText('Save ' + str(index + 1))
                 self.tab2.table_PlotRes.setCellWidget(index, col+2, btn)
 
         self.layout.addWidget(self.tabs)
@@ -401,8 +408,71 @@ class RunSimTRIMSRIM(QWidget):
             y1[i] = y1[i] * finalbins * TotalSimCounts
         return y1
 
+    def WriteSim(self, x, y, ):
+        '''
+        :param x: button layer
+        :param y: button column
+        :return:
+        writes the results of SRIM TRIM calcs
+        '''
+        print('In WriteSim')
+        print(globals.workingdirectory)
+        print('')
+        print('')
+        save_file = globals.workingdirectory+'/SRIM_'+self.tab2.table_PlotRes.item(x,0).text() + '_MeVc.dat'
+        print('Sve_file',save_file)
+        file2 = open(save_file, "w")
+
+        sumdis = 0.0
+        xposlist = RunSimTRIMSRIM.getxpos(self)
+
+        for i in range(len(globals.sample_layers)):
+            sumdis += xposlist[i + 1]
+            print(globals.sample_name[i] + ' = ' + str(sumdis) + '\n')
+            file2.writelines(globals.sample_name[i] + ' = ' + str(sumdis) + '\n')
+
+
+
+
+        for i in range(len(globals.TRIMRes_x[x])):
+            file2.writelines(str(globals.TRIMRes_x[x][i]) + ',' + str(globals.TRIMRes_y[x][i]) + '\n')
+        '''file2.writelines(str(globals.TRIMRes_x[x]) + ',' + str(globals.TRIMRes_y[x]))
+        '''
+        file2.close()
+        print('save_file_fin')
+
+        print('In WriteSim')
+        print(globals.workingdirectory)
+        print('')
+        print('')
+        comp = RunSimTRIMSRIM.getcomp(self, xposlist, x)
+
+        # plot layers
+        for i in range(len(globals.sample_layers)):
+
+            save_file = (globals.workingdirectory + '/SRIM_'
+                         + self.tab2.table_PlotRes.item(x, 0).text() + '_MeVc_' + str(i) + '.dat')
+            print('Sve_file', save_file)
+            file2 = open(save_file, "w")
+
+            sumdis = 0.0
+            xposlist = RunSimTRIMSRIM.getxpos(self)
+
+            for k in range(len(globals.sample_layers)):
+                sumdis += xposlist[k + 1]
+                print(globals.sample_name[k] + ' = ' + str(sumdis) + '\n')
+                file2.writelines(globals.sample_name[k] + ' = ' + str(sumdis) + '\n')
+
+            for j in range(len(globals.TRIMRes_x[x])):
+                file2.writelines(str(globals.TRIMRes_x[x][j]) + ',' + str(comp[i][j]) + '\n')
+        '''file2.writelines(str(globals.TRIMRes_x[x]) + ',' + str(globals.TRIMRes_y[x]))
+        '''
+        file2.close()
+        print('save_file_fin')
+
     def PlotSim(self, x, y, ):
         ''' Plots the results of the srim but depends on whihc button is pressed'''
+
 
         try:
             if y == 2:
