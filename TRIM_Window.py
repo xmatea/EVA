@@ -114,14 +114,15 @@ class RunSimTRIMSRIM(QWidget):
         #print(SampleName.text())
 
 
-        self.layout.addWidget(self.RunTrimSimulation, 12, 0, 12 ,2)
+        self.layout.addWidget(self.RunTrimSimulation, 12, 0)
 
         #print('done a button')
 
         # Initialize tab screen
         #print('initialising tabs')
+        self.layout.addWidget(QLabel(' '), 13, 0)
         self.tabs = QTabWidget()
-        #self.layout.addWidget(self.tabs, 13, 0, 13, 2)
+        #self.layout.addWidget(self.tabs, 13, 1)
         self.tab1 = QWidget()
         self.tab2 = QWidget()
         if globals.scn_res == 1:
