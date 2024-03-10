@@ -1,5 +1,4 @@
 from PyQt5.QtWidgets import (
-    QCheckBox,
     QLabel,
     QPushButton,
     QWidget,
@@ -9,16 +8,12 @@ from PyQt5.QtWidgets import (
     QTabWidget,
     QTableWidget,
     QTableWidgetItem,
-    QApplication,
-    QMenu,
     QMenuBar,
     QFileDialog,
 )
-import PyQt5.QtGui
 import globals
 import numpy as np
 from srim import TRIM, Ion, Layer, Target, Material
-from srim.output import Results
 import matplotlib.pyplot as plt
 
 
@@ -28,9 +23,16 @@ class RunSimTRIMSRIM(QWidget):
         #print('here')
         super(RunSimTRIMSRIM, self).__init__(parent)
         #print('here')
+        if globals.scn_res == 1:
+            self.resize(1500, 1600)
+            self.setMinimumSize(1400, 1400)
+        elif globals.scn_res == 2:
+            self.resize(900, 1600)
+            self.setMinimumSize(1000, 1400)
+        else:
+            self.resize(1500, 1600)
+            self.setMinimumSize(1400, 1400)
 
-        self.resize(1500, 1600)
-        self.setMinimumSize(1400, 1400)
         self.setWindowTitle("TRIM Simulations")
 
         # setting up buttons
@@ -112,26 +114,45 @@ class RunSimTRIMSRIM(QWidget):
         #print(SampleName.text())
 
 
-        self.layout.addWidget(self.RunTrimSimulation, 12, 0)
+        self.layout.addWidget(self.RunTrimSimulation, 12, 0, 12 ,2)
 
         #print('done a button')
 
         # Initialize tab screen
         #print('initialising tabs')
         self.tabs = QTabWidget()
+        #self.layout.addWidget(self.tabs, 13, 0, 13, 2)
         self.tab1 = QWidget()
         self.tab2 = QWidget()
-        self.tabs.resize(1200, 1200)
+        if globals.scn_res == 1:
+            self.tabs.resize(1200, 1200)
+        elif globals.scn_res == 2:
+            self.tabs.resize(600, 1200)
+        else:
+            self.tabs.resize(1200, 1200)
+
         self.tabs.move(0, 0)
 
 
         # Add tabs
         self.tabs.addTab(self.tab1, "Layers")
         self.tabs.addTab(self.tab2, "Results")
-        self.tabs.resize(1000, 1000)
+
+        if globals.scn_res == 1:
+            self.tabs.resize(1000, 1000)
+        elif globals.scn_res == 2:
+            self.tabs.resize(600, 600)
+        else:
+            self.tabs.resize(1000, 1000)
 
         self.tab1.table_TRIMsetup = QTableWidget(self.tab1)
-        self.tab1.table_TRIMsetup.resize(1100,600)
+        if globals.scn_res == 1:
+            self.tab1.table_TRIMsetup.resize(1100, 600)
+        elif globals.scn_res == 2:
+            self.tab1.table_TRIMsetup.resize(600, 600)
+        else:
+            self.tab1.table_TRIMsetup.resize(1100, 600)
+
         self.tab1.table_TRIMsetup.setShowGrid(True)
         self.tab1.table_TRIMsetup.setColumnCount(3)
         self.tab1.table_TRIMsetup.setRowCount(10)
@@ -149,7 +170,13 @@ class RunSimTRIMSRIM(QWidget):
         self.tab1.table_TRIMsetup.setItem(3, 2, QTableWidgetItem('6.7'))
 
         self.tab2.table_PlotRes = QTableWidget(self.tab2)
-        self.tab2.table_PlotRes.resize(1100,600)
+        if globals.scn_res == 1:
+            self.tab2.table_PlotRes.resize(1100, 600)
+        elif globals.scn_res == 2:
+            self.tab2.table_PlotRes.resize(850, 600)
+        else:
+            self.tab2.table_PlotRes.resize(1100, 600)
+
         self.tab2.table_PlotRes.setShowGrid(True)
         self.tab2.table_PlotRes.setColumnCount(5)
         self.tab2.table_PlotRes.setRowCount(100)
@@ -231,7 +258,7 @@ class RunSimTRIMSRIM(QWidget):
             if MonoorSpread == 'Mono':
                 self.tab2.table_PlotRes.setItem(0, 0, QTableWidgetItem(str(Mom)))
             else:
-                self.tab2.table_PlotRes.setItem(0, 0, QTableWidgetItem(str(Mom) + ' +/- ' + str(MomSpread)))
+                self.tab2.table_PlotRes.setItem(0, 0, QTableWidgetItem(str(Mom)))
             # break to components to get %
             xposlist = RunSimTRIMSRIM.getxpos(self)
             comp = RunSimTRIMSRIM.getcomp(self, xposlist, 0)
