@@ -177,6 +177,8 @@ class MainWindow(QWidget):
         Trim_sim_test = TRIM.addAction('SRIM/TRIM Simulation test')
         Trim_sim_test.triggered.connect(lambda: self.RunTrimExample())
 
+        database = bar.addMenu('Periodic Table')
+
         # setting up the actions
 
         file_exit.triggered.connect(lambda: self.closeit(app))
