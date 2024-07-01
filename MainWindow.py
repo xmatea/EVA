@@ -27,6 +27,7 @@ from PyQt5.QtWidgets import (
     QTabWidget,
     QComboBox,
     QGridLayout,
+    QSizePolicy,
 )
 from PyQt5.QtGui import QPalette, QColor, QCloseEvent, QFont
 import sys
@@ -64,26 +65,27 @@ class Color(QWidget):
 
 
 
-class MainWindow(QWidget):
+class MainWindow(QMainWindow):
     def __init__(self, parent = None):
         super(MainWindow,self).__init__(parent)
         self.wp = None
         globals.we = None
 
-        if globals.scn_res == 1:
-            self.resize(1000, 500)
-        elif globals.scn_res == 2:
-            self.resize(700, 300)
-        else:
-            self.resize(1000,500)
+        #if globals.scn_res == 1:
+        #    self.resize(1000, 500)
+        #elif globals.scn_res == 2:
+        #    self.resize(700, 300)
+        #else:
+        #    self.resize(1000,500)
 
 
         self.setWindowTitle("Elemental Analysis")
+        self.setMinimumSize(QSize(600, 300))
 
         # setting up the menu bar'''
-
-
-        bar = QMenuBar(self)
+        
+        #bar = QMenuBar(self)
+        bar = self.menuBar()
         file = bar.addMenu('File')
         file_loaddef = file.addAction('Load Default Setting')
         file_browse_dir = file.addAction('Browse to Data Directory')
@@ -188,139 +190,172 @@ class MainWindow(QWidget):
 
         # setting up the layout
 
-        self.label_RN = QLabel(self)
-        self.label_RN.setText("Run Number                                            ")
-        if globals.scn_res == 1:
-            self.label_RN.move(50, 80)
-        elif globals.scn_res == 2:
-            self.label_RN.move(20, 50)
-        else:
-            self.label_RN.move(50, 80)
+        layout = QGridLayout()
 
-        self.label_RN.show()
+        self.label_RN = QLabel(self)
+        self.label_RN.setText("Run Number")
+        self.label_RN.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
+        #if globals.scn_res == 1:
+        #    self.label_RN.move(50, 80)
+        #elif globals.scn_res == 2:
+        #    self.label_RN.move(20, 50)
+        #else:
+        #    self.label_RN.move(50, 80)
+
+        #self.label_RN.show()
+        layout.addWidget(self.label_RN, 0, 0, 1, 3)
 
         self.label_Com = QLabel(self)
-        self.label_Com.setText("Comment " +
-             "                                                                                                  ")
-        if globals.scn_res == 1:
-            self.label_Com.move(50, 130)
-        elif globals.scn_res == 2:
-            self.label_Com.move(20, 75)
-        else:
-            self.label_Com.move(50, 130)
-        self.label_Com.show()
+        self.label_Com.setText("Comment")
+        self.label_Com.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)                                                                                                 
+        #if globals.scn_res == 1:
+        #    self.label_Com.move(50, 130)
+        #elif globals.scn_res == 2:
+        #    self.label_Com.move(20, 75)
+        #else:
+        #    self.label_Com.move(50, 130)
+        #self.label_Com.show()
+        layout.addWidget(self.label_Com, 1, 0, 1, 3)
 
         self.label_Events = QLabel(self)
-        self.label_Events.setText("Events                                            ")
-        if globals.scn_res == 1:
-            self.label_Events.move(50, 180)
-        elif globals.scn_res == 2:
-            self.label_Events.move(20, 100)
-        else:
-            self.label_Events.move(50, 180)
+        self.label_Events.setText("Events")
+        self.label_Events.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
+        #if globals.scn_res == 1:
+        #    self.label_Events.move(50, 180)
+        #elif globals.scn_res == 2:
+        #    self.label_Events.move(20, 100)
+        #else:
+        #    self.label_Events.move(50, 180)
 
-        self.label_Events.show()
+        #self.label_Events.show()
+        layout.addWidget(self.label_Events, 2, 0, 1, 3)
 
         self.label_Start = QLabel(self)
-        self.label_Start.setText("Start Time                                            ")
-        if globals.scn_res == 1:
-            self.label_Start.move(50, 230)
-        elif globals.scn_res == 2:
-            self.label_Start.move(20, 125)
-        else:
-            self.label_Start.move(50, 230)
+        self.label_Start.setText("Start Time")
+        self.label_Start.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
+        #if globals.scn_res == 1:
+        #    self.label_Start.move(50, 230)
+        #elif globals.scn_res == 2:
+        #    self.label_Start.move(20, 125)
+        #else:
+        #    self.label_Start.move(50, 230)
 
-        self.label_Start.show()
+        #self.label_Start.show()
+        layout.addWidget(self.label_Start, 3, 0, 1, 3)
 
         self.label_End = QLabel(self)
-        self.label_End.setText("End Time                                             ")
-        if globals.scn_res == 1:
-            self.label_End.move(50, 280)
-        elif globals.scn_res == 2:
-            self.label_End.move(20, 150)
-        else:
-            self.label_End.move(50, 280)
+        self.label_End.setText("End Time")
+        self.label_End.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
+        #if globals.scn_res == 1:
+        #    self.label_End.move(50, 280)
+        #elif globals.scn_res == 2:
+        #    self.label_End.move(20, 150)
+        #else:
+        #    self.label_End.move(50, 280)
 
-        self.label_End.show()
+        #self.label_End.show()
+        layout.addWidget(self.label_End, 4, 0, 1, 3)
 
         # setting up the buttons and run number
 
         RunNum_Text = QLineEdit(self)
         RunNum_Text.setAlignment(Qt.AlignCenter)
-        font = QFont()
-        font.setPointSize(12)
-        RunNum_Text.setFont(font)
+        RunNum_Text.setMinimumWidth(200)
+        RunNum_Text.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
+        #font = QFont()
+        #font.setPointSize(8)
+        #RunNum_Text.setFont(font)
         RunNum_Text.setText('2630')
-        if globals.scn_res == 1:
-            RunNum_Text.resize(220, 70)
-            RunNum_Text.move(350, 350)
-        elif globals.scn_res == 2:
-            RunNum_Text.resize(120, 35)
-            RunNum_Text.move(200, 200)
-        else:
-            RunNum_Text.resize(220, 70)
-            RunNum_Text.move(350, 350)
+        #if globals.scn_res == 1:
+        #    RunNum_Text.resize(220, 70)
+        #    RunNum_Text.move(350, 350)
+        #elif globals.scn_res == 2:
+        #    RunNum_Text.resize(120, 35)
+        #    RunNum_Text.move(200, 200)
+        #else:
+        #    RunNum_Text.resize(220, 70)
+        #    RunNum_Text.move(350, 350)
+        layout.addWidget(RunNum_Text, 5, 1)
 
 
 
         button_plus = QPushButton(self)
         button_plus.setText('+1')
-        button_plus.move(650, 350)
-        if globals.scn_res == 1:
-            button_plus.move(650, 350)
-        elif globals.scn_res == 2:
-            button_plus.move(350, 200)
-        else:
-            button_plus.move(650, 350)
+        button_plus.setMinimumWidth(200)
+        button_plus.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
+        #button_plus.move(650, 350)
+        #if globals.scn_res == 1:
+        #    button_plus.move(650, 350)
+        #elif globals.scn_res == 2:
+        #    button_plus.move(350, 200)
+        #else:
+        #    button_plus.move(650, 350)
+        layout.addWidget(button_plus, 5, 2)
 
         button_plus.clicked.connect(lambda: self.Incr_RunNum(RunNum_Text))
 
         button_plusandload = QPushButton(self)
         button_plusandload.setText('Load +1')
-        if globals.scn_res == 1:
-            button_plusandload.move(650,420)
-        elif globals.scn_res == 2:
-            button_plusandload.move(350,250)
-        else:
-            button_plusandload.move(650,420)
+        button_plusandload.setMinimumWidth(200)
+        button_plusandload.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
+        #if globals.scn_res == 1:
+        #    button_plusandload.move(650,420)
+        #elif globals.scn_res == 2:
+        #    button_plusandload.move(350,250)
+        #else:
+        #    button_plusandload.move(650,420)
+        layout.addWidget(button_plusandload, 6, 2)
 
         button_plusandload.clicked.connect(lambda: self.Incr_RunNumandload(RunNum_Text.text(),RunNum_Text))
 
         button_minus = QPushButton(self)
         button_minus.setText('-1')
-        if globals.scn_res == 1:
-            button_minus.move(50, 350)
-        elif globals.scn_res == 2:
-            button_minus.move(50, 200)
+        button_minus.setMinimumWidth(200)
+        button_minus.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
+        #if globals.scn_res == 1:
+        #    button_minus.move(50, 350)
+        #elif globals.scn_res == 2:
+        #    button_minus.move(50, 200)
 
-        else:
-            button_minus.move(50, 350)
+        #else:
+        #    button_minus.move(50, 350)
+        layout.addWidget(button_minus, 5, 0)
 
         button_minus.clicked.connect(lambda: self.Decr_RunNum(RunNum_Text))
 
         button_minusandload = QPushButton(self)
         button_minusandload.setText('Load -1')
-        if globals.scn_res == 1:
-            button_minusandload.move(50, 420)
-        elif globals.scn_res == 2:
-            button_minusandload.move(50, 250)
-        else:
-            button_minusandload.move(50, 420)
+        button_minusandload.setMinimumWidth(200)
+        button_minusandload.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
+        #if globals.scn_res == 1:
+        #    button_minusandload.move(50, 420)
+        #elif globals.scn_res == 2:
+        #    button_minusandload.move(50, 250)
+        #else:
+        #    button_minusandload.move(50, 420)
+        layout.addWidget(button_minusandload, 6, 0)
 
         button_minusandload.clicked.connect(lambda: self.Decr_RunNumandload(RunNum_Text.text(),RunNum_Text))
 
 
         button_load = QPushButton(self)
         button_load.setText('Load')
-        if globals.scn_res == 1:
-            button_load.move(350, 420)
-        elif globals.scn_res == 2:
-            button_load.move(200, 250)
-        else:
-            button_load.move(350, 420)
+        button_load.setMinimumWidth(200)
+        button_load.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
+        #if globals.scn_res == 1:
+        #    button_load.move(350, 420)
+        #elif globals.scn_res == 2:
+        #    button_load.move(200, 250)
+        #else:
+        #    button_load.move(350, 420)
+        layout.addWidget(button_load, 6, 1)
 
         button_load.clicked.connect(lambda: self.loadrunandcom(
             RunNum_Text.text()))
+        
+        widget = QWidget()
+        widget.setLayout(layout)
+        self.setCentralWidget(widget)
 
     def PeakFit(self):
         print('hello in PeakFit')
@@ -595,6 +630,9 @@ class MainWindow(QWidget):
 
 
 app = QApplication(sys.argv)
+app.setStyleSheet("QLabel{font-size: 8pt;}"
+                  "QLineEdit{font-size: 8pt;}"
+                  "QPushButton{font-size: 8pt;}")
 mainWin = MainWindow()
 mainWin.show()
 sys.exit(app.exec_())
