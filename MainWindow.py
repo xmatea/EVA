@@ -80,7 +80,7 @@ class MainWindow(QMainWindow):
 
 
         self.setWindowTitle("Elemental Analysis")
-        self.setMinimumSize(QSize(600, 300))
+        self.setMinimumSize(QSize(650, 300))
 
         # setting up the menu bar'''
         
