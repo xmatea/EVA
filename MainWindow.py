@@ -3,9 +3,9 @@ import time
 import matplotlib.pyplot as plt
 #from ui_EfficiencyUI import Ui_EfficienyCorrection
 from matplotlib.backend_bases import MouseButton
-from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtWidgets import (
-    QWidgetAction,
+from PyQt5.QtCore import QSize, Qt
+from PyQt5.QtWidgets import (
+    QAction,
     QApplication,
     QCheckBox,
     QLabel,
@@ -84,7 +84,7 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(QSize(650, 300))
 
         # setting up the menu bar'''
-        
+
         #bar = QMenuBar(self)
         bar = self.menuBar()
         file = bar.addMenu('File')
@@ -180,11 +180,6 @@ class MainWindow(QMainWindow):
         Trim_sim_test = TRIM.addAction('SRIM/TRIM Simulation test')
         Trim_sim_test.triggered.connect(lambda: self.RunTrimExample())
 
-        # Manual tab
-        plot = bar.addMenu('Help')
-        plot_manual = plot.addAction("Manual")
-        plot_manual.triggered.connect(lambda: self.ShowManual())
-
         # setting up the actions
 
         file_exit.triggered.connect(lambda: self.closeit(app))
@@ -213,7 +208,7 @@ class MainWindow(QMainWindow):
 
         self.label_Com = QLabel(self)
         self.label_Com.setText("Comment")
-        self.label_Com.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)                                                                                                 
+        self.label_Com.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
         #if globals.scn_res == 1:
         #    self.label_Com.move(50, 130)
         #elif globals.scn_res == 2:
@@ -358,7 +353,7 @@ class MainWindow(QMainWindow):
 
         button_load.clicked.connect(lambda: self.loadrunandcom(
             RunNum_Text.text()))
-        
+
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
