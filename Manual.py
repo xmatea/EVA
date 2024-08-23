@@ -16,18 +16,8 @@ class ManualWindow(QWidget):
     def __init__(self, parent=None):
         super(ManualWindow, self).__init__(parent)
 
-        if globals.scn_res == 1:
-            self.resize(1200, 1100)
-            self.setMinimumSize(1200, 1100)
-        elif globals.scn_res == 2:
-            self.resize(800, 900)
-            self.setMinimumSize(800, 1000)
-        else:
-            self.resize(1200, 1100)
-            self.setMinimumSize(1200, 1100)
-
         self.setWindowTitle("Manual")
-        self.setMaximumHeight(1000)
+        self.setMinimumSize(700, 650)
 
         self.htmlstr = self.loadManual("manual.html")
         self.page = QTextBrowser(self)
@@ -41,7 +31,7 @@ class ManualWindow(QWidget):
         self.show()
 
     def loadManual(self, path):
-        with open(path, "r") as file:
+        with open(path, "r", encoding="utf-8") as file:
             manual = "".join(file.readlines())
 
         file.close()

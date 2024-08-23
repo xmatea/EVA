@@ -1,21 +1,25 @@
 <html>
     <head>
+        <!-- Markdown-like styling -->
         <style>
-
             * {
                 font-family: "Segoe UI", "Noto Sans",Helvetica,Arial,sans-serif
             }
 
             body { margin: 50px 15px }
 
-            h1, h2 {
-                margin-top: 24px;
-                margin-bottom: 16px;
+            h1, h2, h3 {
+                margin-top: 12px;
+                margin-bottom: 6px;
                 font-weight: 600;
                 line-height: 1.25;
             }
 
-            p, li { font-size: 12px }
+            p, li { font-size: 14px }
+
+            .img_wrap {
+                margin: 5px 0px;
+            }
 
             a {
                 background-color: transparent;
@@ -31,7 +35,7 @@
                 border-bottom: 1px solid #d0d7deb3;
                 height: .25em;
                 padding: 0;
-                margin: 24px 0;
+                margin: 16px 0;
                 background-color: #d0d7de;
                 border: 0;
             }
@@ -39,19 +43,19 @@
     </head>
     <body>
         <h1>EVA User Manual </h1>
-        <p>EVA is a something something ....... elemental analysis... data analyusis... MuX. Insert some beautiful text
-        about EVA and what it can be used for. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore
-        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
+        <p>EVA is a something something ....... elemental analysis... data analysis... MuX. Insert some beautiful text
+        about EVA and what it can be used for.</p>
 
         <hr>
         <h2>Table of contents</h2>
         <ol>
             <li><a href="#loading-data">Loading data</a></li>
-            <li><a href="#using-the-peak-analysis-tool">Using the peak analysis tool</a></li>
+            <li><a href="#using-the-plot-analysis-tool">Using the Plot Analysis Tool</a></li>
+                <ul>
+                    <li><a href="#peak-identification">Peak identification</a></li>
+                    <li><a href="#element-search">Element search</a></li>
+                    <li><a href="#adjust-and-customise">Adjust and customise figure</a></li>
+                </ul>
             <li><a href="#using-the-srimtrim-tool">Using the SRIM/TRIM tool</a></li>
             <li><a href="#lonk">link</a></li>
         </ol>
@@ -62,44 +66,52 @@
         <p>To load your data into EVA, first go to File>Browse to Data Directory and select the folder containing your data.
         EVA will then automatically load one of your runs. You can choose which run to load by editing the Run Number
         field in the center of the control panel. Press the load button to open the peak analysis window.</p>
+        <div class="img_wrap">
+            <img src="manual/screenshot_plotwindow_600px.png">
+        </div>
         <hr>
-        <h2 id="using-the-peak-analysis-tool">Using the peak analysis tool</h2>
-        <p>The peak analysis window can be used to identify peaks within your data. You can click on
-        different peaks in your data to search for possible sources. Left-click on a peak to search for possible
-        muonic x-ray transitions, or right-click to search for gamma transitions.</p>
+        <h2 id="using-the-plot-analysis-tool">Using the plot analysis tool</h2>
+        <h3 id="peak-identification">Peak identification</h3>
+        <p>In the "peak identification" tab you can left-click on a peak in the figure to search for possible muonic x-ray transitions,
+            or right-click to search for gamma transitions. Within the gamma transitions table, you can click on either a
+            specific energy or a source to plot all transition lines for that element.</p>
+            <div class="img_wrap">
+                <img src="manual/screenshot_plotvlines_600px">
+            </div>
+        <br>
+            <div class="img_wrap">
+                <img src="manual/vlines_plotted.png">
+            </div>
+            <p> To remove lines, navigate to the
+            "remove plot lines" tab in the muonic transition table and click the source to remove. </p>
+            <div class="img_wrap">
+                <img src="manual/vlines_remove.png">
+            </div>
+        <hr>
+        <h3 id="element-search">Element Search</h3>
+        <p>In the "element search" tab you can select a subroutine to automatically find peaks within your data,
+            such as SciPy's find_peaks() routine.</p>
+        <hr>
+        <h3 id="adjust-and-customise">Adjust and customise figure</h3>
+        <p>You can adjust the margins and spacing between subplots if needed from the plot menu above the graph.</p>
 
-         <p>The peak analysis window can be used to identify peaks within your data. You can click on
-        different peaks in your data to search for possible sources. Left-click on a peak to search for possible
-        muonic x-ray transitions, or right-click to search for gamma transitions.</p>
-         <p>The peak analysis window can be used to identify peaks within your data. You can click on
-        different peaks in your data to search for possible sources. Left-click on a peak to search for possible
-        muonic x-ray transitions, or right-click to search for gamma transitions.</p> <p>The peak analysis window can be used to identify peaks within your data. You can click on
-        different peaks in your data to search for possible sources. Left-click on a peak to search for possible
-        muonic x-ray transitions, or right-click to search for gamma transitions.</p>
-         <p>The peak analysis window can be used to identify peaks within your data. You can click on
-        different peaks in your data to search for possible sources. Left-click on a peak to search for possible
-        muonic x-ray transitions, or right-click to search for gamma transitions.</p> <p>The peak analysis window can be used to identify peaks within your data. You can click on
-        different peaks in your data to search for possible sources. Left-click on a peak to search for possible
-        muonic x-ray transitions, or right-click to search for gamma transitions.</p> <p>The peak analysis window can be used to identify peaks within your data. You can click on
-        different peaks in your data to search for possible sources. Left-click on a peak to search for possible
-        muonic x-ray transitions, or right-click to search for gamma transitions.</p> <p>The peak analysis window can be used to identify peaks within your data. You can click on
-        different peaks in your data to search for possible sources. Left-click on a peak to search for possible
-        muonic x-ray transitions, or right-click to search for gamma transitions.</p> <p>The peak analysis window can be used to identify peaks within your data. You can click on
-        different peaks in your data to search for possible sources. Left-click on a peak to search for possible
-        muonic x-ray transitions, or right-click to search for gamma transitions.</p> <p>The peak analysis window can be used to identify peaks within your data. You can click on
-        different peaks in your data to search for possible sources. Left-click on a peak to search for possible
-        muonic x-ray transitions, or right-click to search for gamma transitions.</p> <p>The peak analysis window can be used to identify peaks within your data. You can click on
-        different peaks in your data to search for possible sources. Left-click on a peak to search for possible
-        muonic x-ray transitions, or right-click to search for gamma transitions.</p> <p>The peak analysis window can be used to identify peaks within your data. You can click on
-        different peaks in your data to search for possible sources. Left-click on a peak to search for possible
-        muonic x-ray transitions, or right-click to search for gamma transitions.</p> <p>The peak analysis window can be used to identify peaks within your data. You can click on
-        different peaks in your data to search for possible sources. Left-click on a peak to search for possible
-        muonic x-ray transitions, or right-click to search for gamma transitions.</p>
-        <hr>
-        <h2 id="using-the-srimtrim-tool">Using the SRIM/TRIM tool</h2>
-        <p>Not sure to be honest...</p>
-        <hr>
-        <h2 id="lonk">Lonk</h2>
-        <p>haha</p>
+        <div class="img_wrap">
+            <img src="manual/screenshot_pltmenu_figure_settings.png">
+        </div>
+
+        <div class="img_wrap">
+            <img src="manual/screenshot_pltmenu_figure_settings2.png">
+        </div>
+
+        <p><strong>Note:</strong> You may experience a visual bug when incrementing the spacings. You will still be able to change spacings,
+            but to see the values you will have to press "export values".</p>
+        <p>You can also adjust the colours, titles and more for each subplot in the "customize" menu.</p>
+
+        <div class="img_wrap">
+            <img src="manual/screenshot_pltmenu_axes_settings.png">
+        </div>
+        <div class="img_wrap">
+            <img src="manual/screenshot_pltmenu_axes_settings2.png">
+        </div>
     </body>
 </html>
