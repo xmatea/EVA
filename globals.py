@@ -1,6 +1,6 @@
 import array as arr
 scn_res = 2 # 1 high res 2 normal
-workingdirectory = 'C:/Users/adh37/OneDrive - Science and Technology Facilities Council/Data/Negative Muons/Experiments/Wallace Steel'
+workingdirectory = 'TestData/'
 dataset_GE1 = arr.array('i',[])
 dataset_GE2 = arr.array('i',[])
 dataset_GE3 = arr.array('i',[])
@@ -71,6 +71,7 @@ Normalise_do_not = False
 we = None
 weff = None
 wTrim = None
+wManual = None
 
 E_Corr_GE1_offset = 0.0
 E_Corr_GE1_gradient = 1.0

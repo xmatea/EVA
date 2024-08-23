@@ -3,9 +3,9 @@ import time
 import matplotlib.pyplot as plt
 #from ui_EfficiencyUI import Ui_EfficienyCorrection
 from matplotlib.backend_bases import MouseButton
-from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtWidgets import (
-    QAction,
+from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtWidgets import (
+    QWidgetAction,
     QApplication,
     QCheckBox,
     QLabel,
@@ -29,7 +29,7 @@ from PyQt5.QtWidgets import (
     QGridLayout,
     QSizePolicy,
 )
-from PyQt5.QtGui import QPalette, QColor, QCloseEvent, QFont
+from PyQt6.QtGui import QPalette, QColor, QCloseEvent, QFont
 import sys
 
 import PeakFit
@@ -46,6 +46,7 @@ import LoadDatabaseFile as ldf
 import loadgamma as lg
 import RunTrimExample
 import TRIM_Window
+import Manual
 
 
 
@@ -179,6 +180,11 @@ class MainWindow(QMainWindow):
         Trim_sim_test = TRIM.addAction('SRIM/TRIM Simulation test')
         Trim_sim_test.triggered.connect(lambda: self.RunTrimExample())
 
+        # Manual tab
+        plot = bar.addMenu('Help')
+        plot_manual = plot.addAction("Manual")
+        plot_manual.triggered.connect(lambda: self.ShowManual())
+
         # setting up the actions
 
         file_exit.triggered.connect(lambda: self.closeit(app))
@@ -259,7 +265,7 @@ class MainWindow(QMainWindow):
         # setting up the buttons and run number
 
         RunNum_Text = QLineEdit(self)
-        RunNum_Text.setAlignment(Qt.AlignCenter)
+        RunNum_Text.setAlignment(Qt.AlignmentFlag.AlignCenter)
         RunNum_Text.setMinimumWidth(200)
         RunNum_Text.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
         #font = QFont()
@@ -435,7 +441,13 @@ class MainWindow(QMainWindow):
         else:
             print('window exists')
 
+    def ShowManual(self):
+        """ Display manual page"""
+        print("showing manual")
+        if globals.wManual is None:
+            globals.wManual = Manual.ManualWindow()
 
+        globals.wManual.show()
 
 
     def N_do_not(self,checked,Norm_Counts,Norm_Spills,Normalise_do_not):
@@ -585,17 +597,17 @@ class MainWindow(QMainWindow):
         if self.wp is None:
             self.wp = Plot_Window.PlotWindow()
             print('self,wp = none')
-            self.wp.resize(850, 550)
+           # self.wp.resize(850, 550)
             self.wp.setWindowTitle("Plot Window: "+globals.RunNum)
-            self.wp.show()
+            self.wp.showMaximized()
 
         else:
             print('window exists')
             self.wp = Plot_Window.PlotWindow()
             print('self,wp = none')
-            self.wp.resize(850, 550)
+            #self.wp.resize(850, 550)
             self.wp.setWindowTitle("Plot Window"+globals.RunNum)
-            self.wp.show()
+            self.wp.showMaximized()
 
 
 
@@ -616,6 +628,7 @@ class MainWindow(QMainWindow):
     def onMyToolBarButtonClick(self, s):
         print("click", s)
 
+
     # load settings file
     ls.loadsettings()
     print(ls.settings_info)
@@ -635,4 +648,4 @@ app.setStyleSheet("QLabel{font-size: 8pt;}"
                   "QPushButton{font-size: 8pt;}")
 mainWin = MainWindow()
 mainWin.show()
-sys.exit(app.exec_())
+sys.exit(app.exec())

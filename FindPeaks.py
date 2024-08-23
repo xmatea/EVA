@@ -21,8 +21,8 @@ def Findpeak_with_bck_removed(x,y):
     NFILTER = 9
     HIGH_CLIP = 25
     PEAK_THRESH = 10
-    ## Create smooth backgroud
 
+    ## Create smooth backgroud
     rough_base = meanfilter(spectrum, FSIZE)
     for i in range(NFILTER):
         rough_base = meanfilter(rough_base, FSIZE)
@@ -70,10 +70,9 @@ def Findpeak_with_bck_removed(x,y):
     print('hmmm')
     axx.scatter(peak_pos, height, color='r', s=40, marker='X', label='peaks')
     print('scatter')
-    plt.show()
+    #plt.show()
     print('returning')
     return peaks, peak_pos
-
 
 def FindPeaks(x,y,h,t,d):
     print('here in Findpeaks')
@@ -94,7 +93,7 @@ def FindPeaks(x,y,h,t,d):
     print('hmmm')
     axx.scatter(peak_pos,height, color = 'r', s = 40, marker = 'X', label = 'peaks')
     print('scatter')
-    plt.show()
+    #plt.show()
     print('returning')
     return peaks, peak_pos
 
@@ -120,6 +119,6 @@ def FindPeaksCwt(x,y,h,t,d):
     print('hmmm')
     axx.scatter(peak_pos,height, color = 'r', s = 40, marker = 'X', label = 'peaks')
     print('scatter')
-    plt.show()
+    #plt.show()
     print('returning')
     return [peaks], [peak_pos]

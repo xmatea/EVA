@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backend_bases import MouseButton
 import globals
 
+fill_color = "white"
+
 def How_many_plot():
     """
     Determines how many plots in each plot
@@ -24,16 +26,11 @@ def Plot_Peak_Location(fig,axs,plt,peaks,x,i):
     """
 
     height = peaks[1]['peak_heights']
-    #print('height',height)
     peak_pos = x[peaks[0]]
-    #print('peak_pos',peak_pos)
     axs[i].scatter(peak_pos, height, color='r', s=20, marker='X', label='peaks')
-    #axs[i].scatter(x, peaks, color='r', s=20, marker='X', label='peaks')
-
 
 def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4,title_lab):
     #plots spectra as defined by the plot spectra
-
     numplots=How_many_plot()
     print('numplots', numplots)
     print(globals.Normalise_spill,globals.Normalise_counts)
@@ -42,18 +39,13 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4,title_lab):
     if numplots > 1:
         #print('more than one plot')
         fig, axs = plt.subplots(nrows=numplots, figsize=(16,7))
-        fig.canvas.manager.set_window_title(title_lab)
 
     else:
         #annoying matplotlib fix for one figure in a subplot
         print('only one plot')
         fig, temp = plt.subplots(nrows=1, figsize=(16, 7), squeeze=False)
-        fig.canvas.manager.set_window_title(title_lab)
 
         axs = [temp[0][0]]
-
-    print(axs)
-    #print(axs[0][0])
 
     fig.suptitle("Run Number: " + str(globals.RunNum) + "  " + globals.comment_str)
     fig.supxlabel("Energy (keV)")
@@ -65,20 +57,22 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4,title_lab):
         fig.supylabel("Intensity Normalised to Counts (10^5)")
     elif globals.Normalise_spill:
         fig.supylabel("Intensity Normalised to Spills (10^5)")
+
     i = 0
     print('i=', i)
     if globals.plot_GE1:
         print('1', i)
-        axs[i].fill_between(x1, y1, step='mid', color='yellow')
+        axs[i].fill_between(x1, y1, step='mid', color=fill_color)
         axs[i].step(x1, y1, where='mid', color='black')
         axs[i].set_ylim(0.0)
         axs[i].set_xlim(0.0)
         axs[i].set_title('2099')
         i += 1
         print('here plot GE1')
+
     if globals.plot_GE2:
         #print('2',i)
-        axs[i].fill_between(x2, y2,step='mid',color='yellow')
+        axs[i].fill_between(x2, y2,step='mid',color=fill_color)
         axs[i].step(x2,y2,where='mid',color='black')
         axs[i].set_ylim(0.0)
         axs[i].set_xlim(0.0)
@@ -86,24 +80,24 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4,title_lab):
         i += 1
     if globals.plot_GE3:
         #print('3',i)
-        axs[i].fill_between(x3, y3,step='mid',color='yellow')
+        axs[i].fill_between(x3, y3,step='mid',color=fill_color)
         axs[i].step(x3,y3,where='mid',color='black')
         axs[i].set_ylim(0.0)
         axs[i].set_xlim(0.0)
         axs[i].set_title('4099')
         i += 1
+
     if globals.plot_GE4:
         #print('4',i)
-        axs[i].fill_between(x4, y4,step='mid',color='yellow')
+        axs[i].fill_between(x4, y4,step='mid',color=fill_color)
         axs[i].step(x4,y4,where='mid',color='black')
         axs[i].set_ylim(0.0)
         axs[i].set_xlim(0.0)
         axs[i].set_title('5099')
         i += 1
 
-    plt.rc('font',size=16)
-    plt.tight_layout()
-
+    plt.subplots_adjust(top=0.9, bottom=0.1, left=0.1, right=0.9, hspace=0.45, wspace=0.23)
+    #fig.tight_layout()
     return fig, axs, plt
 
 '''def Plot_Spectra2():
@@ -116,6 +110,7 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4,title_lab):
     fig.supxlabel("Energy (keV)")
     fig.supylabel("Intensity")
     i=0
+    
     if globals.plot_GE1:
         axs[i].fill_between(globals.x_GE1, globals.y_GE1,step='mid',color='yellow')
         axs[i].step(globals.x_GE1,globals.y_GE1,where='mid',color='black')
