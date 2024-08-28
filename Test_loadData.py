@@ -1,11 +1,7 @@
 import unittest
-
+import loaddata
 import globals
 
-import loaddata
-
-
-from PyQt5.QtWidgets import QCheckBox, QWidget
 
 class LoadData(unittest.TestCase):
     '''def test_something(self):

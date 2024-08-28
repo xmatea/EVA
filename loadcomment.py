@@ -1,5 +1,3 @@
-import os
-
 import globals
 
 # shows RunNum is integer and the output is int and a string (python typing)
@@ -29,9 +27,9 @@ def loadcomment(RunNum:int) -> list[int, str]:
             print('Run Info', search_str, 'Found in Line', index - 1)
 
             globals.starttime_str = commenttext[index]
-            globals.endtime_str = commenttext[index+1]
-            globals.events_str = commenttext[index+2]
-            globals.comment_str = commenttext[index+4]
+            globals.endtime_str = commenttext[index + 1]
+            globals.events_str = commenttext[index + 2]
+            globals.comment_str = commenttext[index + 4]
             rtn_str = [globals.starttime_str, globals.endtime_str, globals.events_str, globals.comment_str]
             fd.close()
     except IOError:

@@ -1,13 +1,10 @@
 import math
 
 import Trimdata
-import peakfit_bounds_define
-from lmfit import Parameters, Model
 from lmfit.models import GaussianModel, QuadraticModel
 
-import matplotlib.pyplot as plt
 from matplotlib.backend_bases import MouseButton
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QLabel,
     QPushButton,
     QWidget,
@@ -26,7 +23,6 @@ import numpy as np
 from scipy.optimize import curve_fit
 
 import peakfit_bounds_define
-import peakfitdemo
 
 
 class PeakFit(QWidget):
@@ -50,7 +46,7 @@ class PeakFit(QWidget):
         self.data_y_GE2 = 0
         self.data_y_GE3 = 0
         self.data_y_GE4 = 0
-        print('Norm', globals.Normalise_do_not,globals.Normalise_counts,globals.Normalise_spill)
+        print('Norm', globals.Normalise_do_not, globals.Normalise_counts, globals.Normalise_spill)
 
         if globals.Normalise_do_not:
             if globals.plot_GE1:
@@ -220,7 +216,7 @@ class PeakFit(QWidget):
 
     def loadfunction(self):
         print('in load')
-        name = QFileDialog.getOpenFileName(self, 'Open a file', globals.workingdirectory,'All Files (*.*)')
+        name = QFileDialog.getOpenFileName(self, 'Open a file', globals.workingdirectory, 'All Files (*.*)')
 
         print('here')
         if name != ('', ''):
@@ -504,9 +500,9 @@ class PeakFit(QWidget):
         print(self.data_x_GE1, self.data_y_GE1)
 
         self.fig_ana, self.axs_ana, self.plt_ana = Plot_Spectra.Plot_Spectra3(self.data_x_GE1, self.data_y_GE1,
-                                                   self.data_x_GE2, self.data_y_GE2,
-                                                   self.data_x_GE3, self.data_y_GE3,
-                                                   self.data_x_GE4, self.data_y_GE4, title_lab)
+                                                                              self.data_x_GE2, self.data_y_GE2,
+                                                                              self.data_x_GE3, self.data_y_GE3,
+                                                                              self.data_x_GE4, self.data_y_GE4, title_lab)
 
         self.plt_ana.show()
 
@@ -638,7 +634,7 @@ class PeakFit(QWidget):
             # get and trim the correct data
 
             if globals.whichdet == 'GE1':
-                datax, datay = Trimdata.Trimdata(self.data_x_GE1,self.data_y_GE1, EMin, EMax)
+                datax, datay = Trimdata.Trimdata(self.data_x_GE1, self.data_y_GE1, EMin, EMax)
             elif globals.whichdet == 'GE2':
                 datax, datay = Trimdata.Trimdata(self.data_x_GE2, self.data_y_GE2, EMin, EMax)
             elif globals.whichdet == 'GE3':
@@ -663,7 +659,7 @@ class PeakFit(QWidget):
 
             #define bounds for parameters
 
-            bound_all = peakfit_bounds_define.define_bounds(pp_len,EMin,EMax,back)
+            bound_all = peakfit_bounds_define.define_bounds(pp_len, EMin, EMax, back)
 
             #custom_gaussian = lambda datax, mu, sigma, a, c: gaussian(datax, mu, sigma, a, c)
             #custom_gaussian = lambda x, iniguess: multiGaussianFunc(x, iniguess)
@@ -804,7 +800,7 @@ class PeakFit(QWidget):
         # get and trim the correct data
 
         if globals.whichdet == 'GE1':
-            datax, datay = Trimdata.Trimdata(self.data_x_GE1,self.data_y_GE1, EMin, EMax)
+            datax, datay = Trimdata.Trimdata(self.data_x_GE1, self.data_y_GE1, EMin, EMax)
         elif globals.whichdet == 'GE2':
             datax, datay = Trimdata.Trimdata(self.data_x_GE2, self.data_y_GE2, EMin, EMax)
         elif globals.whichdet == 'GE3':
@@ -990,7 +986,7 @@ class PeakFit(QWidget):
 
         # Summary output
 
-        fname = globals.workingdirectory+'/'+str(globals.RunNum)+'_'+globals.whichdet+'.sum'
+        fname = globals.workingdirectory + '/' + str(globals.RunNum) + '_' + globals.whichdet + '.sum'
         print(fname)
 
         with open(fname, 'w') as f:
@@ -1008,10 +1004,9 @@ class PeakFit(QWidget):
 
         # writing fit results to a separate file
 
-        fname = globals.workingdirectory+'/'+str(globals.RunNum)+'_'+globals.whichdet+'.fit'
+        fname = globals.workingdirectory + '/' + str(globals.RunNum) + '_' + globals.whichdet + '.fit'
         print(fname)
         with open(fname, 'w') as f:
-            import csv
             norows = len(datax)
             for i in range(norows):
                 line = str(datax[i])+' '+str(result.best_fit[i])+"\n"

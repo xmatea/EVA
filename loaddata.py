@@ -9,9 +9,9 @@ def loaddata(RunNum):
     #print('Working dir', globals.workingdirectory)
     flag = 1
     filename_det = [globals.workingdirectory + '/ral0' + str(RunNum) + '.rooth2099.dat',
-                        globals.workingdirectory + '/ral0' + str(RunNum) + '.rooth3099.dat',
-                        globals.workingdirectory + '/ral0' + str(RunNum) + '.rooth4099.dat',
-                        globals.workingdirectory + '/ral0' + str(RunNum) + '.rooth5099.dat']
+                    globals.workingdirectory + '/ral0' + str(RunNum) + '.rooth3099.dat',
+                    globals.workingdirectory + '/ral0' + str(RunNum) + '.rooth4099.dat',
+                    globals.workingdirectory + '/ral0' + str(RunNum) + '.rooth5099.dat']
     #print(filename_det)
     #print(filename_det[0])
 

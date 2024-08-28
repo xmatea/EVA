@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 from matplotlib.backend_bases import MouseButton
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
 
@@ -7,19 +6,15 @@ from PyQt6.QtWidgets import (
     QCheckBox,
     QLabel,
     QPushButton,
-    QHBoxLayout,
     QVBoxLayout,
     QFormLayout,
     QGridLayout,
     QWidget,
     QLineEdit,
-    QTextEdit,
     QTableWidget,
     QTableWidgetItem,
     QTabWidget,
-    QComboBox,
-    QSizePolicy,
-    QSpacerItem
+    QComboBox
 )
 import getmatch
 import Plot_Spectra
@@ -513,7 +508,7 @@ class PlotWindow(QWidget):
 
         if self.findpeaks.peakfindroutine.currentText() == "find peaks (dev)":
             if globals.plot_GE1:
-                peaks_GE1, peak_pos_GE1 = FindPeaks.Findpeak_with_bck_removed(globals.x_GE1,globals.y_GE1)
+                peaks_GE1, peak_pos_GE1 = FindPeaks.Findpeak_with_bck_removed(globals.x_GE1, globals.y_GE1)
                 default_peaks = peaks_GE1[0]
                 #print('dp', default_peaks)
                 # default_peaks = peaks_GE1
@@ -533,7 +528,7 @@ class PlotWindow(QWidget):
 
         if self.findpeaks.peakfindroutine.currentText() == "scipy.FindPeak":
             if globals.plot_GE1:
-                peaks_GE1, peak_pos_GE1 = FindPeaks.FindPeaks(globals.x_GE1,globals.y_GE1,h,t,d)
+                peaks_GE1, peak_pos_GE1 = FindPeaks.FindPeaks(globals.x_GE1, globals.y_GE1, h, t, d)
                 default_peaks = peaks_GE1[0]
                # print('dp',default_peaks)
                 default_sigma = [2.0] * len(default_peaks)
@@ -551,7 +546,7 @@ class PlotWindow(QWidget):
                 i += 1
 
             if globals.plot_GE2:
-                peaks_GE2, peak_pos_GE2 = FindPeaks.FindPeaks(globals.x_GE2,globals.y_GE2,h,t,d)
+                peaks_GE2, peak_pos_GE2 = FindPeaks.FindPeaks(globals.x_GE2, globals.y_GE2, h, t, d)
                 default_peaks = peaks_GE2[0]
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
@@ -562,7 +557,7 @@ class PlotWindow(QWidget):
 
 
             if globals.plot_GE3:
-                peaks_GE3, peak_pos_GE3 = FindPeaks.FindPeaks(globals.x_GE3,globals.y_GE3,h,t,d)
+                peaks_GE3, peak_pos_GE3 = FindPeaks.FindPeaks(globals.x_GE3, globals.y_GE3, h, t, d)
                 default_peaks = peaks_GE3[0]
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
@@ -572,7 +567,7 @@ class PlotWindow(QWidget):
                 i += 1
 
             if globals.plot_GE4:
-                peaks_GE4, peak_pos_GE4 = FindPeaks.FindPeaks(globals.x_GE4,globals.y_GE4,h,t,d)
+                peaks_GE4, peak_pos_GE4 = FindPeaks.FindPeaks(globals.x_GE4, globals.y_GE4, h, t, d)
                 default_peaks = peaks_GE4[0]
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
@@ -586,7 +581,7 @@ class PlotWindow(QWidget):
         if self.findpeaks.peakfindroutine.currentText() == "scipy.Find_Peak_Cwt":
             # Not working at the moment
             if globals.plot_GE1:
-                peaks_GE1, peak_pos_GE1 = FindPeaks.FindPeaksCwt(globals.x_GE1,globals.y_GE1,h,t,d)
+                peaks_GE1, peak_pos_GE1 = FindPeaks.FindPeaksCwt(globals.x_GE1, globals.y_GE1, h, t, d)
 
                 default_peaks = peaks_GE1[0]
                 #print('dpcwt',default_peaks)
@@ -598,7 +593,7 @@ class PlotWindow(QWidget):
                 #print('after match')
 
 
-                Plot_Spectra.Plot_Peak_Location(self.sc.fig, self.sc.axs, self.sc.plt, peaks_GE1, globals.x_GE1,i)
+                Plot_Spectra.Plot_Peak_Location(self.sc.fig, self.sc.axs, self.sc.plt, peaks_GE1, globals.x_GE1, i)
                 #Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, peak_pos_GE1, i)
                 #print('here')
 
@@ -610,34 +605,34 @@ class PlotWindow(QWidget):
                 i += 1
 
             if globals.plot_GE2:
-                peaks_GE2, peak_pos_GE2 = FindPeaks.FindPeaksCwt(globals.x_GE2,globals.y_GE2,h,t,d)
+                peaks_GE2, peak_pos_GE2 = FindPeaks.FindPeaksCwt(globals.x_GE2, globals.y_GE2, h, t, d)
                 default_peaks = peaks_GE2[0]
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE2, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE2', match_GE2)
-                Plot_Spectra.Plot_Peak_Location(self.sc.fig, self.sc.axs, self.sc.plt, peaks_GE2, globals.x_GE2,i)
+                Plot_Spectra.Plot_Peak_Location(self.sc.fig, self.sc.axs, self.sc.plt, peaks_GE2, globals.x_GE2, i)
                 i+=1
 
 
             if globals.plot_GE3:
-                peaks_GE3, peak_pos_GE3 = FindPeaks.FindPeaksCwt(globals.x_GE3,globals.y_GE3,h,t,d)
+                peaks_GE3, peak_pos_GE3 = FindPeaks.FindPeaksCwt(globals.x_GE3, globals.y_GE3, h, t, d)
                 default_peaks = peaks_GE3[0]
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE3, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE3',match_GE3)
-                Plot_Spectra.Plot_Peak_Location(self.sc.fig, self.sc.axs, self.sc.plt, peaks_GE3, globals.x_GE3,i)
+                Plot_Spectra.Plot_Peak_Location(self.sc.fig, self.sc.axs, self.sc.plt, peaks_GE3, globals.x_GE3, i)
                 i += 1
 
             if globals.plot_GE4:
-                peaks_GE4, peak_pos_GE4 = FindPeaks.FindPeaksCwt(globals.x_GE4,globals.y_GE4,h,t,d)
+                peaks_GE4, peak_pos_GE4 = FindPeaks.FindPeaksCwt(globals.x_GE4, globals.y_GE4, h, t, d)
                 default_peaks = peaks_GE4[0]
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE4, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE4',match_GE4)
-                Plot_Spectra.Plot_Peak_Location(self.sc.fig, self.sc.axs, self.sc.plt, peaks_GE4, globals.x_GE4,i)
+                Plot_Spectra.Plot_Peak_Location(self.sc.fig, self.sc.axs, self.sc.plt, peaks_GE4, globals.x_GE4, i)
                 i+=1
     
             self.sc.draw()
@@ -646,22 +641,22 @@ class PlotWindow(QWidget):
     def PlotSpectra(self):
         if globals.Normalise_do_not:
             self.fig,self.axs,self.plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1, globals.y_GE1,
-                                       globals.x_GE2, globals.y_GE2,
-                                       globals.x_GE3, globals.y_GE3,
-                                       globals.x_GE4, globals.y_GE4,
-                                                     "Plot of Data: "+str(globals.RunNum))
+                                                                    globals.x_GE2, globals.y_GE2,
+                                                                    globals.x_GE3, globals.y_GE3,
+                                                                    globals.x_GE4, globals.y_GE4,
+                                                     "Plot of Data: " + str(globals.RunNum))
         elif globals.Normalise_counts:
             self.fig,self.axs,self.plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1_Ncounts, globals.y_GE1_Ncounts,
-                                       globals.x_GE2_Ncounts, globals.y_GE2_Ncounts,
-                                       globals.x_GE3_Ncounts, globals.y_GE3_Ncounts,
-                                       globals.x_GE4_Ncounts, globals.y_GE4_Ncounts,
-                                                     "Plot of Data: "+str(globals.RunNum))
+                                                                    globals.x_GE2_Ncounts, globals.y_GE2_Ncounts,
+                                                                    globals.x_GE3_Ncounts, globals.y_GE3_Ncounts,
+                                                                    globals.x_GE4_Ncounts, globals.y_GE4_Ncounts,
+                                                     "Plot of Data: " + str(globals.RunNum))
         elif globals.Normalise_spill:
             self.fig,self.axs,self.plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1_NEvents, globals.y_GE1_NEvents,
-                                       globals.x_GE2_NEvents, globals.y_GE2_NEvents,
-                                       globals.x_GE3_NEvents, globals.y_GE3_NEvents,
-                                       globals.x_GE4_NEvents, globals.y_GE4_NEvents,
-                                                     "Plot of Data: "+ str(globals.RunNum))
+                                                                    globals.x_GE2_NEvents, globals.y_GE2_NEvents,
+                                                                    globals.x_GE3_NEvents, globals.y_GE3_NEvents,
+                                                                    globals.x_GE4_NEvents, globals.y_GE4_NEvents,
+                                                     "Plot of Data: " + str(globals.RunNum))
 
 
         return PlotWidget(self.fig, self.axs, self.plt)

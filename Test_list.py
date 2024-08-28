@@ -1,18 +1,10 @@
 import unittest
-import LoadDatabaseFile as ldf
-import TRIM_Window
 import globals
-import getmatch
-import loadcomment
-import loaddata
-import loadgamma as lg
-import Eff_Window
-import Energy_Corrections
-from srim import TRIM, Ion, Layer, Target, Material
+import LoadDatabaseFile as ldf
+
 '''from Tests import Test_LoadJason
 from Tests import Test_getmatch'''
 
-from PyQt5.QtWidgets import QCheckBox, QWidget
 
 class MyTestCase(unittest.TestCase):
     '''def test_something(self):

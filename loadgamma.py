@@ -1,6 +1,6 @@
 from collections import namedtuple
 import globals
-import threading
+
 
 def loadgamma():
     loadgammascan(0,117)
@@ -99,6 +99,6 @@ def decodegammas2(filename, A):
                         string = f.readline()
                         gammas = record3._make([string[c[0]:c[1]] for c in columns3])
 
-                        globals.Full_Gammas[A].append((nucl.SYMB,gammas.Eg,gammas.Pg,level.T_half))
+                        globals.Full_Gammas[A].append((nucl.SYMB, gammas.Eg, gammas.Pg, level.T_half))
 
     f.close()

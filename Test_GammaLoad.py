@@ -1,11 +1,7 @@
 import unittest
-
 import globals
-
 import loadgamma as lg
 
-
-from PyQt5.QtWidgets import QCheckBox, QWidget
 
 class MyTestCase(unittest.TestCase):
     '''def test_something(self):
@@ -19,4 +15,4 @@ class MyTestCase(unittest.TestCase):
 
     def test_gammaload2(self):
         lg.loadgamma()
-        self.assertEqual(len(globals.Full_Gammas),119,'load gamma failed')
+        self.assertEqual(len(globals.Full_Gammas), 119, 'load gamma failed')

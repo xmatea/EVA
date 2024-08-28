@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 from matplotlib.backend_bases import MouseButton
-from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import (
-    QAction,
+from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import (
+    QWidgetAction,
     QApplication,
     QCheckBox,
     QLabel,
@@ -21,7 +21,7 @@ from PyQt5.QtWidgets import (
     QFileDialog,
     QMessageBox,
 )
-from PyQt5.QtGui import QPalette, QColor, QCloseEvent
+from PyQt6.QtGui import QPalette, QColor, QCloseEvent
 import sys
 import loaddata
 import loadcomment

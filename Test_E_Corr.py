@@ -1,11 +1,7 @@
 import unittest
-
 import globals
-
 import loaddata
-
 import Energy_Corrections
-
 
 class MyTestCase(unittest.TestCase):
 

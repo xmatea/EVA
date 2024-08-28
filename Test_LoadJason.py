@@ -1,9 +1,6 @@
 import unittest
-import LoadDatabaseFile as ldf
-
 import globals
-
-
+import LoadDatabaseFile as ldf
 
 
 class LoadJason(unittest.TestCase):

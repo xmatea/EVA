@@ -1,16 +1,15 @@
 import unittest
-import LoadDatabaseFile as ldf
-import TRIM_Window
-import globals
-import getmatch
-import loadcomment
 import loaddata
+import globals
+import TRIM_Window
+import loadcomment
+import LoadDatabaseFile as ldf
 import loadgamma as lg
 import Eff_Window
 import Energy_Corrections
-from srim import TRIM, Ion, Layer, Target, Material
+import getmatch
+from srim import Ion, Layer
 
-from PyQt5.QtWidgets import QCheckBox, QWidget
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):
@@ -38,7 +37,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_loadcomment(self):
         #print('loadcomment test')
-        globals.workingdirectory='./TestData/'
+        globals.workingdirectory= './TestData/'
         RunNum=2630
         flag, rtnstr = loadcomment.loadcomment(RunNum)
         self.assertEqual(flag, 1, 'did return flag')
@@ -50,7 +49,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_loadcomment2(self):
         #print('loadcomment2 test')
-        globals.workingdirectory='./TestData/'
+        globals.workingdirectory= './TestData/'
         RunNum=999
         flag, rtnstr = loadcomment.loadcomment(RunNum)
         self.assertEqual(flag, 0, 'did return flag')
@@ -59,7 +58,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_loadcomment3(self):
         #print('loadcomment3 test')
-        globals.workingdirectory='./'
+        globals.workingdirectory= './'
         RunNum=2631
         flag,rtnstr = loadcomment.loadcomment(RunNum)
         self.assertEqual(flag, 0, 'did return flag')
@@ -71,20 +70,20 @@ class MyTestCase(unittest.TestCase):
         globals.workingdirectory = './TestData/'
         RunNum = 2630
         loaddata.loaddata(RunNum)
-        self.assertEqual(globals.flag_d_GE1, 1,'didnt load ge1 data')
-        self.assertEqual(globals.flag_d_GE2, 1,'didnt load ge2 data')
-        self.assertEqual(globals.flag_d_GE3, 1,'didnt load ge3 data')
-        self.assertEqual(globals.flag_d_GE4, 1,'didnt load ge4 data')
+        self.assertEqual(globals.flag_d_GE1, 1, 'didnt load ge1 data')
+        self.assertEqual(globals.flag_d_GE2, 1, 'didnt load ge2 data')
+        self.assertEqual(globals.flag_d_GE3, 1, 'didnt load ge3 data')
+        self.assertEqual(globals.flag_d_GE4, 1, 'didnt load ge4 data')
 
     def test_loaddata2(self):
         #print('loadcdata test')
         globals.workingdirectory = './TestData/'
         RunNum = 999
         loaddata.loaddata(RunNum)
-        self.assertEqual(globals.flag_d_GE1, 0,'didnt load ge1 data')
-        self.assertEqual(globals.flag_d_GE2, 0,'didnt load ge2 data')
-        self.assertEqual(globals.flag_d_GE3, 0,'didnt load ge3 data')
-        self.assertEqual(globals.flag_d_GE4, 0,'didnt load ge4 data')
+        self.assertEqual(globals.flag_d_GE1, 0, 'didnt load ge1 data')
+        self.assertEqual(globals.flag_d_GE2, 0, 'didnt load ge2 data')
+        self.assertEqual(globals.flag_d_GE3, 0, 'didnt load ge3 data')
+        self.assertEqual(globals.flag_d_GE4, 0, 'didnt load ge4 data')
 
     def test_loaddata3(self):
         #print('loadcdata test')
@@ -96,14 +95,14 @@ class MyTestCase(unittest.TestCase):
         RunNum = 2630
         loaddata.loaddata(RunNum)
 
-        self.assertEqual(globals.x_GE1[100], 99.5,'didnt load ge1 data')
-        self.assertEqual(globals.y_GE1[100], 110.0,'didnt load ge2 data')
-        self.assertEqual(globals.x_GE2[100], 99.5 ,'didnt load ge1 data')
-        self.assertEqual(globals.y_GE2[100], 63.0,'didnt load ge2 data')
-        self.assertEqual(globals.x_GE3[100], 12.4375,'didnt load ge1 data')
-        self.assertEqual(globals.y_GE3[100], 19.0,'didnt load ge2 data')
-        self.assertEqual(globals.x_GE4[100], 12.4375 ,'didnt load ge1 data')
-        self.assertEqual(globals.y_GE4[100], 20.0,'didnt load ge2 data')
+        self.assertEqual(globals.x_GE1[100], 99.5, 'didnt load ge1 data')
+        self.assertEqual(globals.y_GE1[100], 110.0, 'didnt load ge2 data')
+        self.assertEqual(globals.x_GE2[100], 99.5, 'didnt load ge1 data')
+        self.assertEqual(globals.y_GE2[100], 63.0, 'didnt load ge2 data')
+        self.assertEqual(globals.x_GE3[100], 12.4375, 'didnt load ge1 data')
+        self.assertEqual(globals.y_GE3[100], 19.0, 'didnt load ge2 data')
+        self.assertEqual(globals.x_GE4[100], 12.4375, 'didnt load ge1 data')
+        self.assertEqual(globals.y_GE4[100], 20.0, 'didnt load ge2 data')
 
     def test_gammaload(self):
         lg.loadgamma()
@@ -113,43 +112,43 @@ class MyTestCase(unittest.TestCase):
 
     def test_gammaload2(self):
         lg.loadgamma()
-        self.assertEqual(len(globals.Full_Gammas),119,'load gamma failed')
+        self.assertEqual(len(globals.Full_Gammas), 119, 'load gamma failed')
 
     def test_saveeffparaGE1(self):
-        Eff_Window.Correction_Eff.save_GE_Eff_settings(self,"GE1", 100, 101, 102, 103, 104)
+        Eff_Window.Correction_Eff.save_GE_Eff_settings(self, "GE1", 100, 101, 102, 103, 104)
 
-        self.assertEqual(globals.Eff_Corr_GE1_P0,100,'Save Eff Parameters P0 Error')
-        self.assertEqual(globals.Eff_Corr_GE1_P1,101,'Save Eff Parameters P1 Error')
-        self.assertEqual(globals.Eff_Corr_GE1_P2,102,'Save Eff Parameters P2 Error')
-        self.assertEqual(globals.Eff_Corr_GE1_P3,103,'Save Eff Parameters P3 Error')
-        self.assertEqual(globals.Eff_Corr_GE1_P4,104,'Save Eff Parameters P4 Error')
+        self.assertEqual(globals.Eff_Corr_GE1_P0, 100, 'Save Eff Parameters P0 Error')
+        self.assertEqual(globals.Eff_Corr_GE1_P1, 101, 'Save Eff Parameters P1 Error')
+        self.assertEqual(globals.Eff_Corr_GE1_P2, 102, 'Save Eff Parameters P2 Error')
+        self.assertEqual(globals.Eff_Corr_GE1_P3, 103, 'Save Eff Parameters P3 Error')
+        self.assertEqual(globals.Eff_Corr_GE1_P4, 104, 'Save Eff Parameters P4 Error')
 
     def test_saveeffparaGE2(self):
-        Eff_Window.Correction_Eff.save_GE_Eff_settings(self,"GE2", 100, 101, 102, 103, 104)
+        Eff_Window.Correction_Eff.save_GE_Eff_settings(self, "GE2", 100, 101, 102, 103, 104)
 
-        self.assertEqual(globals.Eff_Corr_GE2_P0,100,'Save Eff Parameters P0 Error')
-        self.assertEqual(globals.Eff_Corr_GE2_P1,101,'Save Eff Parameters P1 Error')
-        self.assertEqual(globals.Eff_Corr_GE2_P2,102,'Save Eff Parameters P2 Error')
-        self.assertEqual(globals.Eff_Corr_GE2_P3,103,'Save Eff Parameters P3 Error')
-        self.assertEqual(globals.Eff_Corr_GE2_P4,104,'Save Eff Parameters P4 Error')
+        self.assertEqual(globals.Eff_Corr_GE2_P0, 100, 'Save Eff Parameters P0 Error')
+        self.assertEqual(globals.Eff_Corr_GE2_P1, 101, 'Save Eff Parameters P1 Error')
+        self.assertEqual(globals.Eff_Corr_GE2_P2, 102, 'Save Eff Parameters P2 Error')
+        self.assertEqual(globals.Eff_Corr_GE2_P3, 103, 'Save Eff Parameters P3 Error')
+        self.assertEqual(globals.Eff_Corr_GE2_P4, 104, 'Save Eff Parameters P4 Error')
 
     def test_saveeffparaGE3(self):
-        Eff_Window.Correction_Eff.save_GE_Eff_settings(self,"GE3", 100, 101, 102, 103, 104)
+        Eff_Window.Correction_Eff.save_GE_Eff_settings(self, "GE3", 100, 101, 102, 103, 104)
 
-        self.assertEqual(globals.Eff_Corr_GE3_P0,100,'Save Eff Parameters P0 Error')
-        self.assertEqual(globals.Eff_Corr_GE3_P1,101,'Save Eff Parameters P1 Error')
-        self.assertEqual(globals.Eff_Corr_GE3_P2,102,'Save Eff Parameters P2 Error')
-        self.assertEqual(globals.Eff_Corr_GE3_P3,103,'Save Eff Parameters P3 Error')
-        self.assertEqual(globals.Eff_Corr_GE3_P4,104,'Save Eff Parameters P4 Error')
+        self.assertEqual(globals.Eff_Corr_GE3_P0, 100, 'Save Eff Parameters P0 Error')
+        self.assertEqual(globals.Eff_Corr_GE3_P1, 101, 'Save Eff Parameters P1 Error')
+        self.assertEqual(globals.Eff_Corr_GE3_P2, 102, 'Save Eff Parameters P2 Error')
+        self.assertEqual(globals.Eff_Corr_GE3_P3, 103, 'Save Eff Parameters P3 Error')
+        self.assertEqual(globals.Eff_Corr_GE3_P4, 104, 'Save Eff Parameters P4 Error')
 
     def test_saveeffparaGE4(self):
-        Eff_Window.Correction_Eff.save_GE_Eff_settings(self,"GE4", 100, 101, 102, 103, 104)
+        Eff_Window.Correction_Eff.save_GE_Eff_settings(self, "GE4", 100, 101, 102, 103, 104)
 
-        self.assertEqual(globals.Eff_Corr_GE4_P0,100,'Save Eff Parameters P0 Error')
-        self.assertEqual(globals.Eff_Corr_GE4_P1,101,'Save Eff Parameters P1 Error')
-        self.assertEqual(globals.Eff_Corr_GE4_P2,102,'Save Eff Parameters P2 Error')
-        self.assertEqual(globals.Eff_Corr_GE4_P3,103,'Save Eff Parameters P3 Error')
-        self.assertEqual(globals.Eff_Corr_GE4_P4,104,'Save Eff Parameters P4 Error')
+        self.assertEqual(globals.Eff_Corr_GE4_P0, 100, 'Save Eff Parameters P0 Error')
+        self.assertEqual(globals.Eff_Corr_GE4_P1, 101, 'Save Eff Parameters P1 Error')
+        self.assertEqual(globals.Eff_Corr_GE4_P2, 102, 'Save Eff Parameters P2 Error')
+        self.assertEqual(globals.Eff_Corr_GE4_P3, 103, 'Save Eff Parameters P3 Error')
+        self.assertEqual(globals.Eff_Corr_GE4_P4, 104, 'Save Eff Parameters P4 Error')
 
 
     def test_Energy_Correction_GE1(self):
@@ -293,7 +292,7 @@ class MyTestCase(unittest.TestCase):
         default_peaks = [20.500]
         default_sigma = [0.01] * len(default_peaks)
         input_data = list(zip(default_peaks, default_sigma))
-        match=getmatch.getmatchesgammas(input_data)
+        match= getmatch.getmatchesgammas(input_data)
         #print(res)
         #print(match)
         self.assertEqual(match, res, 'load gamma failed')
@@ -389,7 +388,7 @@ class MyTestCase(unittest.TestCase):
 
         SL, TT = MyTestCase.make_setupsample(self)
         xposlist = TRIM_Window.RunSimTRIMSRIM.getxpos(self)
-        res = TRIM_Window.RunSimTRIMSRIM.getcomp(self,xposlist,0)
+        res = TRIM_Window.RunSimTRIMSRIM.getcomp(self, xposlist, 0)
         perlayer = [0.0, 0.0, 0.0, 1.0]
 
         self.assertEqual(correct_res, res, 'comp failed')
@@ -413,7 +412,7 @@ class MyTestCase(unittest.TestCase):
 
         SL, TT = MyTestCase.make_setupsample(self)
         xposlist = TRIM_Window.RunSimTRIMSRIM.getxpos(self)
-        res = TRIM_Window.RunSimTRIMSRIM.getcomp(self,xposlist,0)
+        res = TRIM_Window.RunSimTRIMSRIM.getcomp(self, xposlist, 0)
         perlayer = [0.0, 0.0, 0.0, 1.0]
 
         self.assertEqual(correct_res, res, 'comp failed')

@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-from matplotlib.backend_bases import MouseButton
 import globals
 
 fill_color = "white"
@@ -33,7 +32,7 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4,title_lab):
     #plots spectra as defined by the plot spectra
     numplots=How_many_plot()
     print('numplots', numplots)
-    print(globals.Normalise_spill,globals.Normalise_counts)
+    print(globals.Normalise_spill, globals.Normalise_counts)
     print(x1)
 
     if numplots > 1:

@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QLabel,
     QPushButton,
     QWidget,
@@ -100,7 +100,7 @@ class MultiPlotWindow(QWidget):
         # plots multiple runs from the runlist and with a y offset
 
         MultiPlot.MultiPlot(datax_GE1, datay_GE1, datax_GE2, datay_GE2, datax_GE3, datay_GE3, datax_GE4, datay_GE4,
-                            RunList,offset)
+                            RunList, offset)
 
 
 

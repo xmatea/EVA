@@ -1,6 +1,5 @@
 import matplotlib as plt
 import globals
-from PyQt5.QtGui import QPalette, QColor, QCloseEvent
 import PlotWindow
 
 

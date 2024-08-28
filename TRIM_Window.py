@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QLabel,
     QPushButton,
     QWidget,
@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (
 )
 import globals
 import numpy as np
-from srim import TRIM, Ion, Layer, Target, Material
+from srim import TRIM, Ion, Layer, Target
 import matplotlib.pyplot as plt
 
 
@@ -447,7 +447,7 @@ class RunSimTRIMSRIM(QWidget):
         print(globals.workingdirectory)
         print('')
         print('')
-        save_file = globals.workingdirectory+'/SRIM_'+self.tab2.table_PlotRes.item(x,0).text() + '_MeVc.dat'
+        save_file = globals.workingdirectory + '/SRIM_' + self.tab2.table_PlotRes.item(x, 0).text() + '_MeVc.dat'
         print('Sve_file',save_file)
         file2 = open(save_file, "w")
 
@@ -547,7 +547,7 @@ class RunSimTRIMSRIM(QWidget):
 
                     plt.axvline(x=sumdis, color='k', linestyle='--')
                     plt.text(sumdis, 0, globals.sample_name[i], horizontalalignment='left', rotation='vertical')
-                    print('sample_layers',globals.sample_layers[i])
+                    print('sample_layers', globals.sample_layers[i])
 
                 plt.show()
 

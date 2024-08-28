@@ -1,25 +1,9 @@
-from PyQt5.QtWidgets import (
-    QAction,
-    QApplication,
+from PyQt6.QtWidgets import (
     QCheckBox,
     QLabel,
-    QMainWindow,
-    QStatusBar,
-    QToolBar,
     QPushButton,
-    QStackedLayout,
-    QVBoxLayout,
     QWidget,
-    QMenuBar,
-    QMenu,
-    QHBoxLayout,
     QLineEdit,
-    QFileDialog,
-    QMessageBox,
-    QTableWidget,
-    QTableWidgetItem,
-    QTabWidget,
-    QComboBox,
     QGridLayout,
 )
 

@@ -1,7 +1,8 @@
 import unittest
-import TRIM_Window
 import globals
-from srim import TRIM, Ion, Layer, Target, Material
+import TRIM_Window
+from srim import Ion, Layer
+
 
 class MyTestCase(unittest.TestCase):
     def make_setupsample(self):
@@ -95,7 +96,7 @@ class MyTestCase(unittest.TestCase):
 
         SL, TT = MyTestCase.make_setupsample(self)
         xposlist = TRIM_Window.RunSimTRIMSRIM.getxpos(self)
-        res = TRIM_Window.RunSimTRIMSRIM.getcomp(self,xposlist,0)
+        res = TRIM_Window.RunSimTRIMSRIM.getcomp(self, xposlist, 0)
         perlayer = [0.0, 0.0, 0.0, 1.0]
 
         self.assertEqual(correct_res, res, 'comp failed')
@@ -119,7 +120,7 @@ class MyTestCase(unittest.TestCase):
 
         SL, TT = MyTestCase.make_setupsample(self)
         xposlist = TRIM_Window.RunSimTRIMSRIM.getxpos(self)
-        res = TRIM_Window.RunSimTRIMSRIM.getcomp(self,xposlist,0)
+        res = TRIM_Window.RunSimTRIMSRIM.getcomp(self, xposlist, 0)
         perlayer = [0.0, 0.0, 0.0, 1.0]
 
         self.assertEqual(correct_res, res, 'comp failed')
