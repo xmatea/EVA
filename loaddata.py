@@ -1,5 +1,4 @@
-import array as arr
-
+#import array as arr
 import globals
 import numpy as np
 import Normalise
