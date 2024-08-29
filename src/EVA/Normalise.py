@@ -1,4 +1,4 @@
-import globals
+from EVA import globals
 import numpy as np
 
 def Normalise():

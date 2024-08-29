@@ -1,4 +1,4 @@
-import globals
+from EVA import globals
 
 # shows RunNum is integer and the output is int and a string (python typing)
 def loadcomment(RunNum:int) -> list[int, str]:

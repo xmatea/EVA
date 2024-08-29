@@ -1,8 +1,6 @@
 #import array as arr
-import globals
+from EVA import globals, Normalise, Energy_Corrections
 import numpy as np
-import Normalise
-import Energy_Corrections
 
 def loaddata(RunNum):
     #print('loading data ', RunNum)

@@ -1,6 +1,6 @@
 settings_info = ''
 def loadsettings():
-    with open('Settings.txt') as f:
+    with open('src/EVA/Settings.txt') as f:
         lines = f.readlines()
         print(lines)
         settings_info=lines

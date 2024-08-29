@@ -21,11 +21,12 @@ from PyQt6.QtWidgets import (
     QFileDialog,
     QMessageBox,
 )
+
 from PyQt6.QtGui import QPalette, QColor, QCloseEvent
 import sys
 import loaddata
 import loadcomment
-import globals
+from EVA import globals
 
 
 class PlotWindow(QWidget):

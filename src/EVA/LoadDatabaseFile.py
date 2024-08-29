@@ -1,5 +1,5 @@
 import json
-import globals
+from EVA import globals
 
 
 

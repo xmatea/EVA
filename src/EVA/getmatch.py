@@ -1,4 +1,4 @@
-import globals
+from EVA import globals
 
 def getmatchesgammastrans_clicked(Ele, En):
     print('length of full_gamms', len(globals.Full_Gammas))

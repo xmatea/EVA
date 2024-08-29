@@ -15,7 +15,7 @@ import loadsettings as ls
 
 import LoadDatabaseFile as ldf
 import loadgamma as lg
-import globals
+from EVA import globals
 
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.

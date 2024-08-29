@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
-import Plot_Spectra
-import globals
+from EVA import Plot_Spectra
+from EVA import globals
 
 
 def MultiPlot(x1, y1, x2, y2, x3, y3, x4, y4, RunList, offset):

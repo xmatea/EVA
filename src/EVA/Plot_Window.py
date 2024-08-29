@@ -16,12 +16,11 @@ from PyQt6.QtWidgets import (
     QTabWidget,
     QComboBox
 )
-import getmatch
-import Plot_Spectra
-import FindPeaks
-import SortMatch
+
+from EVA import getmatch, Plot_Spectra, FindPeaks, SortMatch, globals
+
 import time
-import globals
+
 from PlotWidget import PlotWidget
 
 

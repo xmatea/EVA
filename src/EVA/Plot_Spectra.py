@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-import globals
+from EVA import globals
 
 fill_color = "white"
 

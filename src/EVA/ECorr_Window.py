@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import (
     QGridLayout,
 )
 
-import globals
+from EVA import globals
 
 class Correction_E(QWidget):
     """

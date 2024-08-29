@@ -1,4 +1,4 @@
-import globals
+from EVA import globals
 
 def Energy_Corrections():
 

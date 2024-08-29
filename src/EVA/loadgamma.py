@@ -1,5 +1,5 @@
 from collections import namedtuple
-import globals
+from EVA import globals
 
 
 def loadgamma():
@@ -7,7 +7,7 @@ def loadgamma():
 
 
 def loadgammascan(minA,maxA):
-    str1 = './Databases/gammas/levels/z'
+    str1 = 'Databases/gammas/levels/z'
 
     for i in range(minA,maxA):
         A = i+1

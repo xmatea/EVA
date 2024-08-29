@@ -1,6 +1,6 @@
 import math
 
-import Trimdata
+from EVA import Trimdata
 from lmfit.models import GaussianModel, QuadraticModel
 
 from matplotlib.backend_bases import MouseButton
@@ -17,8 +17,7 @@ from PyQt6.QtWidgets import (
     QFileDialog,
 )
 
-import globals
-import Plot_Spectra
+from EVA import globals, Plot_Spectra
 import numpy as np
 from scipy.optimize import curve_fit
 

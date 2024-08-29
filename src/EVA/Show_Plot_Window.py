@@ -1,6 +1,5 @@
 import matplotlib as plt
-import globals
-import PlotWindow
+from EVA import globals, PlotWindow
 
 
 

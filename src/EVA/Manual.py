@@ -10,7 +10,7 @@ from PyQt6.QtWidgets import (
 
 from PyQt6.QtCore import Qt, QSize
 
-import globals
+from EVA import globals
 
 class ManualWindow(QWidget):
     def __init__(self, parent=None):
@@ -19,7 +19,7 @@ class ManualWindow(QWidget):
         self.setWindowTitle("Manual")
         self.setMinimumSize(700, 650)
 
-        self.htmlstr = self.loadManual("manual.html")
+        self.htmlstr = self.loadManual("EVA/manual.html")
         self.page = QTextBrowser(self)
         self.page.setOpenLinks(True)
 

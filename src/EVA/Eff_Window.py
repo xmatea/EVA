@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import (
     QLineEdit,
     QGridLayout,
 )
-import globals
+from EVA import globals
 
 class Correction_Eff(QWidget):
 

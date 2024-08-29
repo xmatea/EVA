@@ -1,7 +1,4 @@
-import Normalise
-import globals
-import loaddata
-
+from EVA import globals, loaddata, Normalise
 
 def ReadMultiRun(RunList):
 

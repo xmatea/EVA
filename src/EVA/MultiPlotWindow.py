@@ -7,9 +7,7 @@ from PyQt6.QtWidgets import (
     QTableWidgetItem,
 )
 
-import MultiPlot
-import GenReadList
-import ReadMultiRun
+from EVA import MultiPlot, GenReadList, ReadMultiRun
 
 class MultiPlotWindow(QWidget):
     """

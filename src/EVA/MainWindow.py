@@ -17,23 +17,22 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QPalette, QColor
 import sys
 
-import PeakFit
-import loaddata
-import loadcomment
-import globals
-import loadsettings as ls
-
-import Eff_Window
-import ECorr_Window
-import Plot_Window
-import MultiPlotWindow
-import LoadDatabaseFile as ldf
-import loadgamma as lg
-import RunTrimExample
-import TRIM_Window
-import Manual
-
-
+from EVA import (
+    PeakFit,
+    loaddata,
+    loadcomment,
+    globals,
+    loadsettings as ls,
+    Eff_Window,
+    ECorr_Window,
+    Plot_Window,
+    MultiPlotWindow,
+    LoadDatabaseFile as ldf,
+    loadgamma as lg,
+    RunTrimExample,
+    TRIM_Window,
+    Manual
+)
 
 class Color(QWidget):
 
