@@ -19,7 +19,7 @@ class ManualWindow(QWidget):
         self.setWindowTitle("Manual")
         self.setMinimumSize(700, 650)
 
-        self.htmlstr = self.loadManual("src/EVA/manual.html")
+        self.htmlstr = self.loadManual("res/manual/manual.html")
         self.page = QTextBrowser(self)
         self.page.setOpenLinks(True)
 

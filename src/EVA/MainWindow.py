@@ -31,7 +31,7 @@ from EVA import (
     loadgamma as lg,
     RunTrimExample,
     TRIM_Window,
-    Manual
+    manual_window
 )
 
 class Color(QWidget):
@@ -165,9 +165,9 @@ class MainWindow(QMainWindow):
         Trim_sim_test.triggered.connect(lambda: self.RunTrimExample())
 
         # Manual tab
-        plot = bar.addMenu('Help')
-        plot_manual = plot.addAction("Manual")
-        plot_manual.triggered.connect(lambda: self.ShowManual())
+        help = bar.addMenu('Help')
+        help_manual = help.addAction("Manual")
+        help_manual.triggered.connect(lambda: self.show_manual())
 
         # setting up the actions
 
@@ -425,11 +425,11 @@ class MainWindow(QMainWindow):
         else:
             print('window exists')
 
-    def ShowManual(self):
+    def show_manual(self):
         """ Display Manual page"""
-        print("showing Manual")
+        print("showing manual")
         if globals.wManual is None:
-            globals.wManual = Manual.ManualWindow()
+            globals.wManual = manual_window.ManualWindow()
 
         globals.wManual.show()
 
