@@ -1,6 +1,5 @@
 import unittest
-import loaddata
-import globals
+from EVA import loaddata, globals
 
 
 class LoadData(unittest.TestCase):

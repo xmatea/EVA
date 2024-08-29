@@ -1,13 +1,16 @@
 import unittest
-import loaddata
-import globals
-import TRIM_Window
-import loadcomment
-import LoadDatabaseFile as ldf
-import loadgamma as lg
-import Eff_Window
-import Energy_Corrections
-import getmatch
+from EVA import (
+    loaddata,
+    loadcomment,
+    loadgamma as lg,
+    globals,
+    TRIM_Window,
+    Energy_Corrections,
+    LoadDatabaseFile as ldf,
+    getmatch,
+    Eff_Window
+)
+
 from srim import Ion, Layer
 
 

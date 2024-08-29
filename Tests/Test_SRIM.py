@@ -1,6 +1,5 @@
 import unittest
-import globals
-import TRIM_Window
+from EVA import globals, TRIM_Window
 from srim import Ion, Layer
 
 

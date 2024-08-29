@@ -1,6 +1,5 @@
 import unittest
-import LoadDatabaseFile as ldf
-import getmatch
+from EVA import LoadDatabaseFile as ldf, getmatch
 
 
 class get_match(unittest.TestCase):

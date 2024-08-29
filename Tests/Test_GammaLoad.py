@@ -1,6 +1,5 @@
 import unittest
-import globals
-import loadgamma as lg
+from EVA import loadgamma as lg, globals
 
 
 class MyTestCase(unittest.TestCase):

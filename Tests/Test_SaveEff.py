@@ -1,6 +1,5 @@
 import unittest
-import globals
-import Eff_Window
+from EVA import globals, Eff_Window
 
 
 class MyTestCase(unittest.TestCase):

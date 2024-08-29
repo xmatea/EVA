@@ -1,7 +1,6 @@
 import unittest
-import globals
-import loaddata
-import Energy_Corrections
+from EVA import loaddata, globals, Energy_Corrections
+
 
 class MyTestCase(unittest.TestCase):
 

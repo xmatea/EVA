@@ -1,6 +1,5 @@
 import unittest
-import loadgamma as lg
-import getmatch
+from EVA import loadgamma as lg, getmatch
 
 
 class MyTestCase(unittest.TestCase):

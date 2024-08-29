@@ -1,6 +1,5 @@
 import unittest
-import globals
-import loadcomment
+from EVA import loadcomment, globals
 
 
 class LoadComment(unittest.TestCase):

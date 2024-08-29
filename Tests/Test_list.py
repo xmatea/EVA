@@ -1,6 +1,5 @@
 import unittest
-import globals
-import LoadDatabaseFile as ldf
+from EVA import globals, LoadDatabaseFile as ldf
 
 '''from Tests import Test_LoadJason
 from Tests import Test_getmatch'''

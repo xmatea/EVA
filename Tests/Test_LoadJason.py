@@ -1,6 +1,5 @@
 import unittest
-import globals
-import LoadDatabaseFile as ldf
+from EVA import globals, LoadDatabaseFile as ldf
 
 
 class LoadJason(unittest.TestCase):
