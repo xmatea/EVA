@@ -8,14 +8,10 @@ import sys
 
 
 #import WelcomeScreen as WS
-import MainWindow as MW
-
-import loadsettings as ls
 
 
-import LoadDatabaseFile as ldf
-import loadgamma as lg
-from EVA import globals
+from EVA import globals, MainWindow as MW, loadgamma as lg, loadsettings as ls, LoadDatabaseFile as ldf
+
 
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
