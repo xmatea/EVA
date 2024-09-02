@@ -1,7 +1,6 @@
 # EVA - Elemental Visual Analysis
 EVA is a data analysis and visualisation tool to be used with MuX at ISIS. 
 
----
 # Installation guide
 Download the project and unzip to a destination of your choice. 
 It is highly recommended you make a virtual environment before running EVA.
