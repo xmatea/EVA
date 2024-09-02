@@ -1,3 +1,4 @@
+import os
 from PyQt6.QtWidgets import (
     QGridLayout,
     QTextEdit,
@@ -15,19 +16,24 @@ from EVA import globals
 class ManualWindow(QWidget):
     def __init__(self, parent=None):
         super(ManualWindow, self).__init__(parent)
-
         self.setWindowTitle("Manual")
         self.setMinimumSize(700, 650)
 
-        self.htmlstr = self.loadManual("res/manual/manual.html")
         self.page = QTextBrowser(self)
         self.page.setOpenLinks(True)
-
-        self.page.setHtml(self.htmlstr)
         self.page.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.layout = QVBoxLayout(self)
         self.layout.addWidget(self.page)
+
+        self.manual_path = "./res/manual/manual.html"
+
+        try:
+            self.htmlstr = self.loadManual(self.manual_path)
+            self.page.setHtml(self.htmlstr)
+        except FileNotFoundError:
+            self.page.setText("Oops! Failed to load manual!")
+
         self.show()
 
     def loadManual(self, path):

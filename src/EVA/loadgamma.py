@@ -3,7 +3,9 @@ from EVA import globals
 
 
 def loadgamma():
-    loadgammascan(0,117)
+    # check if gammas have already been loaded by checking random index
+    if not globals.Full_Gammas[20]:
+        loadgammascan(0,117)
 
 
 def loadgammascan(minA,maxA):

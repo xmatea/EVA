@@ -285,13 +285,16 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(globals.x_GE4[100], expected_result[100], 'Error in Energy Corrections')
 
 
-
-
     def test_gammamatch(self):
         lg.loadgamma()
+        """   
         res=[{'Element': '140Eu', 'Energy': 20.5, 'diff': 0.0, 'Intensity': ' 0.000E+00', 'lifetime': '        '},
              {'Element': '140Eu', 'Energy': 20.5, 'diff': 0.0, 'Intensity': ' 0.000E+00', 'lifetime': '        '},
              {'Element': '140Eu', 'Energy': 20.5, 'diff': 0.0, 'Intensity': ' 0.000E+00', 'lifetime': '        '}]
+        """
+
+        res = [{'Element': '140Eu', 'Energy': 20.5, 'diff': 0.0, 'Intensity': ' 0.000E+00', 'lifetime': '        '}]
+
         default_peaks = [20.500]
         default_sigma = [0.01] * len(default_peaks)
         input_data = list(zip(default_peaks, default_sigma))
