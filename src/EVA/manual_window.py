@@ -26,17 +26,17 @@ class ManualWindow(QWidget):
         self.layout = QVBoxLayout(self)
         self.layout.addWidget(self.page)
 
-        self.manual_path = "./res/manual/manual.html"
+        self.path = "./res/manual/manual.html"
 
         try:
-            self.htmlstr = self.loadManual(self.manual_path)
+            self.htmlstr = self.load_manual(self.path)
             self.page.setHtml(self.htmlstr)
         except FileNotFoundError:
             self.page.setText("Oops! Failed to load manual!")
 
         self.show()
 
-    def loadManual(self, path):
+    def load_manual(self, path):
         with open(path, "r", encoding="utf-8") as file:
             manual = "".join(file.readlines())
 
