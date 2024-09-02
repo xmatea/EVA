@@ -13,7 +13,7 @@ After `pip` has installed all requirements, install an editable build of the pro
 ```
 pip install -e .
 ```
-The above command will install a build of EVA which will update automatilly as changes are made. EVA will not run unless there is a build present.
+The above command will install a build of EVA which will update automatically as changes are made. EVA will not run unless there is a build present.
 
 Once this is done you can start EVA by running `MainWindow.py` in src/EVA.
 
