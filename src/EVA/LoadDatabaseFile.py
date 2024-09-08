@@ -4,7 +4,7 @@ from EVA import globals
 
 
 def loadDatabaseFile():
-    with open('Databases/Muonic X-rays/peak_data.json', 'r') as read_file:
+    with open('./src/EVA/Databases/Muonic X-rays/peak_data.json', 'r') as read_file:
         print('decoding file')
         globals.peakdata = json.load(read_file)
         primary_energies = {}
