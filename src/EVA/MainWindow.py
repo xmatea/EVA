@@ -356,24 +356,28 @@ class MainWindow(QMainWindow):
         print('hello in PeakFit ge1')
         globals.whichdet = 'GE1'
 
-        PeakFit.PeakFit()
+        self.PeakFit_window = PeakFit.PeakFit()
+        self.PeakFit_window.showMaximized()
 
     def PeakFit_GE2(self):
         print('hello in PeakFit ge2')
         globals.whichdet = 'GE2'
-        PeakFit.PeakFit()
+        self.PeakFit_window = PeakFit.PeakFit()
+        self.PeakFit_window.showMaximized()
 
     def PeakFit_GE3(self):
         print('hello in PeakFitge 3')
         globals.whichdet = 'GE3'
 
-        PeakFit.PeakFit()
+        self.PeakFit_window = PeakFit.PeakFit()
+        self.PeakFit_window.showMaximized()
 
     def PeakFit_GE4(self):
         print('hello in PeakFit ge4')
         globals.whichdet = 'GE4'
 
-        PeakFit.PeakFit()
+        self.PeakFit_window = PeakFit.PeakFit(self)
+        self.PeakFit_window.showMaximized()
 
     def multiplot(self):
         print('hello in multiplot')
