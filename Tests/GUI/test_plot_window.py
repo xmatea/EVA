@@ -74,11 +74,6 @@ class TestPlotWindow:
 
         # first element in tuple is which energy to search, second element in tuple is how many lines will be plotted
         # when clicking the first element in the table after searching that energy.
-        tables = [window.clickpeaks.table_muon,
-                  window.clickpeaks.table_muon_prim,
-                  window.clickpeaks.table_muon_sec,
-                  window.clickpeaks.table_gamma]
-
         tests = [(189.9, 124), (551.8, 626), (44.4, 198)]
 
         for test in tests:
@@ -119,8 +114,8 @@ class TestPlotWindow:
 
         # first element in tuple is which energy to search, second element in tuple is how many lines will be plotted
         # when clicking the first element in the table after searching that energy.
-        table = window.clickpeaks.table_muon
         tests = [(189.9, 60), (551.8, 41), (44.4, 29)]
+        table = window.clickpeaks.table_muon
 
         for test in tests:
             # simulate left click on figure
