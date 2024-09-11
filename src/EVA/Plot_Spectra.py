@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from EVA import globals
 
-fill_color = "white"
+fill_color = "yellow"
 
 def How_many_plot():
     """
