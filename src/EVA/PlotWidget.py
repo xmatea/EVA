@@ -28,12 +28,12 @@ class PlotWidget(FigureCanvasQTAgg, QWidget):
 
     def update_plot(self, plt=None, axs=None, fig=None):
         if fig is not None:
-            self.sc.fig = fig
+            self.fig = fig
 
         if axs is not None:
-            self.sc.axs = axs
+            self.axs = axs
 
         if plt is not None:
-            self.sc.plt = plt
+            self.plt = plt
 
         self.draw()

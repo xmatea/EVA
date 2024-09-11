@@ -2,12 +2,15 @@ from PyQt6.QtWidgets import (
     QLabel,
     QPushButton,
     QWidget,
+    QFormLayout,
+    QVBoxLayout,
+    QGridLayout,
     QLineEdit,
     QTableWidget,
     QTableWidgetItem,
 )
 
-from EVA import MultiPlot, GenReadList, ReadMultiRun
+from EVA import MultiPlot, GenReadList, ReadMultiRun, PlotWidget
 
 class MultiPlotWindow(QWidget):
     """
@@ -19,32 +22,35 @@ class MultiPlotWindow(QWidget):
     def __init__(self, parent = None):
         super(MultiPlotWindow,self).__init__(parent)
 
-        self.resize(1200, 1100)
-        self.setMinimumSize(1200, 1100)
         self.setWindowTitle("Multi-Plot Window ")
 
+        # set up containers and layouts
+        self.layout = QGridLayout()
+        self.side_panel = QWidget()
+        self.settings_form = QWidget()
+        self.settings_form_layout = QFormLayout()
+        self.side_panel_layout = QVBoxLayout()
+
+        # set size constraints
+        self.side_panel.setMaximumWidth(380)
+
+        # create empty plot widget
+        self.plot = PlotWidget.PlotWidget()
+
         # sets up button
-        plot_multi = QPushButton(self)
-        plot_multi.setText('Load and Plot Multi Spectra')
-        plot_multi.move(100,100)
-        plot_multi.clicked.connect(
-            lambda: self.loadandplot())
+        self.plot_multi = QPushButton('Load and Plot Multi Spectra')
+        self.plot_multi.clicked.connect(lambda: self.loadandplot())
 
         # label for offset
-        lab_multi_offset = QLabel(self)
-        lab_multi_offset.setText('Offset')
-        lab_multi_offset.move(550,115)
+        self.lab_multi_offset = QLabel('Offset')
 
         # input for the value of the y-axis offset
-        self.val_multi_offset = QLineEdit(self)
-        self.val_multi_offset.setText('0.0')
-        self.val_multi_offset.move(650, 110)
+        self.val_multi_offset = QLineEdit('0.0')
 
         # makes the table for the list of run numbers to plot
-        self.RunListTable = QTableWidget(self)
+        self.RunListTable = QTableWidget()
         self.RunListTable.setColumnCount(3)
-        self.RunListTable.move(100,200)
-        self.RunListTable.setMinimumSize(800,700)
+        #self.RunListTable.setMinimumSize(800,700)
         self.RunListTable.setRowCount(50)
         self.RunListTable.setHorizontalHeaderLabels(['Start', 'End', 'Step'])
 
@@ -55,7 +61,19 @@ class MultiPlotWindow(QWidget):
 
                 self.RunListTable.setItem(j,i,QTableWidgetItem(''))
 
-        self.show()
+        # add all components to layout
+        self.settings_form.setLayout(self.settings_form_layout)
+        self.settings_form_layout.addRow(self.lab_multi_offset, self.val_multi_offset)
+        self.settings_form_layout.addRow(self.plot_multi)
+
+        self.side_panel.setLayout(self.side_panel_layout)
+        self.side_panel_layout.addWidget(self.settings_form)
+        self.side_panel_layout.addWidget(self.RunListTable)
+
+        self.setLayout(self.layout)
+        self.layout.addWidget(self.side_panel, 0, 0)
+        self.layout.addWidget(self.plot, 0, 1)
+
 
     def loadandplot(self):
         #print('hello')
@@ -97,8 +115,8 @@ class MultiPlotWindow(QWidget):
 
         # plots multiple runs from the runlist and with a y offset
 
-        MultiPlot.MultiPlot(datax_GE1, datay_GE1, datax_GE2, datay_GE2, datax_GE3, datay_GE3, datax_GE4, datay_GE4,
+        fig, ax, plt = MultiPlot.MultiPlot(datax_GE1, datay_GE1, datax_GE2, datay_GE2, datax_GE3, datay_GE3, datax_GE4, datay_GE4,
                             RunList, offset)
 
-
+        self.plot.update_plot(axs=ax, fig=fig)
 
