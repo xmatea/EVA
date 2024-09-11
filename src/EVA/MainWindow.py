@@ -377,7 +377,8 @@ class MainWindow(QMainWindow):
 
     def multiplot(self):
         print('hello in multiplot')
-        MultiPlotWindow.MultiPlotWindow()
+        self.multiplot_window = MultiPlotWindow.MultiPlotWindow()
+        self.multiplot_window.showMaximized()
 
     def RunTrimExample(self):
 
