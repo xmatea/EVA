@@ -23,6 +23,7 @@ class MultiPlotWindow(QWidget):
         super(MultiPlotWindow,self).__init__(parent)
 
         self.setWindowTitle("Multi-Plot Window ")
+        self.setMinimumSize(1100, 600)
 
         # set up containers and layouts
         self.layout = QGridLayout()
@@ -50,10 +51,8 @@ class MultiPlotWindow(QWidget):
         # makes the table for the list of run numbers to plot
         self.RunListTable = QTableWidget()
         self.RunListTable.setColumnCount(3)
-        #self.RunListTable.setMinimumSize(800,700)
         self.RunListTable.setRowCount(50)
         self.RunListTable.setHorizontalHeaderLabels(['Start', 'End', 'Step'])
-
 
         # sets each point in the table to a blank
         for i in range(3):
@@ -61,7 +60,7 @@ class MultiPlotWindow(QWidget):
 
                 self.RunListTable.setItem(j,i,QTableWidgetItem(''))
 
-        # add all components to layout
+        # add all components to layouts
         self.settings_form.setLayout(self.settings_form_layout)
         self.settings_form_layout.addRow(self.lab_multi_offset, self.val_multi_offset)
         self.settings_form_layout.addRow(self.plot_multi)
@@ -73,7 +72,6 @@ class MultiPlotWindow(QWidget):
         self.setLayout(self.layout)
         self.layout.addWidget(self.side_panel, 0, 0)
         self.layout.addWidget(self.plot, 0, 1)
-
 
     def loadandplot(self):
         #print('hello')
