@@ -1,5 +1,5 @@
 import math
-
+from matplotlib import pyplot as plt
 from EVA import Trimdata
 from lmfit.models import GaussianModel, QuadraticModel
 
@@ -498,12 +498,12 @@ class PeakFit(QWidget):
 
         print(self.data_x_GE1, self.data_y_GE1)
 
-        self.fig_ana, self.axs_ana, self.plt_ana = Plot_Spectra.Plot_Spectra3(self.data_x_GE1, self.data_y_GE1,
+        self.fig_ana, self.axs_ana = Plot_Spectra.Plot_Spectra3(self.data_x_GE1, self.data_y_GE1,
                                                                               self.data_x_GE2, self.data_y_GE2,
                                                                               self.data_x_GE3, self.data_y_GE3,
                                                                               self.data_x_GE4, self.data_y_GE4, title_lab)
 
-        self.plt_ana.show()
+        plt.show()
 
         # changes the xlimits of each subplot
         i = 0
@@ -511,7 +511,7 @@ class PeakFit(QWidget):
             self.axs_ana[i].set_xlim([float(self.val_fit_XMin.text())-5.0, float(self.val_fit_XMax.text())+5.0])
             i += 1
 
-        self.plt_ana.show()
+        plt.show()
 
         # returns settings
 
@@ -567,7 +567,7 @@ class PeakFit(QWidget):
 
                     yesno.show()
 
-        self.plt_ana.connect('button_press_event', on_click)
+        plt.connect('button_press_event', on_click)
 
     def fit_spectra(self):
 
@@ -709,11 +709,11 @@ class PeakFit(QWidget):
             self.tab1.table_poly.setItem(0, 5, QTableWidgetItem(str(perr[para_len - 1])))
 
             #plot results
-            self.plt_ana.plot(datax, multiGaussianFunc(datax, *popt), label="gaussian")
-            self.plt_ana.axvline(EMin, color='red', linestyle='--')
-            self.plt_ana.axvline(EMax, color='red', linestyle='--')
-            self.plt_ana.legend()
-            self.plt_ana.show()
+            plt.plot(datax, multiGaussianFunc(datax, *popt), label="gaussian")
+            plt.axvline(EMin, color='red', linestyle='--')
+            plt.axvline(EMax, color='red', linestyle='--')
+            plt.legend()
+            plt.show()
             self.fig_ana.canvas.draw()
 
 
@@ -959,13 +959,13 @@ class PeakFit(QWidget):
         try:
             self.ln.remove()
             self.lnr.remove()
-            self.ln, = self.plt_ana.plot(datax, result.best_fit, label="best fit")
-            self.lnr, = self.plt_ana.plot(datax, datay - result.best_fit, label='Residual')
+            self.ln, = plt.plot(datax, result.best_fit, label="best fit")
+            self.lnr, = plt.plot(datax, datay - result.best_fit, label='Residual')
         except:
-            self.ln, = self.plt_ana.plot(datax, result.best_fit, label="best fit")
-            self.lnr, = self.plt_ana.plot(datax, datay - result.best_fit, label='Residual')
+            self.ln, = plt.plot(datax, result.best_fit, label="best fit")
+            self.lnr, = plt.plot(datax, datay - result.best_fit, label='Residual')
 
-        self.plt_ana.draw()
+        plt.draw()
         #print(np.min(datay-result.best_fit))
         if np.max(datay)> np.max(result.best_fit):
             maxy = np.max(datay)+0.05*np.max(datay)
@@ -974,10 +974,10 @@ class PeakFit(QWidget):
 
         self.axs_ana[0].set_ylim(
             [np.min(datay-result.best_fit)-0.05*(np.min(datay-result.best_fit)), maxy])
-        self.plt_ana.axvline(EMin, color='red', linestyle='--')
-        self.plt_ana.axvline(EMax, color='red', linestyle='--')
-        self.plt_ana.legend()
-        self.plt_ana.show()
+        plt.axvline(EMin, color='red', linestyle='--')
+        plt.axvline(EMax, color='red', linestyle='--')
+        plt.legend()
+        plt.show()
         self.fig_ana.canvas.draw()
 
 

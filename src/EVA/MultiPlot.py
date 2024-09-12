@@ -11,9 +11,14 @@ def MultiPlot(x1, y1, x2, y2, x3, y3, x4, y4, RunList, offset):
 
     #gets around annoying matplotlib issue of inconsistent return of subplots
     if numplots > 1:
-        fig, axs = plt.subplots(nrows=numplots, ncols=1, figsize=(16, 7))
+        #print('more than one plot')
+        fig, axs = plt.subplots(nrows=numplots, figsize=(16, 7))
+
     else:
-        fig, temp = plt.subplots(nrows=numplots, ncols=1, figsize=(16, 7), squeeze=False)
+        #annoying matplotlib fix for one figure in a subplot
+        print('only one plot')
+        fig, temp = plt.subplots(nrows=1, figsize=(16, 7), squeeze=False)
+
         axs = [temp[0][0]]
 
     # labels figures
@@ -67,8 +72,6 @@ def MultiPlot(x1, y1, x2, y2, x3, y3, x4, y4, RunList, offset):
         axs[i].legend()
         i += 1
 
-    plt.rc('font',size=16)
-    plt.tight_layout()
-
-    return fig, axs, plt
+    plt.subplots_adjust(top=0.9, bottom=0.1, left=0.1, right=0.9, hspace=0.45, wspace=0.23)
+    return fig, axs
 

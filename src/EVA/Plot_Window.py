@@ -1,3 +1,4 @@
+from matplotlib import pyplot as plt
 from matplotlib.backend_bases import MouseButton
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
 
@@ -62,7 +63,7 @@ class PlotWindow(QWidget):
         # set up plot window and navigator
         self.sc = self.PlotSpectra()
         self.toolbar = NavigationToolbar2QT(self.sc, self)
-        self.sc.plt.connect('button_press_event', self.on_click)
+        plt.connect('button_press_event', self.on_click)
 
         # Add everything to main window layout (gridlayout)
         self.layout.addWidget(self.tabs, 0, 0, 0, 1, alignment=Qt.AlignmentFlag.AlignLeft)
@@ -639,26 +640,26 @@ class PlotWindow(QWidget):
 
     def PlotSpectra(self):
         if globals.Normalise_do_not:
-            self.fig,self.axs,self.plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1, globals.y_GE1,
+            self.fig,self.axs = Plot_Spectra.Plot_Spectra3(globals.x_GE1, globals.y_GE1,
                                                                     globals.x_GE2, globals.y_GE2,
                                                                     globals.x_GE3, globals.y_GE3,
                                                                     globals.x_GE4, globals.y_GE4,
                                                      "Plot of Data: " + str(globals.RunNum))
         elif globals.Normalise_counts:
-            self.fig,self.axs,self.plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1_Ncounts, globals.y_GE1_Ncounts,
+            self.fig,self.axs = Plot_Spectra.Plot_Spectra3(globals.x_GE1_Ncounts, globals.y_GE1_Ncounts,
                                                                     globals.x_GE2_Ncounts, globals.y_GE2_Ncounts,
                                                                     globals.x_GE3_Ncounts, globals.y_GE3_Ncounts,
                                                                     globals.x_GE4_Ncounts, globals.y_GE4_Ncounts,
                                                      "Plot of Data: " + str(globals.RunNum))
         elif globals.Normalise_spill:
-            self.fig,self.axs,self.plt = Plot_Spectra.Plot_Spectra3(globals.x_GE1_NEvents, globals.y_GE1_NEvents,
+            self.fig,self.axs = Plot_Spectra.Plot_Spectra3(globals.x_GE1_NEvents, globals.y_GE1_NEvents,
                                                                     globals.x_GE2_NEvents, globals.y_GE2_NEvents,
                                                                     globals.x_GE3_NEvents, globals.y_GE3_NEvents,
                                                                     globals.x_GE4_NEvents, globals.y_GE4_NEvents,
                                                      "Plot of Data: " + str(globals.RunNum))
 
 
-        return PlotWidget(self.fig, self.axs, self.plt)
+        return PlotWidget(self.fig, self.axs)
 
 
     def on_click(self, event):

@@ -8,8 +8,10 @@ from PyQt6.QtWidgets import (
     QLineEdit,
     QTableWidget,
     QTableWidgetItem,
+    QSizePolicy
 )
 
+from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
 from EVA import MultiPlot, GenReadList, ReadMultiRun, PlotWidget
 
 class MultiPlotWindow(QWidget):
@@ -28,15 +30,22 @@ class MultiPlotWindow(QWidget):
         # set up containers and layouts
         self.layout = QGridLayout()
         self.side_panel = QWidget()
-        self.settings_form = QWidget()
-        self.settings_form_layout = QFormLayout()
         self.side_panel_layout = QVBoxLayout()
 
+        self.plot_container = QWidget()
+        self.plot_container_layout = QVBoxLayout()
+
+        self.settings_form = QWidget()
+        self.settings_form_layout = QFormLayout()
+
+
         # set size constraints
-        self.side_panel.setMaximumWidth(380)
+        self.side_panel.setMaximumWidth(400)
 
         # create empty plot widget
         self.plot = PlotWidget.PlotWidget()
+        self.plot.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        self.plot_nav_bar = NavigationToolbar2QT(self.plot, self)
 
         # sets up button
         self.plot_multi = QPushButton('Load and Plot Multi Spectra')
@@ -52,6 +61,7 @@ class MultiPlotWindow(QWidget):
         self.RunListTable = QTableWidget()
         self.RunListTable.setColumnCount(3)
         self.RunListTable.setRowCount(50)
+        self.RunListTable.setMinimumWidth(380)
         self.RunListTable.setHorizontalHeaderLabels(['Start', 'End', 'Step'])
 
         # sets each point in the table to a blank
@@ -64,14 +74,19 @@ class MultiPlotWindow(QWidget):
         self.settings_form.setLayout(self.settings_form_layout)
         self.settings_form_layout.addRow(self.lab_multi_offset, self.val_multi_offset)
         self.settings_form_layout.addRow(self.plot_multi)
-
+        """
+        self.plot_container.setLayout(self.plot_container_layout)
+        #self.plot_container_layout.addWidget(self.plot_nav_bar)
+        self.plot_container_layout.addWidget(self.plot)
+        """
         self.side_panel.setLayout(self.side_panel_layout)
         self.side_panel_layout.addWidget(self.settings_form)
         self.side_panel_layout.addWidget(self.RunListTable)
 
         self.setLayout(self.layout)
-        self.layout.addWidget(self.side_panel, 0, 0)
-        self.layout.addWidget(self.plot, 0, 1)
+        self.layout.addWidget(self.side_panel, 0, 0, 0, 1)
+        self.layout.addWidget(self.plot_nav_bar, 0, 1)
+        self.layout.addWidget(self.plot, 1, 1)
 
     def loadandplot(self):
         #print('hello')
@@ -113,8 +128,9 @@ class MultiPlotWindow(QWidget):
 
         # plots multiple runs from the runlist and with a y offset
 
-        fig, ax, plt = MultiPlot.MultiPlot(datax_GE1, datay_GE1, datax_GE2, datay_GE2, datax_GE3, datay_GE3, datax_GE4, datay_GE4,
+        fig, ax = MultiPlot.MultiPlot(datax_GE1, datay_GE1, datax_GE2, datay_GE2, datax_GE3, datay_GE3, datax_GE4, datay_GE4,
                             RunList, offset)
 
-        self.plot.update_plot(axs=ax, fig=fig)
+        self.plot.update_plot(fig=fig, axs=ax)
+        self.plot.updateGeometry()
 

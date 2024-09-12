@@ -97,7 +97,7 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4,title_lab):
 
     plt.subplots_adjust(top=0.9, bottom=0.1, left=0.1, right=0.9, hspace=0.45, wspace=0.23)
     #fig.tight_layout()
-    return fig, axs, plt
+    return fig, axs
 
 '''def Plot_Spectra2():
     numplots=How_many_plot()
