@@ -208,7 +208,7 @@ class PeakFit(QWidget):
         print("In init")
         self.data_plot = self.PlotAnalysisSpectra(self.title_lab)
         self.data_plot_navbar = NavigationToolbar2QT(self.data_plot, self)
-        self.data_plot.plt.connect('button_press_event', self.on_click)
+        plt.connect('button_press_event', self.on_click)
 
         self.plot_container.setLayout(self.plot_container_layout)
         self.plot_container_layout.addWidget(self.data_plot_navbar)
@@ -511,7 +511,7 @@ class PeakFit(QWidget):
                                                                               self.data_x_GE3, self.data_y_GE3,
                                                                               self.data_x_GE4, self.data_y_GE4, title_lab)
 
-        plt.show()
+        #plt.show()
 
         # changes the xlimits of each subplot
 
@@ -520,7 +520,7 @@ class PeakFit(QWidget):
             self.axs_ana[i].set_xlim([float(self.xrange_min_line_edit.text())-5.0, float(self.xrange_max_line_edit.text())+5.0])
             i += 1
 
-        plt.show()
+        #plt.show()
 
         # returns settings
         globals.plot_GE1 = memoryGE1
