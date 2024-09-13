@@ -1,13 +1,20 @@
 import math
 from matplotlib import pyplot as plt
-from EVA import Trimdata
+from EVA import Trimdata, PlotWidget
 from lmfit.models import GaussianModel, QuadraticModel
 
 from matplotlib.backend_bases import MouseButton
+from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
+
+from matplotlib import pyplot as plt
 from PyQt6.QtWidgets import (
     QLabel,
     QPushButton,
     QWidget,
+    QFormLayout,
+    QVBoxLayout,
+    QHBoxLayout,
+    QGridLayout,
     QLineEdit,
     QTableWidget,
     QTableWidgetItem,
@@ -16,7 +23,7 @@ from PyQt6.QtWidgets import (
     QErrorMessage,
     QFileDialog,
 )
-
+from PyQt6.QtCore import Qt
 from EVA import globals, Plot_Spectra
 import numpy as np
 from scipy.optimize import curve_fit
@@ -28,7 +35,7 @@ class PeakFit(QWidget):
     """
         This window is the GUI for the PeakFit window
 
-        """
+    """
 
 
     def __init__(self, parent = None):
@@ -88,81 +95,69 @@ class PeakFit(QWidget):
                 self.data_x_GE4 = globals.x_GE4_NEvents
                 self.data_y_GE4 = globals.y_GE4_NEvents
 
-        self.resize(1200, 1100)
-        self.setMinimumSize(1400, 1250)
+        self.setMinimumSize(1200, 800)
         self.setWindowTitle("Peak Fitting Window: Run Number " + str(globals.RunNum) + " Det: " + globals.whichdet)
 
-        # label for offset
-        lab_multi_offset = QLabel(self)
-        lab_multi_offset.setText('Fitting Range (Min, Max):')
-        lab_multi_offset.move(550, 115)
+        # Set up containers and layouts
+        self.layout = QGridLayout()
+        self.setLayout(self.layout)
 
-        # XMin and XMax
-        self.val_fit_XMin = QLineEdit(self)
-        self.val_fit_XMin.setText('180.0')
-        self.val_fit_XMin.move(650, 110)
+        self.fit_settings_form = QWidget()
+        self.fit_settings_form_layout = QFormLayout()
 
-        self.val_fit_XMax = QLineEdit(self)
-        self.val_fit_XMax.setText('200.0')
-        self.val_fit_XMax.move(850, 110)
+        self.plot_container = QWidget()
+        self.plot_container_layout = QVBoxLayout()
 
-        # sets up button
-        plot_fit = QPushButton(self)
-        plot_fit.setText('Fit Currently loaded Spectra')
-        plot_fit.move(100,100)
-        plot_fit.clicked.connect(
-            lambda: self.fit_spectra_lmfit())
-        '''plot_fit.clicked.connect(
-            lambda: self.fit_spectra())'''
+        self.fitting_panel = QWidget()
+        self.fitting_panel_layout = QVBoxLayout()
 
-        # Initialize tab screen
-        print('initialising tabs')
-        self.tabs = QTabWidget(self)
+        self.tabs = QTabWidget()
+
         self.tab1 = QWidget()
+        self.tab1_layout = QVBoxLayout()
+
         self.tab2 = QWidget()
-        self.tabs.resize(1200, 1000)
-        self.tabs.move(100,200)
+        self.tab2_layout = QVBoxLayout()
 
+        # set size constraints
+        self.fitting_panel.setMaximumWidth(700)
+        self.tabs.setMinimumWidth(650)
+        self.fit_settings_form.setMaximumWidth(400)
 
-        # Add tabs
+        # Set up fit settings form
+        self.fit_settings_form_title = QLabel("Set fitting range")
+        self.xrange_min_line_edit = QLineEdit('180.0')
+        self.xrange_max_line_edit = QLineEdit('200.0')
+        self.fit_button = QPushButton('Fit Currently loaded Spectra')
+
+        self.fit_button.clicked.connect(lambda: self.fit_spectra_lmfit())
+
+        # add all form components to form layout
+        self.fit_settings_form.setLayout(self.fit_settings_form_layout)
+        self.fit_settings_form_layout.addWidget(self.fit_settings_form_title)
+        self.fit_settings_form_layout.addRow(QLabel("Start"), self.xrange_max_line_edit)
+        self.fit_settings_form_layout.addRow(QLabel("Stop"),  self.xrange_min_line_edit)
+        self.fit_settings_form_layout.addWidget(self.fit_button)
+
+        # Set up tab view
         self.tabs.addTab(self.tab1, "Individual Peak Fit")
         self.tabs.addTab(self.tab2, "Element Search")
 
-        self.tab1.label_Element = QLabel("Peaks:"
-                                         , self.tab1)
-        self.tab1.label_Element.move(10, 10)
-        self.tab1.label_Element.show()
-
-        # Create first tab
-        # table for all peaks
+        self.tab1.label_Element1 = QLabel("Peaks:")
 
         self.tab1.table_clickpeaks = QTableWidget(self.tab1)
         self.tab1.table_clickpeaks.setShowGrid(True)
         self.tab1.table_clickpeaks.setColumnCount(6)
         self.tab1.table_clickpeaks.setRowCount(100)
-        self.tab1.table_clickpeaks.move(50,50)
-        self.tab1.table_clickpeaks.setMinimumSize(1050,500)
+
         self.tab1.table_clickpeaks.verticalScrollBar()
-        #self.tab1.table_clickpeaks.
         self.tab1.table_clickpeaks.setHorizontalHeaderLabels(
             ['Position (keV)','Error', 'Area','Error', 'Width', 'Error'])
-        self.tab1.table_clickpeaks.setColumnWidth(0, 250)
-        self.tab1.table_clickpeaks.setColumnWidth(1, 50)
-        self.tab1.table_clickpeaks.setColumnWidth(2, 150)
-        self.tab1.table_clickpeaks.setColumnWidth(3, 50)
-        self.tab1.table_clickpeaks.setColumnWidth(4, 150)
-        self.tab1.table_clickpeaks.setColumnWidth(5, 50)
+
         self.tab1.table_clickpeaks.cellClicked.connect(self.settinggaussian)
 
 
-
-
-        self.tab1.table_clickpeaks.show()
-
-        self.tab1.label_Element = QLabel("Polynomial Background:"
-                                         , self.tab1)
-        self.tab1.label_Element.move(10, 560)
-        self.tab1.label_Element.show()
+        self.tab1.label_Element2 = QLabel("Polynomial Background:")
 
         # table for background polynomial
 
@@ -170,48 +165,60 @@ class PeakFit(QWidget):
         self.tab1.table_poly.setShowGrid(True)
         self.tab1.table_poly.setColumnCount(6)
         self.tab1.table_poly.setRowCount(1)
-        self.tab1.table_poly.move(50,600)
-        self.tab1.table_poly.setMinimumSize(1050,275)
         self.tab1.table_poly.verticalScrollBar()
-        #self.tab1.table_clickpeaks.
+
         self.tab1.table_poly.setHorizontalHeaderLabels(
             ['Const','Error','1st','Error', '2nd','Error'])
-        self.tab1.table_poly.setColumnWidth(0, 150)
-        self.tab1.table_poly.setColumnWidth(1, 170)
-        self.tab1.table_poly.setColumnWidth(2, 80)
+
         self.tab1.table_poly.setItem(0,0, QTableWidgetItem(str(25)))
         self.tab1.table_poly.setItem(0, 2, QTableWidgetItem(str(0.001)))
         self.tab1.table_poly.setItem(0, 4, QTableWidgetItem(str(0.0)))
         self.tab1.table_poly.cellClicked.connect(self.settingploy)
 
-        self.tab1.table_clickpeaks.show()
 
-        self.tab1.savebut = QPushButton(self.tab1)
-        self.tab1.savebut.setText('Save As')
-        self.tab1.savebut.move(150, 875)
-
+        self.tab1.savebut = QPushButton('Save As')
         self.tab1.savebut.clicked.connect(lambda: self.savefunction())
-        self.tab1.savebut.show()
 
-        self.tab1.loadbut = QPushButton(self.tab1)
-        self.tab1.loadbut.setText('Load')
-        self.tab1.loadbut.move(450, 875)
-        self.tab1.loadbut.clicked.connect(lambda : self.loadfunction())
-        self.tab1.loadbut.show()
+        self.tab1.loadbut = QPushButton('Load')
+        self.tab1.loadbut.clicked.connect(lambda: self.loadfunction())
+
+        # restrict size of load and save buttons
+        #self.tab1.loadbut.setMaximumWidth(200)
+        #self.tab1.savebut.setMaximumWidth(200)
+
+        # add all tab1 components to tab1 layout
+        self.tab1.setLayout(self.tab1_layout)
+        self.tab1_layout.addWidget(self.tab1.label_Element1)
+        self.tab1_layout.addWidget(self.tab1.table_clickpeaks)
+        self.tab1_layout.addWidget(self.tab1.label_Element2)
+        self.tab1_layout.addWidget(self.tab1.table_poly)
+        self.tab1_layout.addWidget(self.tab1.savebut)
+        self.tab1_layout.addWidget(self.tab1.loadbut)
 
 
 
+        # add peak fit form and tables to left panel widget
+        self.fitting_panel.setLayout(self.fitting_panel_layout)
+        self.fitting_panel_layout.addWidget(self.fit_settings_form)
+        self.fitting_panel_layout.addWidget(self.tabs)
+
+        # set up plot widget
+        self.title_lab = "Analysis of RunNum: " + str(globals.RunNum) + "Det: " + globals.whichdet
+
+        print("In init")
+        self.data_plot = self.PlotAnalysisSpectra(self.title_lab)
+        self.data_plot_navbar = NavigationToolbar2QT(self.data_plot, self)
+        self.data_plot.plt.connect('button_press_event', self.on_click)
+
+        self.plot_container.setLayout(self.plot_container_layout)
+        self.plot_container_layout.addWidget(self.data_plot_navbar)
+        self.plot_container_layout.addWidget(self.data_plot)
+
+        # add all components to main layout
+        self.layout.addWidget(self.plot_container, 0, 1)
+        self.layout.addWidget(self.fitting_panel, 0, 0)
 
 
-        print('here')
-        title_lab = "Analysis of RunNum: " + str(globals.RunNum) + "Det: " + globals.whichdet
-
-        # plot and activate cool plot
-        PeakFit.PlotAnalysisSpectra(self,title_lab)
-
-        print("return")
-
-        self.show()
 
     def loadfunction(self):
         print('in load')
@@ -224,8 +231,8 @@ class PeakFit(QWidget):
             temp = file.readline()
             print(temp)
             EMin, EMax = file.readline().split(' ')
-            self.val_fit_XMin.setText(EMin)
-            self.val_fit_XMax.setText(EMax)
+            self.xrange_max_line_edit.setText(EMin)
+            self.xrange_max_line_edit.setText(EMax)
             print(EMin,EMax)
             temp = file.readline()
             print(temp)
@@ -284,8 +291,8 @@ class PeakFit(QWidget):
             ph_status = []
             pw = []
             pw_status = []
-            EMin = float(self.val_fit_XMin.text())
-            EMax = float(self.val_fit_XMax.text())
+            EMin = float(self.xrange_min_line_edit.text())
+            EMax = float(self.xrange_max_line_edit.text())
             pp_len = 0
             for i in range(int(self.tab1.table_clickpeaks.rowCount())):
                 try:
@@ -307,7 +314,7 @@ class PeakFit(QWidget):
 
             #checks reading the table
 
-            if pp_len == 0:
+            if self.tab1.table_clickpeaks.item(0, 0) is None:
                 # pop up box to say no peaks in the table
                 error_message = QErrorMessage(self)
                 error_message.setWindowTitle("Peak Setup Error")
@@ -464,7 +471,7 @@ class PeakFit(QWidget):
 
         return
 
-    def PlotAnalysisSpectra(self,title_lab):
+    def PlotAnalysisSpectra(self, title_lab):
 
         print('globals.whichdet', globals.whichdet)
 
@@ -496,7 +503,8 @@ class PeakFit(QWidget):
             globals.plot_GE3 = False
             globals.plot_GE4 = True
 
-        print(self.data_x_GE1, self.data_y_GE1)
+        #print(self.data_x_GE1, self.data_y_GE1)
+
 
         self.fig_ana, self.axs_ana = Plot_Spectra.Plot_Spectra3(self.data_x_GE1, self.data_y_GE1,
                                                                               self.data_x_GE2, self.data_y_GE2,
@@ -506,68 +514,68 @@ class PeakFit(QWidget):
         plt.show()
 
         # changes the xlimits of each subplot
+
         i = 0
         for i in range(len(self.axs_ana)):
-            self.axs_ana[i].set_xlim([float(self.val_fit_XMin.text())-5.0, float(self.val_fit_XMax.text())+5.0])
+            self.axs_ana[i].set_xlim([float(self.xrange_min_line_edit.text())-5.0, float(self.xrange_max_line_edit.text())+5.0])
             i += 1
 
         plt.show()
 
         # returns settings
-
         globals.plot_GE1 = memoryGE1
         globals.plot_GE2 = memoryGE2
         globals.plot_GE3 = memoryGE3
         globals.plot_GE4 = memoryGE4
 
-        def on_click(event):
+        return PlotWidget.PlotWidget(self.fig_ana, self.axs_ana)
 
-            if event.button is MouseButton.RIGHT:
-                # Find possible gamma peaks
-                x, y = event.xdata, event.ydata
-                print('x,y', x, y)
-                if event.inaxes:
-                    ax = event.inaxes  # the axes instance
-                    print(ax)
-                    yesno = QWidget()
-                    yesno.title = "Add peak"
-                    yesno.left = 100
-                    yesno.top = 100
-                    yesno.width = 320
-                    yesno.height = 200
-                    yesno.setWindowTitle(yesno.title)
-                    yesno.setGeometry(yesno.left, yesno.top, yesno.width, yesno.height)
+    def on_click(self, event):
+        print("clicked!")
+        if event.button is MouseButton.RIGHT:
+            # Find possible gamma peaks
+            x, y = event.xdata, event.ydata
+            print('x,y', x, y)
+            if event.inaxes:
+                ax = event.inaxes  # the axes instance
+                print(ax)
+                yesno = QWidget()
+                yesno.title = "Add peak"
+                yesno.left = 100
+                yesno.top = 100
+                yesno.width = 320
+                yesno.height = 200
+                yesno.setWindowTitle(yesno.title)
+                yesno.setGeometry(yesno.left, yesno.top, yesno.width, yesno.height)
 
-                    buttonReply = QMessageBox.question(yesno, 'AddPeak',
-                                                       "Do you wish to add a Fit peak at "
-                                                       + "{:.1f}".format(x) + " keV",
-                                                       QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-                    if buttonReply == QMessageBox.Yes:
-                        print('Yes clicked.')
-                        noofrows = self.tab1.table_clickpeaks.rowCount()
-                        print('noofrows', noofrows)
-                        #print('item', self.tab1.table_clickpeaks.item(0,0).text())
-                        i = 0
-                        foundfirstblank = 0
-                        std_width=0.2
-                        for i in range(noofrows):
-                            #print('here', self.tab1.table_clickpeaks.item(i, 0))
-                            if self.tab1.table_clickpeaks.item(i, 0) == None:
-                                if foundfirstblank == 0:
-                                    self.tab1.table_clickpeaks.setItem(i, 0,
-                                                                       QTableWidgetItem(str("{:.1f}".format(x))))
-                                    foundfirstblank = 1
-                                    area = (y * std_width) * math.sqrt(2*math.pi)
-                                    self.tab1.table_clickpeaks.setItem(i, 2,
-                                                                       QTableWidgetItem(str("{:.1f}".format(area))))
-                                    self.tab1.table_clickpeaks.setItem(i, 4,
-                                                                       QTableWidgetItem(str(std_width)))
-                    else:
-                        print('No clicked.')
+                buttonReply = QMessageBox.question(yesno, 'AddPeak',
+                                                   "Do you wish to add a Fit peak at "
+                                                   + "{:.1f}".format(x) + " keV",
+                                                   QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+                if buttonReply == QMessageBox.StandardButton.Yes:
+                    print('Yes clicked.')
+                    noofrows = self.tab1.table_clickpeaks.rowCount()
+                    print('noofrows', noofrows)
+                    #print('item', self.tab1.table_clickpeaks.item(0,0).text())
+                    i = 0
+                    foundfirstblank = 0
+                    std_width=0.2
+                    for i in range(noofrows):
+                        #print('here', self.tab1.table_clickpeaks.item(i, 0))
+                        if self.tab1.table_clickpeaks.item(i, 0) == None:
+                            if foundfirstblank == 0:
+                                self.tab1.table_clickpeaks.setItem(i, 0,
+                                                                   QTableWidgetItem(str("{:.1f}".format(x))))
+                                foundfirstblank = 1
+                                area = (y * std_width) * math.sqrt(2*math.pi)
+                                self.tab1.table_clickpeaks.setItem(i, 2,
+                                                                   QTableWidgetItem(str("{:.1f}".format(area))))
+                                self.tab1.table_clickpeaks.setItem(i, 4,
+                                                                   QTableWidgetItem(str(std_width)))
+                else:
+                    print('No clicked.')
 
-                    yesno.show()
-
-        plt.connect('button_press_event', on_click)
+                yesno.show()
 
     def fit_spectra(self):
 
@@ -591,8 +599,8 @@ class PeakFit(QWidget):
         pp = []
         ph = []
         pw = []
-        EMin = float(self.val_fit_XMin.text())
-        EMax = float(self.val_fit_XMax.text())
+        EMin = float(self.xrange_min_line_edit.text())
+        EMax = float(self.xrange_max_line_edit.text())
         pp_len = 0
         for i in range(int(self.tab1.table_clickpeaks.rowCount())):
             try:
@@ -605,11 +613,12 @@ class PeakFit(QWidget):
 
         #checks reading the table
 
-        if pp_len == 0:
+        if self.tab1.table_clickpeaks.item(0, 0) is None:
             # pop up box to say no peaks in the table
             error_message = QErrorMessage(self)
             error_message.setWindowTitle("Peak Setup Error")
             error_message.showMessage("Error: No peaks in the peak table")
+            return
 
         else:
             # fitting bit
@@ -713,9 +722,8 @@ class PeakFit(QWidget):
             plt.axvline(EMin, color='red', linestyle='--')
             plt.axvline(EMax, color='red', linestyle='--')
             plt.legend()
-            plt.show()
-            self.fig_ana.canvas.draw()
-
+            #plt.show()
+            self.data_plot.draw()
 
             # Generate function
             # Guassians
@@ -730,8 +738,8 @@ class PeakFit(QWidget):
         ph_status = []
         pw = []
         pw_status = []
-        EMin = float(self.val_fit_XMin.text())
-        EMax = float(self.val_fit_XMax.text())
+        EMin = float(self.xrange_min_line_edit.text())
+        EMax = float(self.xrange_max_line_edit.text())
         pp_len = 0
         for i in range(int(self.tab1.table_clickpeaks.rowCount())):
             try:
@@ -753,11 +761,12 @@ class PeakFit(QWidget):
 
         #checks reading the table
 
-        if pp_len == 0:
+        if self.tab1.table_clickpeaks.item(0, 0) is None:
             # pop up box to say no peaks in the table
             error_message = QErrorMessage(self)
             error_message.setWindowTitle("Peak Setup Error")
             error_message.showMessage("Error: No peaks in the peak table")
+            return
 
         else:
             # fitting bit
@@ -891,13 +900,21 @@ class PeakFit(QWidget):
         print('values',result.values)
         print('best values',result.best_values)
         print('error',result.params)
-        print(f'{result.params["f0_amplitude"].value:11.5f} {result.params["f0_amplitude"].stderr:11.5f}')
 
-        #calc chisq
+        # if unable to establish covariance, display error message
+        if result.covar is None:
+            error_message = QErrorMessage(self)
+            error_message.setWindowTitle("Peak Fit Error")
+            error_message.showMessage("Error: Unable to establish covariance.")
+            return
 
-        r = datay - result.best_fit
-        chisq = sum((r / np.sqrt(datay)) ** 2)/len(datax)
-        print('Chisq=',chisq)
+        else:
+            print(f'{result.params["f0_amplitude"].value:11.5f} {result.params["f0_amplitude"].stderr:11.5f}')
+            #calc chisq
+
+            r = datay - result.best_fit
+            chisq = sum((r / np.sqrt(datay)) ** 2)/len(datax)
+            print('Chisq=',chisq)
 
         #write results to GUI
         for i in range(0, pp_len):
@@ -977,8 +994,8 @@ class PeakFit(QWidget):
         plt.axvline(EMin, color='red', linestyle='--')
         plt.axvline(EMax, color='red', linestyle='--')
         plt.legend()
-        plt.show()
-        self.fig_ana.canvas.draw()
+
+        self.data_plot.draw()
 
 
         # write results to file
