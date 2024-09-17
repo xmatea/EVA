@@ -3,6 +3,7 @@ import numpy as np
 
 scn_res = 2 # 1 high res 2 normal
 workingdirectory = 'TestData/'
+muon_database = "mudirac"
 dataset_GE1 = np.array('i',[])
 dataset_GE2 = np.array('i',[])
 dataset_GE3 = np.array('i',[])
