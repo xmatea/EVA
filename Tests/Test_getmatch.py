@@ -1,10 +1,11 @@
 import unittest
-from EVA import LoadDatabaseFile as ldf, getmatch
+from EVA import LoadDatabaseFile as ldf, getmatch, globals
 
 
 class get_match(unittest.TestCase):
     def test_getmatch(self):
         #print('testing get match')
+        globals.muon_database = "legacy"
         ldf.loadDatabaseFile()
         default_peaks = [330.9, 296.5, 92.6, 1253.7, 330.7]
         default_sigma = [0.45] * len(default_peaks)
