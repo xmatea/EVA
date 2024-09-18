@@ -31,7 +31,8 @@ from EVA import (
     loadgamma as lg,
     RunTrimExample,
     TRIM_Window,
-    manual_window
+    manual_window,
+    config
 )
 
 class Color(QWidget):
@@ -173,6 +174,7 @@ class MainWindow(QMainWindow):
 
         file_exit.triggered.connect(lambda: self.closeit(app))
         file_browse_dir.triggered.connect(lambda: self.Browse_dir())
+        file_loaddef.triggered.connect(config.restore_defaults)
         plot_which_det_GE1.triggered.connect(lambda: self.setplotGE1(plot_which_det_GE1.isChecked()))
         plot_which_det_GE2.triggered.connect(lambda: self.setplotGE2(plot_which_det_GE2.isChecked()))
         plot_which_det_GE3.triggered.connect(lambda: self.setplotGE3(plot_which_det_GE3.isChecked()))
