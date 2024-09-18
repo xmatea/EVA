@@ -57,6 +57,8 @@ class MainWindow(QMainWindow):
         self.wp = None
         globals.we = None
 
+        print(config.parser["GE1"])
+
         #if globals.scn_res == 1:
         #    self.resize(1000, 500)
         #elif globals.scn_res == 2:
@@ -596,8 +598,6 @@ class MainWindow(QMainWindow):
             self.wp.showMaximized()
 
 
-
-
     def Incr_RunNum(self, RunNum_text):
         print('plus 1')
         RunNum_text.setText(str(int(RunNum_text.text()) + 1))
@@ -609,7 +609,8 @@ class MainWindow(QMainWindow):
     def Browse_dir(self):
         dir_path = QFileDialog.getExistingDirectory(self, "Choose Directory", "C:\\")
         print(dir_path)
-        globals.workingdirectory = dir_path
+        config.parser["general"]["working_directory"] = dir_path
+        #config.save_config()
 
     def onMyToolBarButtonClick(self, s):
         print("click", s)

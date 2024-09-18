@@ -59,7 +59,7 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4,title_lab):
     print('i=', i)
     if globals.plot_GE1:
         print('1', i)
-        axs[i].fill_between(x1, y1, step='mid', color=config.config_parser["plot"]["fill_colour"])
+        axs[i].fill_between(x1, y1, step='mid', color=config.parser["plot"]["fill_colour"])
         axs[i].step(x1, y1, where='mid', color='black')
         axs[i].set_ylim(0.0)
         axs[i].set_xlim(0.0)
@@ -69,7 +69,7 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4,title_lab):
 
     if globals.plot_GE2:
         #print('2',i)
-        axs[i].fill_between(x2, y2,step='mid',color=config.config_parser["plot"]["fill_colour"])
+        axs[i].fill_between(x2, y2,step='mid',color=config.parser["plot"]["fill_colour"])
         axs[i].step(x2,y2,where='mid',color='black')
         axs[i].set_ylim(0.0)
         axs[i].set_xlim(0.0)
@@ -77,7 +77,7 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4,title_lab):
         i += 1
     if globals.plot_GE3:
         #print('3',i)
-        axs[i].fill_between(x3, y3,step='mid',color=config.config_parser["plot"]["fill_colour"])
+        axs[i].fill_between(x3, y3,step='mid',color=config.parser["plot"]["fill_colour"])
         axs[i].step(x3,y3,where='mid',color='black')
         axs[i].set_ylim(0.0)
         axs[i].set_xlim(0.0)
@@ -86,7 +86,7 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4,title_lab):
 
     if globals.plot_GE4:
         #print('4',i)
-        axs[i].fill_between(x4, y4,step='mid',color=config.config_parser["plot"]["fill_colour"])
+        axs[i].fill_between(x4, y4,step='mid',color=config.parser["plot"]["fill_colour"])
         axs[i].step(x4,y4,where='mid',color='black')
         axs[i].set_ylim(0.0)
         axs[i].set_xlim(0.0)

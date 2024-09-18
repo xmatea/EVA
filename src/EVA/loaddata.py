@@ -1,17 +1,15 @@
 #import array as arr
-from EVA import globals, Normalise, Energy_Corrections
+from EVA import globals, Normalise, Energy_Corrections, config
 import numpy as np
 
 def loaddata(RunNum):
-    #print('loading data ', RunNum)
-    #print('Working dir', globals.workingdirectory)
+    working_directory = config.parser["general"]["working_directory"]
     flag = 1
-    filename_det = [globals.workingdirectory + '/ral0' + str(RunNum) + '.rooth2099.dat',
-                    globals.workingdirectory + '/ral0' + str(RunNum) + '.rooth3099.dat',
-                    globals.workingdirectory + '/ral0' + str(RunNum) + '.rooth4099.dat',
-                    globals.workingdirectory + '/ral0' + str(RunNum) + '.rooth5099.dat']
-    #print(filename_det)
-    #print(filename_det[0])
+
+    filename_det = [working_directory + '/ral0' + str(RunNum) + '.rooth2099.dat',
+                    working_directory + '/ral0' + str(RunNum) + '.rooth3099.dat',
+                    working_directory + '/ral0' + str(RunNum) + '.rooth4099.dat',
+                    working_directory + '/ral0' + str(RunNum) + '.rooth5099.dat']
 
     try:
         globals.dataset_GE1 = np.loadtxt(filename_det[0], delimiter=" ")
