@@ -135,13 +135,13 @@ class PeakFit(QWidget):
         # add all form components to form layout
         self.fit_settings_form.setLayout(self.fit_settings_form_layout)
         self.fit_settings_form_layout.addWidget(self.fit_settings_form_title)
+        self.fit_settings_form_layout.addRow(QLabel("Start"), self.xrange_min_line_edit)
         self.fit_settings_form_layout.addRow(QLabel("Stop"), self.xrange_max_line_edit)
-        self.fit_settings_form_layout.addRow(QLabel("Start"),  self.xrange_min_line_edit)
         self.fit_settings_form_layout.addWidget(self.fit_button)
 
         # Set up tab view
         self.tabs.addTab(self.tab1, "Individual Peak Fit")
-        self.tabs.addTab(self.tab2, "Element Search")
+        #self.tabs.addTab(self.tab2, "Element Search")
 
         self.tab1.label_Element1 = QLabel("Peaks:")
 
@@ -905,7 +905,7 @@ class PeakFit(QWidget):
         if result.covar is None:
             error_message = QErrorMessage(self)
             error_message.setWindowTitle("Peak Fit Error")
-            error_message.showMessage("Error: Unable to establish covariance.")
+            error_message.showMessage("Error: Fit did not converge.")
             return
 
         else:

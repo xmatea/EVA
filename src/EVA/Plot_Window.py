@@ -267,7 +267,7 @@ class PlotWindow(QWidget):
 
         findpeaks.peakfindroutine = QComboBox(findpeaks)
         findpeaks.peakfindroutine.addItem('scipy.FindPeak')
-        findpeaks.peakfindroutine.addItem('scipy.Find_Peak_Cwt')
+        #findpeaks.peakfindroutine.addItem('scipy.Find_Peak_Cwt')
         findpeaks.peakfindroutine.addItem('find peaks (dev)')
         #findpeaks.settings_layout.addWidget(findpeaks.peakfindroutine)
 
@@ -516,7 +516,7 @@ class PlotWindow(QWidget):
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
 
-                Plot_Spectra.Plot_Peak_Location(self.sc.fig, self.sc.axs, self.sc.plt, peaks_GE1, globals.x_GE1, i)
+                Plot_Spectra.Plot_Peak_Location(self.sc.axs, peaks_GE1, globals.x_GE1, i)
                 # Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, peak_pos_GE1, i)
 
                 out = SortMatch.SortMatch(match_GE1)
@@ -535,7 +535,7 @@ class PlotWindow(QWidget):
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
 
-                Plot_Spectra.Plot_Peak_Location(self.sc.fig, self.sc.axs, self.sc.plt, peaks_GE1, globals.x_GE1, i)
+                Plot_Spectra.Plot_Peak_Location(self.sc.axs, peaks_GE1, globals.x_GE1, i)
                 #Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, globals.x_GE1,i)
                 #Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, peak_pos_GE1, i)
 
@@ -552,7 +552,7 @@ class PlotWindow(QWidget):
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE2, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE2', match_GE2)
-                Plot_Spectra.Plot_Peak_Location(self.sc.fig, self.sc.axs, self.sc.plt, peaks_GE2, globals.x_GE2, i)
+                Plot_Spectra.Plot_Peak_Location(self.sc.axs, peaks_GE2, globals.x_GE2, i)
                 i += 1
 
 
@@ -563,7 +563,7 @@ class PlotWindow(QWidget):
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE3, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE3',match_GE3)
-                Plot_Spectra.Plot_Peak_Location(self.sc.fig, self.sc.axs, self.sc.plt, peaks_GE3, globals.x_GE3, i)
+                Plot_Spectra.Plot_Peak_Location(self.sc.axs, peaks_GE3, globals.x_GE3, i)
                 i += 1
 
             if globals.plot_GE4:
@@ -573,7 +573,7 @@ class PlotWindow(QWidget):
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE4, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE4',match_GE4)
-                Plot_Spectra.Plot_Peak_Location(self.sc.fig, self.sc.axs, self.sc.plt, peaks_GE4, globals.x_GE4, i)
+                Plot_Spectra.Plot_Peak_Location(self.sc.axs, peaks_GE4, globals.x_GE4, i)
                 i += 1
 
             self.sc.draw()
@@ -584,18 +584,12 @@ class PlotWindow(QWidget):
                 peaks_GE1, peak_pos_GE1 = FindPeaks.FindPeaksCwt(globals.x_GE1, globals.y_GE1, h, t, d)
 
                 default_peaks = peaks_GE1[0]
-                #print('dpcwt',default_peaks)
-                #default_peaks = peaks_GE1
+
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
 
-                #print('after match')
-
-
-                Plot_Spectra.Plot_Peak_Location(self.sc.fig, self.sc.axs, self.sc.plt, peaks_GE1, globals.x_GE1, i)
-                #Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, peak_pos_GE1, i)
-                #print('here')
+                Plot_Spectra.Plot_Peak_Location(self.sc.axs, peaks_GE1, globals.x_GE1, i)
 
                 out = SortMatch.SortMatch(match_GE1)
                 print('after out')
@@ -611,7 +605,7 @@ class PlotWindow(QWidget):
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE2, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE2', match_GE2)
-                Plot_Spectra.Plot_Peak_Location(self.sc.fig, self.sc.axs, self.sc.plt, peaks_GE2, globals.x_GE2, i)
+                Plot_Spectra.Plot_Peak_Location(self.sc.axs, peaks_GE2, globals.x_GE2, i)
                 i+=1
 
 
@@ -622,7 +616,7 @@ class PlotWindow(QWidget):
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE3, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE3',match_GE3)
-                Plot_Spectra.Plot_Peak_Location(self.sc.fig, self.sc.axs, self.sc.plt, peaks_GE3, globals.x_GE3, i)
+                Plot_Spectra.Plot_Peak_Location(self.sc.axs, peaks_GE3, globals.x_GE3, i)
                 i += 1
 
             if globals.plot_GE4:
@@ -632,7 +626,7 @@ class PlotWindow(QWidget):
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE4, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE4',match_GE4)
-                Plot_Spectra.Plot_Peak_Location(self.sc.fig, self.sc.axs, self.sc.plt, peaks_GE4, globals.x_GE4, i)
+                Plot_Spectra.Plot_Peak_Location(self.sc.axs, peaks_GE4, globals.x_GE4, i)
                 i+=1
     
             self.sc.draw()

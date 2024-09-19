@@ -19,7 +19,7 @@ def How_many_plot():
         numplots += 1
     return numplots
 
-def Plot_Peak_Location(fig,axs,plt,peaks,x,i):
+def Plot_Peak_Location(axs,peaks,x,i):
     """
     Plots the location of the peaks
     """
