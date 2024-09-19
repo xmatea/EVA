@@ -1,0 +1,123 @@
+import array as arr
+import numpy as np
+
+scn_res = 2 # 1 high res 2 normal
+workingdirectory = 'TestData/'
+dataset_GE1 = np.array('i',[])
+dataset_GE2 = np.array('i',[])
+dataset_GE3 = np.array('i',[])
+dataset_GE4 = np.array('i',[])
+plot_GE1 = True
+plot_GE2 = False
+plot_GE3 = True
+plot_GE4 = False
+flag_d_GE1 = 0
+flag_d_GE2 = 0
+flag_d_GE3 = 0
+flag_d_GE4 = 0
+x_GE1 = np.array('i', [])
+y_GE1 = np.array('i', [])
+err_GE1 = np.array('i', [])
+x_GE2 = np.array('i', [])
+y_GE2 = np.array('i', [])
+err_GE2 = np.array('i', [])
+x_GE3 = np.array('i', [])
+y_GE3 = np.array('i', [])
+err_GE3 = np.array('i', [])
+x_GE4 = np.array('i', [])
+y_GE4 = np.array('i', [])
+err_GE4 = np.array('i', [])
+x_GE1_Ncounts = np.array('i', [])
+y_GE1_Ncounts = np.array('i', [])
+err_GE1_Ncounts = np.array('i', [])
+x_GE2_Ncounts = np.array('i', [])
+y_GE2_Ncounts = np.array('i', [])
+err_GE2_Ncounts = np.array('i', [])
+x_GE3_Ncounts = np.array('i', [])
+y_GE3_Ncounts = np.array('i', [])
+err_GE3_Ncounts = np.array('i', [])
+x_GE4_Ncounts = np.array('i', [])
+y_GE4_Ncounts = np.array('i', [])
+err_GE4_Ncounts = np.array('i', [])
+x_GE1_NEvents = np.array('i', [])
+y_GE1_NEvents = np.array('i', [])
+err_GE1_NEvents = np.array('i', [])
+x_GE2_NEvents = np.array('i', [])
+y_GE2_NEvents = np.array('i', [])
+err_GE2_NEvents = np.array('i', [])
+x_GE3_NEvents = np.array('i', [])
+y_GE3_NEvents = np.array('i', [])
+err_GE3_NEvents = np.array('i', [])
+x_GE4_NEvents = np.array('i', [])
+y_GE4_NEvents = np.array('i', [])
+err_GE4_NEvents = np.array('i', [])
+
+#Full_Gammas = (("Element","Energy","Intensity","Lifetime"))
+#Full_Gammas = np.array('',[])
+Full_Gammas = []
+i = 0
+for i in range(119):
+    Full_Gammas.append([])
+#Full_Gammas[3].append(['sf','ad','tg','ref'])
+starttime_str = ''
+endtime_str = ''
+events_str = ''
+comment_str = ''
+RunNum = 0
+peakdata = ''
+peak_data = {}
+Normalise_counts = True
+Normalise_spill = False
+Normalise_do_not = False
+
+we = None
+weff = None
+wTrim = None
+wManual = None
+
+E_Corr_GE1_offset = 0.0
+E_Corr_GE1_gradient = 1.0
+E_Corr_GE2_offset = 0.0
+E_Corr_GE2_gradient = 1.0
+E_Corr_GE3_offset = 0.0
+E_Corr_GE3_gradient = 1.0
+E_Corr_GE4_offset = 0.0
+E_Corr_GE4_gradient = 1.0
+E_Corr_GE1_apply = False
+E_Corr_GE2_apply = False
+E_Corr_GE3_apply = False
+E_Corr_GE4_apply = False
+
+Eff_Corr_GE1_P0 = 93.2
+Eff_Corr_GE1_P1 = 59.2
+Eff_Corr_GE1_P2 = -13.6
+Eff_Corr_GE1_P3 = 1.35
+Eff_Corr_GE1_P4 = -0.049
+Eff_Corr_GE2_P0 = 0.0
+Eff_Corr_GE2_P1 = 1.0
+Eff_Corr_GE2_P2 = 0.0
+Eff_Corr_GE2_P3 = 1.0
+Eff_Corr_GE2_P4 = 1.0
+Eff_Corr_GE3_P0 = -1.79
+Eff_Corr_GE3_P1 = 0.805
+Eff_Corr_GE3_P2 = -0.0711
+Eff_Corr_GE3_P3 = 0.0
+Eff_Corr_GE3_P4 = 0.0
+Eff_Corr_GE4_P0 = 0.0
+Eff_Corr_GE4_P1 = 1.0
+Eff_Corr_GE4_P2 = 0.0
+Eff_Corr_GE4_P3 = 1.0
+Eff_Corr_GE4_P4 = 1.0
+Eff_Corr_GE1_apply = False
+Eff_Corr_GE2_apply = False
+Eff_Corr_GE3_apply = False
+Eff_Corr_GE4_apply = False
+
+
+TRIMRes_x = []
+TRIMRes_y = []
+TRIMRes_e = []
+sample_layers = []
+sample_name = []
+
+whichdet = ''

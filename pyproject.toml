@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name='EVA'
+version='0.1'
+url=''
+license=''
+author='adh37'
+author_email='adrian.hillier@stfc.ac.uk'
+description='Elemental analysis Data Visualiser for MuX @ ISIS'
+test_suite = "Tests"
+dependencies = ["PyQt6", "scipy", "numpy", "matplotlib", "lmfit", "pandas"]
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib"
+]

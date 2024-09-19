@@ -1,0 +1,129 @@
+<html>
+    <head>
+        <!-- Markdown-like styling -->
+        <style>
+            * {
+                font-family: "Segoe UI", "Noto Sans",Helvetica,Arial,sans-serif
+            }
+
+            body { margin: 50px 15px }
+
+            h1, h2, h3 {
+                margin-top: 12px;
+                margin-bottom: 6px;
+                font-weight: 600;
+                line-height: 1.25;
+            }
+
+            p, li { font-size: 14px }
+
+            .img_wrap {
+                margin: 5px 0px;
+            }
+
+            a {
+                background-color: transparent;
+                color: #0969da;
+                text-decoration: none;
+            }
+
+            ul, ol { list-style-type: lower-alpha; }
+
+            hr {
+                box-sizing: content-box;
+                overflow: hidden;
+                border-bottom: 1px solid #d0d7deb3;
+                height: .25em;
+                padding: 0;
+                margin: 16px 0;
+                background-color: #d0d7de;
+                border: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>EVA User Manual </h1>
+        <p>EVA is a something something ....... elemental analysis... data analysis... MuX. Insert some beautiful text
+        about EVA and what it can be used for.</p>
+
+        <hr>
+        <h2>Table of contents</h2>
+        <ol>
+            <li><a href="#loading-data">Loading data</a></li>
+            <li><a href="#using-the-plot-analysis-tool">Using the Plot Analysis Tool</a></li>
+                <ul>
+                    <li><a href="#peak-identification">Peak identification</a></li>
+                    <li><a href="#element-search">Element search</a></li>
+                    <li><a href="#adjust-and-customise">Adjust and customise figure</a></li>
+                </ul>
+            <li><a href="#using-the-srimtrim-tool">Using the SRIM/TRIM tool</a></li>
+        </ol>
+        <hr>
+
+        <h2 id="loading-data">Loading data</h2>
+
+        <p>To load your data into EVA, first go to File>Browse to Data Directory and select the folder containing your data.
+        EVA will then automatically load one of your runs. You can choose which run to load by editing the Run Number
+        field in the center of the control panel. Press the load button to open the peak analysis window.</p>
+        <div class="img_wrap">
+            <img src="./src/EVA/res/manual/img/cover_650px.png">
+        </div>
+        <hr>
+        <h2 id="using-the-plot-analysis-tool">Using the plot analysis tool</h2>
+        <h3 id="peak-identification">Peak identification</h3>
+        <p>In the "peak identification" tab you can left-click on a peak in the figure to search for possible muonic x-ray transitions,
+            or right-click to search for gamma transitions. Within the gamma transitions table, you can click on either a
+            specific energy or a source to plot all transition lines for that element.</p>
+            <div class="img_wrap">
+                <img src="./src/EVA/res/manual/img/vlines_add_500px">
+            </div>
+        <br>
+        <p>Vertical lines will appear on the figure as shown below, indicating the different possible transitions for
+        that element.</p>
+            <div class="img_wrap">
+                <img src="./src/EVA/res/manual/img/vlines_plotted_500px.png">
+            </div>
+            <p> To remove lines, navigate to the
+            "remove plot lines" tab in the muonic transition table and click the source to remove. </p>
+            <div class="img_wrap">
+                <img src="./src/EVA/res/manual/img/vlines_remove_500px.png">
+            </div>
+        <hr>
+        <h3 id="element-search">Element Search</h3>
+        <p>In the "element search" tab you can select a subroutine to automatically find peaks within your data,
+            such as SciPy's find_peaks() routine.</p>
+        <hr>
+        <h3 id="adjust-and-customise">Adjust and customise figure</h3>
+        <p>You can adjust the margins and spacing between subplots if needed from the plot menu above the graph.</p>
+
+        <div class="img_wrap">
+            <img src="./src/EVA/res/manual/img/plotmenu_figure_settings_300px.png">
+        </div>
+
+        <div class="img_wrap">
+            <img src="./src/EVA/res/manual/img/plotmenu_figure_settings_open_300px.png">
+        </div>
+
+        <p><strong>Note:</strong> You may experience a visual bug when incrementing the spacings. You will still be able to change spacings,
+            but to see the values you will have to press "export values".</p>
+        <p>You can also adjust the colours, titles and more for each subplot in the "customize" menu.</p>
+
+        <div class="img_wrap">
+            <img src="./src/EVA/res/manual/img/plotmenu_axes_settings_300px.png">
+        </div>
+        <div class="img_wrap">
+            <img src="./src/EVA/res/manual/img/plotmenu_axes_settings_open_300px.png">
+        </div>
+
+        <hr>
+        <h2 id="using-the-srimtrim-tool">Using the SRIM/TRIM tool</h2>
+        <p>To use the SRIM/TRIM tool you must have SRIM 2013 installed on your computer. You can get it
+            at http://www.srim.org/SRIM/SRIMLEGL.htm. Before running a SRIM simulation in EVA, you should locate where SRIM is installed on your system and run
+            SRIM.exe and TRIM.exe to ensure everything is properly installed.</p>
+
+        <p><strong>Note:</strong> If you're installing SRIM on
+            Windows 7 or newer, you may run into issues when trying to run SRIM.exe or TRIM.exe. After you've installed SRIM2013,
+                you can find a nice step-by-step guide on how to fix these issues within the SRIM2013/SRIM Setup folder.
+        </p>
+    </body>
+</html>
