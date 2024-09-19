@@ -8,11 +8,11 @@ from PyQt6.QtWidgets import (
     QLineEdit,
     QTableWidget,
     QTableWidgetItem,
-    QSizePolicy
+    QErrorMessage
 )
 
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
-from EVA import MultiPlot, GenReadList, ReadMultiRun, PlotWidget
+from EVA import MultiPlot, GenReadList, ReadMultiRun, PlotWidget, globals
 
 class MultiPlotWindow(QWidget):
     """
@@ -119,8 +119,15 @@ class MultiPlotWindow(QWidget):
         #print('offset', offset)
 
         # reads data and returns as each detector and as an array
-        datax_GE1, datay_GE1, datax_GE2, datay_GE2, datax_GE3, datay_GE3, datax_GE4, datay_GE4\
+        flag, datax_GE1, datay_GE1, datax_GE2, datay_GE2, datax_GE3, datay_GE3, datax_GE4, datay_GE4\
             = ReadMultiRun.ReadMultiRun(RunList)
+
+        # if any of the detector load flags are 0, return error message
+        if not all([globals.flag_d_GE1, globals.flag_d_GE2, globals.flag_d_GE3, globals.flag_d_GE4]):
+            error_message = QErrorMessage(self)
+            error_message.setWindowTitle("Multi-run plot error")
+            error_message.showMessage("Error: Failed to load specified run(s).")
+            return
 
         # plots multiple runs from the runlist and with a y offset
         fig, ax = MultiPlot.MultiPlot(datax_GE1, datay_GE1, datax_GE2, datay_GE2, datax_GE3, datay_GE3, datax_GE4, datay_GE4,
