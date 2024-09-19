@@ -135,8 +135,8 @@ class PeakFit(QWidget):
         # add all form components to form layout
         self.fit_settings_form.setLayout(self.fit_settings_form_layout)
         self.fit_settings_form_layout.addWidget(self.fit_settings_form_title)
-        self.fit_settings_form_layout.addRow(QLabel("Start"), self.xrange_max_line_edit)
-        self.fit_settings_form_layout.addRow(QLabel("Stop"),  self.xrange_min_line_edit)
+        self.fit_settings_form_layout.addRow(QLabel("Stop"), self.xrange_max_line_edit)
+        self.fit_settings_form_layout.addRow(QLabel("Start"),  self.xrange_min_line_edit)
         self.fit_settings_form_layout.addWidget(self.fit_button)
 
         # Set up tab view
