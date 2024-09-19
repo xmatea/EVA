@@ -57,7 +57,7 @@ def ReadMultiRun(RunList):
     for i in range(lenRunList):
         #print('i',RunList[i])
         loaddata.loaddata(RunList[i])
-        Normalise.Normalise()
+        #Normalise.Normalise()
         if globals.Normalise_do_not:
             try:
                 datax_GE1.append(globals.x_GE1)
