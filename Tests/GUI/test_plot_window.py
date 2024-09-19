@@ -3,12 +3,14 @@ import pytest
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget
 from pytestqt.plugin import qtbot
-from matplotlib.backend_bases import MouseEvent, MouseButton
+from matplotlib.backend_bases import MouseButton
 
 from EVA.Plot_Window import PlotWindow
 from EVA.loaddata import loaddata
 from EVA.LoadDatabaseFile import loadDatabaseFile
 from EVA.loadgamma import loadgamma
+
+import Tests.GUI.test_util_gui as util
 
 
 class TestPlotWindow:
@@ -20,18 +22,6 @@ class TestPlotWindow:
         loadgamma()
         loaddata(2630)
 
-    # simulate a mouse click event in figure at specified location
-    def trigger_peak_click_event(self, window, xdata, ydata, button, ax):
-        canvas = window.sc
-
-        event = MouseEvent("", canvas, x=0, y=0, button=button)
-        event.xdata = np.float64(xdata)
-        event.ydata = np.float64(ydata)
-        event.inaxes = ax
-
-        # call on_click
-        PlotWindow.on_click(window, event)
-
     # test if the expected data is displayed in gamma table when clicking a specific peak in the figure
     def test_clickpeaks_gammas(self, qtbot):
         widget = QWidget()
@@ -41,8 +31,11 @@ class TestPlotWindow:
 
         tests = [("44Sc", 189.9), ("93Zr", 65.6)]
         for test in tests:
-            self.trigger_peak_click_event(window, xdata=test[1], ydata=0,
+            event = util.trigger_figure_click_event(window.sc, xdata=test[1], ydata=0,
                                           ax=window.sc.axs[1], button=MouseButton.RIGHT)
+            # call on_click
+            PlotWindow.on_click(window, event)
+
             table_res = window.clickpeaks.table_gamma.item(0, 0).text()
             assert table_res == test[0], \
                 "data displayed at position 0,0 in gamma table did not match the expected value"
@@ -56,8 +49,12 @@ class TestPlotWindow:
 
         tests = [("Cs", 193.4), ("Ho", 911.7)]
         for test in tests:
-            self.trigger_peak_click_event(window, xdata=test[1], ydata=0,
+            # simulate click event
+            event = util.trigger_figure_click_event(window.sc, xdata=test[1], ydata=0,
                                           ax=window.sc.axs[1], button=MouseButton.LEFT)
+            # call on_click
+            PlotWindow.on_click(window, event)
+
             table_res = window.clickpeaks.table_muon.item(0, 0).text()
             print(table_res)
             assert table_res == test[0], \
@@ -73,8 +70,11 @@ class TestPlotWindow:
         #qtbot.wait(1000)
         print(window.sc.axs[1].lines)
 
-        self.trigger_peak_click_event(window, xdata=189.9, ydata=0,
+        # simulate click event
+        event = util.trigger_figure_click_event(window.sc, xdata=189.9, ydata=0,
                                       ax=window.sc.axs[1], button=MouseButton.RIGHT)
+
+        PlotWindow.on_click(window, event)
 
         # Click on source in gamma table to plot vertical lines on figure
         gamma_table_item = window.clickpeaks.table_gamma.item(0, 0)
