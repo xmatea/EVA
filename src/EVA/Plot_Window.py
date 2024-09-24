@@ -337,13 +337,17 @@ class PlotWindow(QWidget):
         if cell_contents is None:
             return
 
-        Ele = cell_contents.text()
+        element = cell_contents.text()
 
-        # loop through all lines in all detectors and delete the line if the label is equal to Ele
+        # loop through all lines in all detectors and delete the line if the label is equal to element
         for i in range(len(self.sc.axs)):
-            for line in self.sc.axs[i].lines:
-                if line.get_label() == Ele:
-                    line.remove()
+
+            # search for all lines with label == element
+            lines_to_remove = [line for line in self.sc.axs[i].lines if line.get_label() == element]
+            num = len(lines_to_remove)
+
+            for j in range(num):
+                lines_to_remove[j].remove()
 
         self.sc.draw() # update figure
         self.clickpeaks.table_plotted_lines.removeRow(row)
