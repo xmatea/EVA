@@ -96,6 +96,10 @@ def ReadMultiRun(RunList):
             except:
                 print('Ooops')
 
+        # raise flag if any detectors failed to load
+        if not all([globals.flag_d_GE1, globals.flag_d_GE2, globals.flag_d_GE3, globals.flag_d_GE4]):
+            flag = 1
+
     if globals.Normalise_do_not:
         try:
             globals.x_GE1 = tempx_GE1

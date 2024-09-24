@@ -89,7 +89,6 @@ class MultiPlotWindow(QWidget):
         line = []
 
         #read table from GUI
-
         for i in range(50):
             try:
                 start = int(self.RunListTable.item(i,0).text())
@@ -108,10 +107,11 @@ class MultiPlotWindow(QWidget):
                 step = 0
             line.append([start,end,step])
 
-        #print('line')
         #print(line)
         # generates a list of runs to load and plot
         RunList = GenReadList.GenReadList(line)
+
+        print(RunList)
 
         if not RunList:
             error_message = QErrorMessage(self)
@@ -120,6 +120,7 @@ class MultiPlotWindow(QWidget):
             return
 
         #print('RunList', RunList)
+
         # reads offset from GUI
         offset = float(self.val_multi_offset.text())
         #print('offset', offset)
@@ -128,14 +129,12 @@ class MultiPlotWindow(QWidget):
         flag, datax_GE1, datay_GE1, datax_GE2, datay_GE2, datax_GE3, datay_GE3, datax_GE4, datay_GE4\
             = ReadMultiRun.ReadMultiRun(RunList)
 
-        # if any of the detector load flags are 0, return error message
-        if not all([globals.flag_d_GE1, globals.flag_d_GE2, globals.flag_d_GE3, globals.flag_d_GE4]):
+        # if readmultirun returned 1, return error message
+        if flag:
             error_message = QErrorMessage(self)
             error_message.setWindowTitle("Multi-run plot error")
             error_message.showMessage("Error: Failed to load specified run(s).")
             return
-
-
 
         # plots multiple runs from the runlist and with a y offset
         fig, ax = MultiPlot.MultiPlot(datax_GE1, datay_GE1, datax_GE2, datay_GE2, datax_GE3, datay_GE3, datax_GE4, datay_GE4,
