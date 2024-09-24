@@ -344,7 +344,7 @@ class PlotWindow(QWidget):
 
         self.sc.draw() # update figure
         self.clickpeaks.table_plotted_lines.removeRow(row)
-        self.clickpeaks.table_plotted_lines.setRowCount(10)
+        #self.clickpeaks.table_plotted_lines.setRowCount(10)
         self.numoflines -= 1
 
     def clickpeaks_table_clickpeaks_gamma(self, row, col):
