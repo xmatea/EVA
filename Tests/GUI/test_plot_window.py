@@ -60,46 +60,6 @@ class TestPlotWindow:
             assert table_res == test[0], \
                 "data displayed at position 0,0 in muon table on figure click did not match the expected value"
 
-
-    def test_plot_and_remove_lines(self, qtbot):
-        widget = QWidget()
-        window = PlotWindow(widget)
-        qtbot.addWidget(window)
-        #widget.showMaximized()
-
-
-        print(window.sc.axs[1].lines)
-
-        # simulate click event
-        event = util.trigger_figure_click_event(window.sc, xdata=189.9, ydata=0,
-                                      ax=window.sc.axs[1], button=MouseButton.RIGHT)
-
-        PlotWindow.on_click(window, event)
-
-        # Click on source in gamma table to plot vertical lines on figure
-        gamma_table_item = window.clickpeaks.table_gamma.item(0, 0)
-        gamma_table_rect = window.clickpeaks.table_gamma.visualItemRect(gamma_table_item)
-
-        qtbot.mouseClick(window.clickpeaks.table_gamma.viewport(), Qt.MouseButton.LeftButton,
-                         pos=gamma_table_rect.center())
-
-        # check that lines were plotted
-        print(window.sc.axs[1].lines)
-        assert len(list(window.sc.axs[1].lines)) > 1, "no lines were plotted"
-        assert len(list(window.sc.axs[1].lines)) == 124, "not all lines were plotted"
-
-
-        # Click on source in remove plot lines table to remove vertical line
-        remove_table_item = window.clickpeaks.table_plotted_lines.item(0, 1)
-        remove_table_rect = window.clickpeaks.table_plotted_lines.visualItemRect(remove_table_item)
-
-        qtbot.mouseClick(window.clickpeaks.table_plotted_lines.viewport(), Qt.MouseButton.LeftButton,
-                         pos=remove_table_rect.center())
-
-        # Check that all lines were hidden (except for first line which is the plotted data)
-        print(list(window.sc.axs[1].lines))
-        assert len(list(window.sc.axs[1].lines)) == 1, "lines were not hidden"
-
     def test_plot_and_remove_lines_gammas(self, qtbot):
         widget = QWidget()
         window = PlotWindow(widget)
