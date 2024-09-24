@@ -85,7 +85,6 @@ class TestPlotWindow:
                          pos=gamma_table_rect.center())
 
             # check that lines were plotted
-            print("g", len(list(window.sc.axs[1].lines)))
             assert len(list(window.sc.axs[1].lines)) > 1, "no lines were plotted"
             assert len(list(window.sc.axs[1].lines)) == test[1], "not all lines were plotted"
 
@@ -123,7 +122,6 @@ class TestPlotWindow:
                              pos=table_rect.center())
 
             # check that lines were plotted
-            print("mu", len(list(window.sc.axs[1].lines)))
             assert len(list(window.sc.axs[1].lines)) > 1, "no lines were plotted"
             assert len(list(window.sc.axs[1].lines)) == test[1], "not all lines were plotted"
 
