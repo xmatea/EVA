@@ -160,8 +160,7 @@ class PlotWindow(QWidget):
 
         clickpeaks.table_muon.verticalScrollBar()
         clickpeaks.table_muon.setHorizontalHeaderLabels(['Element', 'Transition', 'Error'])
-
-        #clickpeaks.table_muon.cellClicked.connect(self.clickpeaks_table_clickpeaks)
+        clickpeaks.table_muon.cellClicked.connect(self.clickpeaks_table_clickpeaks)
 
         # table for primary peaks
         clickpeaks.table_muon_prim = QTableWidget(clickpeaks.tab2)
@@ -181,11 +180,9 @@ class PlotWindow(QWidget):
 
         clickpeaks.table_muon_prim.verticalScrollBar()
         clickpeaks.table_muon_prim.setHorizontalHeaderLabels(['Element', 'Transition', 'Error'])
-
-        #clickpeaks.table_muon_prim.cellClicked.connect(self.clickpeaks_table_clickpeaks_prim)
+        clickpeaks.table_muon_prim.cellClicked.connect(self.clickpeaks_table_clickpeaks_prim)
 
         # table for secondary peaks
-
         clickpeaks.table_muon_sec = QTableWidget(clickpeaks.tab3)
         clickpeaks.table_muon_sec.setShowGrid(True)
         clickpeaks.table_muon_sec.setColumnCount(3)
@@ -203,7 +200,7 @@ class PlotWindow(QWidget):
 
         clickpeaks.table_muon_sec.verticalScrollBar()
         clickpeaks.table_muon_sec.setHorizontalHeaderLabels(['Element', 'Transition', 'Error'])
-        #clickpeaks.table_muon_sec.cellClicked.connect(self.clickpeaks_table_clickpeaks_sec)
+        clickpeaks.table_muon_sec.cellClicked.connect(self.clickpeaks_table_clickpeaks_sec)
 
         # Gamma table
         clickpeaks.desc_gamma = QLabel("Possible Gamma Transition:", clickpeaks)
@@ -251,25 +248,21 @@ class PlotWindow(QWidget):
         findpeaks.settings_form.setLayout(findpeaks.settings_form_layout)
 
         findpeaks.desc_peaks = QLabel("Peak detection", findpeaks)
-        #findpeaks.settings_layout.addWidget(findpeaks.desc_peaks)
 
         findpeaks.find_peaks_button = QPushButton("Find Peaks", findpeaks)
 
-        #findpeaks.settings_layout.addWidget(findpeaks.find_peaks_button)
         findpeaks.find_peaks_button.clicked.connect(
             lambda: self.find_peaks_automatically())
 
         findpeaks.useDef_checkbox = QCheckBox(findpeaks)
 
         findpeaks.useDef_checkbox.setChecked(True)
-        #findpeaks.settings_layout.addWidget(findpeaks.useDef_checkbox)
         findpeaks.useDef_checkbox.toggled.connect(self.useDef_onClicked)
 
         findpeaks.peakfindroutine = QComboBox(findpeaks)
         findpeaks.peakfindroutine.addItem('scipy.FindPeak')
         #findpeaks.peakfindroutine.addItem('scipy.Find_Peak_Cwt')
         findpeaks.peakfindroutine.addItem('find peaks (dev)')
-        #findpeaks.settings_layout.addWidget(findpeaks.peakfindroutine)
 
         findpeaks.label_FindPeak_Height = QLabel("Height", findpeaks)
         findpeaks.label_FindPeak_Height.hide()
@@ -379,10 +372,15 @@ class PlotWindow(QWidget):
                     self.sc.axs[i].axvline(
                         float(rowres[1]), color=self.sc.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
 
+        # update figure
         self.sc.draw()
-        self.clickpeaks.table_plotted_lines.setItem(self.numoflines, 1, QTableWidgetItem(Ele))
+
+        # increment number of lines in table
         self.numoflines += 1
 
+        # update table
+        self.clickpeaks.table_plotted_lines.setRowCount(self.numoflines)
+        self.clickpeaks.table_plotted_lines.setItem(self.numoflines-1, 1, QTableWidgetItem(Ele))
 
     def clickpeaks_table_clickpeaks_sec(self, row, col):
         table = self.clickpeaks.table_muon_sec
@@ -391,28 +389,34 @@ class PlotWindow(QWidget):
             return
 
         Ele = table.item(row, 0).text()
-        En = table.item(row, 1).text()
+        Trans = table.item(row, 1).text()
 
         if col == 0:  # plot all the lines from an element
-            res = getmatch.getmatchesgammas_clicked(Ele)
+            res = getmatch.get_matches_Element(Ele)
             next_color = self.sc.axs[0]._get_lines.get_next_color()
             for match in res:
-                rowres = [match['Element'], match['Energy'], match['Intensity'], match['lifetime']]
+                rowres = [match['element'], match['energy'], match['transition']]
                 for i in range(len(self.sc.axs)):
                     self.sc.axs[i].axvline(
                         float(rowres[1]), color=next_color, linestyle='--', label=str(Ele))
 
         if col == 1:  # plots just one transition
-            res = getmatch.getmatchesgammastrans_clicked(Ele, En)
+            res = getmatch.get_matches_Trans(Ele, Trans)
             for match in res:
-                rowres = [match['Element'], match['Energy'], match['Intensity'], match['lifetime']]
+                rowres = [match['element'], match['energy'], match['transition']]
                 for i in range(len(self.axs)):
                     self.sc.axs[i].axvline(
                         float(rowres[1]), color=self.sc.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
 
+        # update figure
         self.sc.draw()
-        self.clickpeaks.table_plotted_lines.setItem(self.numoflines, 1, QTableWidgetItem(Ele))
+
+        # increment number of lines in table
         self.numoflines += 1
+
+        # update table
+        self.clickpeaks.table_plotted_lines.setRowCount(self.numoflines)
+        self.clickpeaks.table_plotted_lines.setItem(self.numoflines - 1, 0, QTableWidgetItem(Ele))
 
 
     def clickpeaks_table_clickpeaks_prim(self, row, col):
@@ -422,28 +426,34 @@ class PlotWindow(QWidget):
             return
 
         Ele = table.item(row, 0).text()
-        En = table.item(row, 1).text()
+        Trans = table.item(row, 1).text()
 
         if col == 0:  # plot all the lines from an element
-            res = getmatch.getmatchesgammas_clicked(Ele)
+            res = getmatch.get_matches_Element(Ele)
             next_color = self.sc.axs[0]._get_lines.get_next_color()
             for match in res:
-                rowres = [match['Element'], match['Energy'], match['Intensity'], match['lifetime']]
+                rowres = [match['element'], match['energy'], match['transition']]
                 for i in range(len(self.sc.axs)):
                     self.sc.axs[i].axvline(
                         float(rowres[1]), color=next_color, linestyle='--', label=str(Ele))
 
         if col == 1:  # plots just one transition
-            res = getmatch.getmatchesgammastrans_clicked(Ele, En)
+            res = getmatch.get_matches_Trans(Ele, Trans)
             for match in res:
-                rowres = [match['Element'], match['Energy'], match['Intensity'], match['lifetime']]
+                rowres = [match['element'], match['energy'], match['transition']]
                 for i in range(len(self.axs)):
                     self.sc.axs[i].axvline(
                         float(rowres[1]), color=self.sc.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
 
+        # update figure
         self.sc.draw()
-        self.clickpeaks.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
+
+        # increment number of lines in table
         self.numoflines += 1
+
+        # update table
+        self.clickpeaks.table_plotted_lines.setRowCount(self.numoflines)
+        self.clickpeaks.table_plotted_lines.setItem(self.numoflines - 1, 0, QTableWidgetItem(Ele))
 
 
     def clickpeaks_table_clickpeaks(self, row, col):
@@ -453,29 +463,35 @@ class PlotWindow(QWidget):
             return
 
         Ele = table.item(row, 0).text()
-        En = table.item(row, 1).text()
+        Trans = table.item(row, 1).text()
 
         if col == 0:  # plot all the lines from an element
-            res = getmatch.getmatchesgammas_clicked(Ele)
+            res = getmatch.get_matches_Element(Ele)
+            print(res)
             next_color = self.sc.axs[0]._get_lines.get_next_color()
             for match in res:
-                rowres = [match['Element'], match['Energy'], match['Intensity'], match['lifetime']]
+                rowres = [match['element'], match['energy'], match['transition']]
                 for i in range(len(self.sc.axs)):
                     self.sc.axs[i].axvline(
                         float(rowres[1]), color=next_color, linestyle='--', label=str(Ele))
 
         if col == 1:  # plots just one transition
-            res = getmatch.getmatchesgammastrans_clicked(Ele, En)
+            res = getmatch.get_matches_Trans(Ele, Trans)
+            print(res)
             for match in res:
-                rowres = [match['Element'], match['Transition'], match['En'], match['lifetime']]
+                rowres = [match['element'], match['energy'], match['transition']]
                 for i in range(len(self.axs)):
                     self.sc.axs[i].axvline(
-                        float(rowres[1]), color=self.sc.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
-
+                        float(rowres[1]), color=self.sc.axs[i]._get_lines.get_next_color(), linestyle='--', label=str(Ele))
+        # update figure
         self.sc.draw()
-        self.clickpeaks.table_plotted_lines.setItem(self.numoflines, 0, QTableWidgetItem(Ele))
+
+        # increment number of lines in table
         self.numoflines += 1
 
+        # update table
+        self.clickpeaks.table_plotted_lines.setRowCount(self.numoflines)
+        self.clickpeaks.table_plotted_lines.setItem(self.numoflines - 1, 0, QTableWidgetItem(Ele))
 
     def useDef_onClicked(self):
         if self.findpeaks.useDef_checkbox.isChecked():
