@@ -67,7 +67,7 @@ class TestPlotWindow:
         qtbot.addWidget(window)
         #widget.showMaximized()
 
-        #qtbot.wait(1000)
+
         print(window.sc.axs[1].lines)
 
         # simulate click event
@@ -88,7 +88,6 @@ class TestPlotWindow:
         assert len(list(window.sc.axs[1].lines)) > 1, "no lines were plotted"
         assert len(list(window.sc.axs[1].lines)) == 124, "not all lines were plotted"
 
-        #qtbot.wait(1000)
 
         # Click on source in remove plot lines table to remove vertical line
         remove_table_item = window.clickpeaks.table_plotted_lines.item(0, 1)
@@ -97,12 +96,6 @@ class TestPlotWindow:
         qtbot.mouseClick(window.clickpeaks.table_plotted_lines.viewport(), Qt.MouseButton.LeftButton,
                          pos=remove_table_rect.center())
 
-        #qtbot.wait(1000)
-
         # Check that all lines were hidden (except for first line which is the plotted data)
-        all_hidden = True
-        for line in window.sc.axs[1].lines[1:]:
-            if line._visible:
-                all_hidden = False
-
-        assert all_hidden, "Failed to remove all plot lines"
+        print(list(window.sc.axs[1].lines))
+        assert len(list(window.sc.axs[1].lines)) == 1, "lines were not hidden"
