@@ -339,10 +339,11 @@ class PlotWindow(QWidget):
 
         Ele = cell_contents.text()
 
+        # loop through all lines in all detectors and delete the line if the label is equal to Ele
         for i in range(len(self.sc.axs)):
-            new_lines = [line for line in self.sc.axs[i].lines if line.get_label() == Ele]
-            for line in new_lines:
-                line.set_visible(False) # deleting lines in matplotlib is dodgy, it's faster to just hide them
+            for line in self.sc.axs[i].lines:
+                if line.get_label() == Ele:
+                    line.remove()
 
         self.sc.draw() # update figure
         self.clickpeaks.table_plotted_lines.removeRow(row)
