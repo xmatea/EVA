@@ -1,6 +1,6 @@
 import math
 from matplotlib import pyplot as plt
-from EVA import Trimdata, PlotWidget
+from EVA import Trimdata, plot_widget
 from lmfit.models import GaussianModel, QuadraticModel
 
 from matplotlib.backend_bases import MouseButton
@@ -528,7 +528,7 @@ class PeakFit(QWidget):
         globals.plot_GE3 = memoryGE3
         globals.plot_GE4 = memoryGE4
 
-        return PlotWidget.PlotWidget(self.fig_ana, self.axs_ana)
+        return plot_widget.PlotWidget(self.fig_ana, self.axs_ana)
 
     def on_click(self, event):
         print("clicked!")

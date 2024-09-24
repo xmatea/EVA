@@ -22,7 +22,7 @@ from EVA import getmatch, Plot_Spectra, FindPeaks, SortMatch, globals
 
 import time
 
-from EVA.PlotWidget import PlotWidget
+from EVA.plot_widget import PlotWidget
 
 
 class PlotWindow(QWidget):

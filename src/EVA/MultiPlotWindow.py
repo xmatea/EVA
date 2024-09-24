@@ -12,7 +12,7 @@ from PyQt6.QtWidgets import (
 )
 
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
-from EVA import MultiPlot, GenReadList, ReadMultiRun, PlotWidget, globals
+from EVA import MultiPlot, GenReadList, ReadMultiRun, plot_widget, globals
 
 class MultiPlotWindow(QWidget):
     """
@@ -42,10 +42,9 @@ class MultiPlotWindow(QWidget):
         # set size constraints
         self.side_panel.setMaximumWidth(400)
 
-        # create empty plot widget
-        self.plot = PlotWidget.PlotWidget()
+        # create empty plot widget as placeholfrt
+        self.plot = plot_widget.PlotWidget()
 
-        #self.plot.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         self.plot_nav_bar = NavigationToolbar2QT(self.plot, self)
 
         # sets up button
@@ -113,6 +112,13 @@ class MultiPlotWindow(QWidget):
         #print(line)
         # generates a list of runs to load and plot
         RunList = GenReadList.GenReadList(line)
+
+        if not RunList:
+            error_message = QErrorMessage(self)
+            error_message.setWindowTitle("Multi-run plot error")
+            error_message.showMessage("Error: You must specify at least one run number in the table.")
+            return
+
         #print('RunList', RunList)
         # reads offset from GUI
         offset = float(self.val_multi_offset.text())
@@ -129,22 +135,20 @@ class MultiPlotWindow(QWidget):
             error_message.showMessage("Error: Failed to load specified run(s).")
             return
 
+
+
         # plots multiple runs from the runlist and with a y offset
         fig, ax = MultiPlot.MultiPlot(datax_GE1, datay_GE1, datax_GE2, datay_GE2, datax_GE3, datay_GE3, datax_GE4, datay_GE4,
                             RunList, offset)
 
-        """
-        TODO: fix this. Ran into trouble trying to delete the old plot widgets and navbar when reloading data, for now 
-        they will just be hidden instead. Could cause performance issues if loading many times in the same window...
-        """
+        self.layout.removeWidget(self.plot)
+        self.layout.removeWidget(self.plot_nav_bar)
 
-        # self.layout.removeWidget(self.plot)
-        # self.layout.removeWidget(self.plot_nav_bar)
+        # hopefully this is ok!
+        self.plot_nav_bar.deleteLater()
+        self.plot.deleteLater()
 
-        self.plot_nav_bar.hide()
-        self.plot.hide()
-
-        self.plot = PlotWidget.PlotWidget(fig=fig, axs=ax)
+        self.plot = plot_widget.PlotWidget(fig=fig, axs=ax)
         self.plot_nav_bar = NavigationToolbar2QT(self.plot, self)
 
         self.layout.addWidget(self.plot_nav_bar, 0, 1)

@@ -16,7 +16,6 @@ class PlotWidget(FigureCanvasQTAgg):
     def __init__(self, fig=None, axs=None):
         super(FigureCanvasQTAgg, self).__init__(fig)
         self.axs = axs
-        self.setStyleSheet("background-color: pink")
 
     def update_plot(self, fig=None, axs=None):
         if fig is not None:
