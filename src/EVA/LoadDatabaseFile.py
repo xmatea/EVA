@@ -4,29 +4,53 @@ from EVA import globals
 
 
 def loadDatabaseFile():
-    with open('./src/EVA/Databases/Muonic X-rays/peak_data.json', 'r') as read_file:
-        print('decoding file')
-        globals.peakdata = json.load(read_file)
-        primary_energies = {}
-        secondary_energies = {}
-        all_energies = {}
-        # sort data
-        for element in globals.peakdata:
-            primary_energy = [float(x[1]) for x in list(globals.peakdata[element]['Primary'].items())]
-            secondary_energy = [float(x[1]) for x in list(globals.peakdata[element]['Secondary'].items())]
-            primary_trans = [x[0] for x in list(globals.peakdata[element]['Primary'].items())]
-            secondary_trans = [x[0] for x in list(globals.peakdata[element]['Secondary'].items())]
+    if globals.muon_database == "legacy":
+        with open('./src/EVA/Databases/Muonic X-rays/peak_data.json', 'r') as read_file:
+            print('decoding file')
+            globals.peakdata = json.load(read_file)
+            primary_energies = {}
+            secondary_energies = {}
+            all_energies = {}
+            # sort data
+            for element in globals.peakdata:
+                primary_energy = [float(x[1]) for x in list(globals.peakdata[element]['Primary'].items())]
+                secondary_energy = [float(x[1]) for x in list(globals.peakdata[element]['Secondary'].items())]
+                primary_trans = [x[0] for x in list(globals.peakdata[element]['Primary'].items())]
+                secondary_trans = [x[0] for x in list(globals.peakdata[element]['Secondary'].items())]
 
-            primary_energies[element] = dict(zip(primary_trans, primary_energy))
-            secondary_energies[element] = dict(zip(secondary_trans, secondary_energy))
-            all_energies[element] = dict(zip(primary_trans + secondary_trans,
-                                             primary_energy + secondary_energy))
-        globals.peak_data['Primary energy'] = primary_energies
-        globals.peak_data['Secondary energy'] = secondary_energies
-        globals.peak_data['All energies'] = all_energies
+                primary_energies[element] = dict(zip(primary_trans, primary_energy))
+                secondary_energies[element] = dict(zip(secondary_trans, secondary_energy))
+                all_energies[element] = dict(zip(primary_trans + secondary_trans,
+                                                 primary_energy + secondary_energy))
+            globals.peak_data['Primary energy'] = primary_energies
+            globals.peak_data['Secondary energy'] = secondary_energies
+            globals.peak_data['All energies'] = all_energies
 
-    return
+        return
 
+    elif globals.muon_database == "mudirac":
+        with open('./src/EVA/Databases/Muonic X-rays/mudirac_data.json', 'r') as read_file:
+            print('decoding file')
+            peakdata = json.load(read_file)
+            primary_energies = {}
+            secondary_energies = {}
+            all_energies = {}
 
+            # sort data
+            for element in peakdata:
+                for isotope in peakdata[element]["Isotopes"]:
+                    primary_energy = {}
+                    secondary_energy = {}
+                    for p_trans in peakdata[element]["Isotopes"][isotope]["Primary"]:
+                        primary_energy[p_trans] = peakdata[element]["Isotopes"][isotope]["Primary"][p_trans]["E"]
 
+                    for s_trans in peakdata[element]["Isotopes"][isotope]["Secondary"]:
+                        secondary_energy[s_trans] = peakdata[element]["Isotopes"][isotope]["Secondary"][s_trans]["E"]
 
+                    primary_energies[isotope] = primary_energy
+                    secondary_energies[isotope] = secondary_energy
+                    all_energies[isotope] = dict(primary_energy, **secondary_energy)
+
+            globals.peak_data['Primary energy'] = primary_energies
+            globals.peak_data['Secondary energy'] = secondary_energies
+            globals.peak_data['All energies'] = all_energies

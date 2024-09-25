@@ -9,6 +9,7 @@ from EVA.Plot_Window import PlotWindow
 from EVA.loaddata import loaddata
 from EVA.LoadDatabaseFile import loadDatabaseFile
 from EVA.loadgamma import loadgamma
+from EVA import globals
 
 import Tests.GUI.test_util_gui as util
 
@@ -18,6 +19,7 @@ class TestPlotWindow:
     @pytest.fixture(autouse=True)
     def setup(self):
         # loading database and sample data
+        globals.muon_database = "legacy"
         loadDatabaseFile()
         loadgamma()
         loaddata(2630)

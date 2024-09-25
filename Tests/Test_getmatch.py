@@ -1,10 +1,12 @@
 import unittest
-from EVA import LoadDatabaseFile as ldf, getmatch
+from EVA import LoadDatabaseFile as ldf, getmatch, globals
+import numpy as np
 
 
 class get_match(unittest.TestCase):
-    def test_getmatch(self):
+    def test_getmatch_gammas(self):
         #print('testing get match')
+        globals.muon_database = "legacy"
         ldf.loadDatabaseFile()
         default_peaks = [330.9, 296.5, 92.6, 1253.7, 330.7]
         default_sigma = [0.45] * len(default_peaks)
@@ -13,3 +15,29 @@ class get_match(unittest.TestCase):
         res, res1, res2 = getmatch.get_matches(input_data)
 
         self.assertEqual(res, good_res, 'Failed get_match')
+
+    def test_getmatch_muon(self):
+        # manually reset the database and load the mudirac data instead
+        globals.muon_database = "mudirac"
+
+        ldf.loadDatabaseFile()
+        default_peaks = [330.9, 296.5, 92.6, 1253.7, 330.7]
+        default_sigma = [0.45] * len(default_peaks)
+
+        input_data = list(zip(default_peaks, default_sigma))
+        target_res = ['65Cu', '63Cu', '54Fe', '124Sn', '24Mg', '25Mg', '56Fe', '122Sn', '57Fe', '120Sn', '58Fe', '118Sn',
+                  '117Sn', '116Sn', '24Mg', '115Sn', '114Sn', '26Mg', '112Sn', '63Cu', '58Ni', '65Cu', '60Ni', '61Ni',
+                  '62Ni', '64Ni', '24Mg', '25Mg', '26Mg', '55Mn', '25Mg', '124Sn', '122Sn', '120Sn', '118Sn', '117Sn',
+                  '116Sn', '26Mg', '115Sn', '114Sn', '112Sn', '142Ce', '140Ce', '138Ce', '136Ce', '133Cs', '55Mn',
+                  '112Sn', '114Sn', '115Sn', '116Sn', '117Sn', '118Sn', '120Sn', '122Sn', '124Sn', '142Ce', '140Ce',
+                  '138Ce', '136Ce', '113In', '115In', '41K', '40K', '39K', '174Hf', '180Hf', '58Fe', '82Se', '80Se',
+                  '120Te', '78Se', '122Te', '124Te', '125Te', '126Te', '128Te', '77Se', '130Te', '76Se', '74Se',
+                  '113In', '115In', '174Hf', '180Hf', '51V']
+
+        res, res1, res2 = getmatch.get_matches(input_data)
+
+        for i, x in enumerate(res[0]):
+            self.assertEqual(x["element"], target_res[i], msg="Failed to get match for muonic xrays")
+
+        # set database back to legacy in case it breaks something
+        globals.muon_database = "legacy"
