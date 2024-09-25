@@ -151,9 +151,9 @@ def get_matches(input_peaks):
     Primary_matches = []
     Secondary_matches = []
     for x in globals.peak_data:
-        print('x=' + x)
+        #print('x=' + x)
         raw_data = globals.peak_data[x]
-        print('raw_data at x', raw_data)
+        #print('raw_data at x', raw_data)
         matches = []
         for peak, sigma in input_peaks:
             for element in raw_data:
