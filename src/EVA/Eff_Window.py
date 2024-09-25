@@ -13,8 +13,7 @@ class Correction_Eff(QWidget):
     def __init__(self, parent = None):
         super(Correction_Eff,self).__init__(parent)
 
-        self.resize(1400, 500)
-        self.setMinimumSize(1400, 500)
+        self.setMaximumSize(1200, 500)
         self.setWindowTitle("Efficiency Correction ")
 
         # setting up buttons
