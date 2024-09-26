@@ -20,7 +20,6 @@ class MultiPlotWindow(QWidget):
 
         """
 
-
     def __init__(self, parent = None):
         super(MultiPlotWindow,self).__init__(parent)
 
