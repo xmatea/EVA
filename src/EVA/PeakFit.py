@@ -105,9 +105,6 @@ class PeakFit(QWidget):
         self.fit_settings_form = QWidget()
         self.fit_settings_form_layout = QFormLayout()
 
-        self.plot_container = QWidget()
-        self.plot_container_layout = QVBoxLayout()
-
         self.fitting_panel = QWidget()
         self.fitting_panel_layout = QVBoxLayout()
 
@@ -206,19 +203,12 @@ class PeakFit(QWidget):
         self.title_lab = "Analysis of RunNum: " + str(globals.RunNum) + "Det: " + globals.whichdet
 
         print("In init")
-        self.data_plot = self.PlotAnalysisSpectra(self.title_lab)
-        self.data_plot_navbar = NavigationToolbar2QT(self.data_plot, self)
+        self.plot = self.PlotAnalysisSpectra(self.title_lab)
         plt.connect('button_press_event', self.on_click)
 
-        self.plot_container.setLayout(self.plot_container_layout)
-        self.plot_container_layout.addWidget(self.data_plot_navbar)
-        self.plot_container_layout.addWidget(self.data_plot)
-
         # add all components to main layout
-        self.layout.addWidget(self.plot_container, 0, 1)
+        self.layout.addWidget(self.plot, 0, 1)
         self.layout.addWidget(self.fitting_panel, 0, 0)
-
-
 
     def loadfunction(self):
         print('in load')
@@ -723,7 +713,7 @@ class PeakFit(QWidget):
             plt.axvline(EMax, color='red', linestyle='--')
             plt.legend()
             #plt.show()
-            self.data_plot.draw()
+            self.plot.canvas.draw()
 
             # Generate function
             # Guassians
@@ -995,7 +985,7 @@ class PeakFit(QWidget):
         plt.axvline(EMax, color='red', linestyle='--')
         plt.legend()
 
-        self.data_plot.draw()
+        self.plot.canvas.draw()
 
 
         # write results to file
