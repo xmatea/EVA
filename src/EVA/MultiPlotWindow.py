@@ -41,10 +41,8 @@ class MultiPlotWindow(QWidget):
         # set size constraints
         self.side_panel.setMaximumWidth(400)
 
-        # create empty plot widget as placeholfrt
+        # create empty plot widget as placeholder
         self.plot = plot_widget.PlotWidget()
-
-        #self.plot_nav_bar = NavigationToolbar2QT(self.plot, self)
 
         # sets up button
         self.plot_multi = QPushButton('Load and Plot Multi Spectra')
@@ -80,7 +78,6 @@ class MultiPlotWindow(QWidget):
 
         self.setLayout(self.layout)
         self.layout.addWidget(self.side_panel, 0, 0, 0, 1)
-        #self.layout.addWidget(self.plot_nav_bar, 0, 1)
         self.layout.addWidget(self.plot, 0, 1)
 
     def loadandplot(self):

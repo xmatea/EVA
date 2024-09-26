@@ -15,6 +15,9 @@ class FigureCanvas(FigureCanvasQTAgg):
         super().__init__(fig)
         self.axs = axs
 
+    def __del__(self):
+        print("deleted")
+
 class PlotWidget(QWidget):
     def __init__(self, fig=None, axs=None):
         super().__init__()
@@ -25,7 +28,7 @@ class PlotWidget(QWidget):
         if fig is None:
             self.navbar = None
         else:
-            self.navbar = NavigationToolbar2QT(self.canvas)
+            self.navbar = NavigationToolbar2QT(self.canvas, self)
 
         self.layout.addWidget(self.navbar, Qt.AlignmentFlag.AlignLeft)
         self.layout.addWidget(self.canvas)
@@ -52,8 +55,8 @@ class PlotWidget(QWidget):
                 self.layout.removeWidget(self.navbar)
                 self.navbar.deleteLater()
 
-            self.navbar = NavigationToolbar2QT(self.canvas)
             self.canvas = FigureCanvas(fig=self.canvas.figure, axs=self.canvas.axs)
+            self.navbar = NavigationToolbar2QT(self.canvas, self)
 
             self.layout.addWidget(self.navbar)
             self.layout.addWidget(self.canvas)
