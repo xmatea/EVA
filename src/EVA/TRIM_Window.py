@@ -67,7 +67,7 @@ class RunSimTRIMSRIM(QWidget):
         Stats = QLineEdit('100')
 
         self.bar = QMenuBar()
-        #self.bar.setFixedHeight(35)
+        #self.bar.setFixedHeight(25)
 
         file = self.bar.addMenu('File')
 
@@ -84,25 +84,25 @@ class RunSimTRIMSRIM(QWidget):
                                                                      TRIMOutDir, Stats))
 
         # set up containers and layouts
-        self.plot_container = QWidget()
         self.trim_settings_container = QWidget()
-
-        self.layout = QGridLayout()
         self.trim_settings_layout = QFormLayout()
-        self.plot_container_layout = QVBoxLayout()
+
+        # main layout to hold menu bar and page contents
+        self.main_layout = QVBoxLayout()
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+
+        # content container to hold page contents
+        self.content_layout = QGridLayout()
+        self.content_container = QWidget()
 
         self.tab1_layout = QVBoxLayout()
         self.tab2_layout = QVBoxLayout()
 
         # size constraints
-        self.trim_settings_container.setMaximumWidth(600)
+        self.trim_settings_container.setFixedWidth(600)
 
         # set up plot window
         self.plot = plot_widget.PlotWidget()
-        self.navbar = NavigationToolbar2QT(self.plot, parent=self)
-
-        self.plot_container_layout.addWidget(self.navbar)
-        self.plot_container_layout.addWidget(self.plot)
 
         # set up trim settings panel
         self.trim_settings_layout.addRow(QLabel('Sample Name'), SampleName)
@@ -122,7 +122,7 @@ class RunSimTRIMSRIM(QWidget):
         # Initialize tab screen
 
         self.tabs = QTabWidget()
-        self.tabs.setMaximumWidth(600)
+        self.tabs.setFixedWidth(600)
 
         self.tab1 = QWidget()
         self.tab2 = QWidget()
@@ -186,14 +186,15 @@ class RunSimTRIMSRIM(QWidget):
 
         # set layouts to containers
         self.trim_settings_container.setLayout(self.trim_settings_layout)
-        self.plot_container.setLayout(self.plot_container_layout)
-        self.setLayout(self.layout)
+        self.content_container.setLayout(self.content_layout)
 
-        # add containers to layout
-        self.layout.addWidget(self.bar, 0, 0, 1, 0)
-        self.layout.addWidget(self.trim_settings_container, 1, 0)
-        self.layout.addWidget(self.tabs, 2, 0)
-        self.layout.addWidget(self.plot_container, 1, 1, 0, 1)
+        self.content_layout.addWidget(self.trim_settings_container, 0, 0)
+        self.content_layout.addWidget(self.plot, 0, 1, 2, 1)
+        self.content_layout.addWidget(self.tabs, 1, 0)
+
+        self.setLayout(self.main_layout)
+        self.main_layout.addWidget(self.bar)
+        self.main_layout.addWidget(self.content_container)
 
     def closeEvent(self, event):
         # close window cleanly
@@ -513,7 +514,7 @@ class RunSimTRIMSRIM(QWidget):
                 for i in range(len(globals.sample_layers)):
                     axx.plot(globals.TRIMRes_x[0], comp[i])
 
-                figt.show()
+                self.plot.update_plot(fig=figt, axs=axx)
 
             else:
                 figt, axx = plt.subplots()
@@ -532,7 +533,7 @@ class RunSimTRIMSRIM(QWidget):
                     axx.text(sumdis, 5, globals.sample_name[i], horizontalalignment='left', rotation='vertical')
                     print('sample_layers', globals.sample_layers[i])
 
-                figt.show()
+                self.plot.update_plot(fig=figt, axs=axx)
 
         except:
             print('plot error')
