@@ -61,14 +61,12 @@ class PlotWindow(QWidget):
         self.tabs.addTab(self.findpeaks, "Element Search")
 
         # set up plot window and navigator
-        self.sc = self.PlotSpectra()
-        self.toolbar = NavigationToolbar2QT(self.sc, self)
+        self.plot = self.PlotSpectra()
         plt.connect('button_press_event', self.on_click)
 
         # Add everything to main window layout (gridlayout)
         self.layout.addWidget(self.tabs, 0, 0, 0, 1, alignment=Qt.AlignmentFlag.AlignLeft)
-        self.layout.addWidget(self.toolbar, 0, 1)
-        self.layout.addWidget(self.sc, 1, 1)
+        self.layout.addWidget(self.plot, 1, 1)
         #self.layout.addWidget(self.findpeaks, 2, 1)
 
         self.numoflines = 0
@@ -333,16 +331,16 @@ class PlotWindow(QWidget):
         element = cell_contents.text()
 
         # loop through all lines in all detectors and delete the line if the label is equal to element
-        for i in range(len(self.sc.axs)):
+        for i in range(len(self.plot.canvas.axs)):
 
             # search for all lines with label == element
-            lines_to_remove = [line for line in self.sc.axs[i].lines if line.get_label() == element]
+            lines_to_remove = [line for line in self.plot.canvas.axs[i].lines if line.get_label() == element]
             num = len(lines_to_remove)
 
             for j in range(num):
                 lines_to_remove[j].remove()
 
-        self.sc.draw() # update figure
+        self.plot.canvas.draw() # update figure
         self.clickpeaks.table_plotted_lines.removeRow(row)
         #self.clickpeaks.table_plotted_lines.setRowCount(10)
         self.numoflines -= 1
@@ -357,11 +355,11 @@ class PlotWindow(QWidget):
 
         if col == 0:  # plot all the lines from an element
             res = getmatch.getmatchesgammas_clicked(Ele)
-            next_color = self.sc.axs[0]._get_lines.get_next_color()
+            next_color = self.plot.canvas.axs[0]._get_lines.get_next_color()
             for match in res:
                 rowres = [match['Element'], match['Energy'], match['Intensity'], match['lifetime']]
-                for i in range(len(self.sc.axs)):
-                    self.sc.axs[i].axvline(
+                for i in range(len(self.plot.canvas.axs)):
+                    self.plot.canvas.axs[i].axvline(
                         float(rowres[1]), color=next_color, linestyle='--', label=str(Ele))
 
         if col == 1:  # plots just one transition
@@ -369,11 +367,11 @@ class PlotWindow(QWidget):
             for match in res:
                 rowres = [match['Element'], match['Energy'], match['Intensity'], match['lifetime']]
                 for i in range(len(self.axs)):
-                    self.sc.axs[i].axvline(
-                        float(rowres[1]), color=self.sc.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
+                    self.plot.canvas.axs[i].axvline(
+                        float(rowres[1]), color=self.plot.canvas.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
 
         # update figure
-        self.sc.draw()
+        self.plot.canvas.draw()
 
         # increment number of lines in table
         self.numoflines += 1
@@ -393,11 +391,11 @@ class PlotWindow(QWidget):
 
         if col == 0:  # plot all the lines from an element
             res = getmatch.get_matches_Element(Ele)
-            next_color = self.sc.axs[0]._get_lines.get_next_color()
+            next_color = self.plot.canvas.axs[0]._get_lines.get_next_color()
             for match in res:
                 rowres = [match['element'], match['energy'], match['transition']]
-                for i in range(len(self.sc.axs)):
-                    self.sc.axs[i].axvline(
+                for i in range(len(self.plot.canvas.axs)):
+                    self.plot.canvas.axs[i].axvline(
                         float(rowres[1]), color=next_color, linestyle='--', label=str(Ele))
 
         if col == 1:  # plots just one transition
@@ -405,11 +403,11 @@ class PlotWindow(QWidget):
             for match in res:
                 rowres = [match['element'], match['energy'], match['transition']]
                 for i in range(len(self.axs)):
-                    self.sc.axs[i].axvline(
-                        float(rowres[1]), color=self.sc.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
+                    self.plot.canvas.axs[i].axvline(
+                        float(rowres[1]), color=self.plot.canvas.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
 
         # update figure
-        self.sc.draw()
+        self.plot.canvas.draw()
 
         # increment number of lines in table
         self.numoflines += 1
@@ -430,11 +428,11 @@ class PlotWindow(QWidget):
 
         if col == 0:  # plot all the lines from an element
             res = getmatch.get_matches_Element(Ele)
-            next_color = self.sc.axs[0]._get_lines.get_next_color()
+            next_color = self.plot.canvas.axs[0]._get_lines.get_next_color()
             for match in res:
                 rowres = [match['element'], match['energy'], match['transition']]
-                for i in range(len(self.sc.axs)):
-                    self.sc.axs[i].axvline(
+                for i in range(len(self.plot.canvas.axs)):
+                    self.plot.canvas.axs[i].axvline(
                         float(rowres[1]), color=next_color, linestyle='--', label=str(Ele))
 
         if col == 1:  # plots just one transition
@@ -442,11 +440,11 @@ class PlotWindow(QWidget):
             for match in res:
                 rowres = [match['element'], match['energy'], match['transition']]
                 for i in range(len(self.axs)):
-                    self.sc.axs[i].axvline(
-                        float(rowres[1]), color=self.sc.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
+                    self.plot.canvas.axs[i].axvline(
+                        float(rowres[1]), color=self.plot.canvas.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
 
         # update figure
-        self.sc.draw()
+        self.plot.canvas.draw()
 
         # increment number of lines in table
         self.numoflines += 1
@@ -468,11 +466,11 @@ class PlotWindow(QWidget):
         if col == 0:  # plot all the lines from an element
             res = getmatch.get_matches_Element(Ele)
             print(res)
-            next_color = self.sc.axs[0]._get_lines.get_next_color()
+            next_color = self.plot.canvas.axs[0]._get_lines.get_next_color()
             for match in res:
                 rowres = [match['element'], match['energy'], match['transition']]
-                for i in range(len(self.sc.axs)):
-                    self.sc.axs[i].axvline(
+                for i in range(len(self.plot.canvas.axs)):
+                    self.plot.canvas.axs[i].axvline(
                         float(rowres[1]), color=next_color, linestyle='--', label=str(Ele))
 
         if col == 1:  # plots just one transition
@@ -481,10 +479,10 @@ class PlotWindow(QWidget):
             for match in res:
                 rowres = [match['element'], match['energy'], match['transition']]
                 for i in range(len(self.axs)):
-                    self.sc.axs[i].axvline(
-                        float(rowres[1]), color=self.sc.axs[i]._get_lines.get_next_color(), linestyle='--', label=str(Ele))
+                    self.plot.canvas.axs[i].axvline(
+                        float(rowres[1]), color=self.plot.canvas.axs[i]._get_lines.get_next_color(), linestyle='--', label=str(Ele))
         # update figure
-        self.sc.draw()
+        self.plot.canvas.draw()
 
         # increment number of lines in table
         self.numoflines += 1
@@ -537,7 +535,7 @@ class PlotWindow(QWidget):
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
 
-                Plot_Spectra.Plot_Peak_Location(self.sc.axs, peaks_GE1, globals.x_GE1, i)
+                Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE1, globals.x_GE1, i)
                 # Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, peak_pos_GE1, i)
 
                 out = SortMatch.SortMatch(match_GE1)
@@ -545,7 +543,7 @@ class PlotWindow(QWidget):
                 self.findpeaks.table_peaks.setItem(i, 1, QTableWidgetItem(str(dict(list(out.items())))))
                 #print('after table_peaks')
                 i += 1
-                self.sc.draw()
+                self.plot.canvas.draw()
 
         if self.findpeaks.peakfindroutine.currentText() == "scipy.FindPeak":
             if globals.plot_GE1:
@@ -556,7 +554,7 @@ class PlotWindow(QWidget):
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
 
-                Plot_Spectra.Plot_Peak_Location(self.sc.axs, peaks_GE1, globals.x_GE1, i)
+                Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE1, globals.x_GE1, i)
                 #Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, globals.x_GE1,i)
                 #Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, peak_pos_GE1, i)
 
@@ -573,7 +571,7 @@ class PlotWindow(QWidget):
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE2, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE2', match_GE2)
-                Plot_Spectra.Plot_Peak_Location(self.sc.axs, peaks_GE2, globals.x_GE2, i)
+                Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE2, globals.x_GE2, i)
                 i += 1
 
 
@@ -584,7 +582,7 @@ class PlotWindow(QWidget):
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE3, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE3',match_GE3)
-                Plot_Spectra.Plot_Peak_Location(self.sc.axs, peaks_GE3, globals.x_GE3, i)
+                Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE3, globals.x_GE3, i)
                 i += 1
 
             if globals.plot_GE4:
@@ -594,10 +592,10 @@ class PlotWindow(QWidget):
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE4, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE4',match_GE4)
-                Plot_Spectra.Plot_Peak_Location(self.sc.axs, peaks_GE4, globals.x_GE4, i)
+                Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE4, globals.x_GE4, i)
                 i += 1
 
-            self.sc.draw()
+            self.plot.canvas.draw()
 
         if self.findpeaks.peakfindroutine.currentText() == "scipy.Find_Peak_Cwt":
             # Not working at the moment
@@ -610,7 +608,7 @@ class PlotWindow(QWidget):
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
 
-                Plot_Spectra.Plot_Peak_Location(self.sc.axs, peaks_GE1, globals.x_GE1, i)
+                Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE1, globals.x_GE1, i)
 
                 out = SortMatch.SortMatch(match_GE1)
                 print('after out')
@@ -626,7 +624,7 @@ class PlotWindow(QWidget):
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE2, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE2', match_GE2)
-                Plot_Spectra.Plot_Peak_Location(self.sc.axs, peaks_GE2, globals.x_GE2, i)
+                Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE2, globals.x_GE2, i)
                 i+=1
 
 
@@ -637,7 +635,7 @@ class PlotWindow(QWidget):
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE3, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE3',match_GE3)
-                Plot_Spectra.Plot_Peak_Location(self.sc.axs, peaks_GE3, globals.x_GE3, i)
+                Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE3, globals.x_GE3, i)
                 i += 1
 
             if globals.plot_GE4:
@@ -647,10 +645,10 @@ class PlotWindow(QWidget):
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE4, res_PM, res_SM = getmatch.get_matches(input_data)
                 print('match_GE4',match_GE4)
-                Plot_Spectra.Plot_Peak_Location(self.sc.axs, peaks_GE4, globals.x_GE4, i)
+                Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE4, globals.x_GE4, i)
                 i+=1
     
-            self.sc.draw()
+            self.plot.canvas.draw()
 
 
     def PlotSpectra(self):
