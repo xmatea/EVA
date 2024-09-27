@@ -49,9 +49,11 @@ def loaddata(RunNum):
         globals.flag_d_GE4 = 0
         print('5099 file not found')
 
+    # Temporary fix until array issue is resolved
+    if not all([globals.flag_d_GE1, globals.flag_d_GE2, globals.flag_d_GE3, globals.flag_d_GE4]):
+        return 0
 
     print('Going to Energy correction')
-
     Energy_Corrections.Energy_Corrections()
 
     print('going to Normalise')
@@ -62,7 +64,4 @@ def loaddata(RunNum):
     print('Going to Efficiency corrections')
 
     return flag
-
-    #
-
     # Load data and store in globals

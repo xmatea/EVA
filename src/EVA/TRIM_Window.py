@@ -66,8 +66,8 @@ class RunSimTRIMSRIM(QWidget):
         MinMomentum = QLineEdit('21.0')
         MaxMomentum = QLineEdit('30.0')
         StepMomentum = QLineEdit('1.0')
-        SRIMdir = QLineEdit('c:/Users/matea/SRIM2013') #QLineEdit('c:/SRIM2013')
-        TRIMOutDir = QLineEdit('c:/Users/matea/SRIM2013/SRIM Outputs') #QLineEdit('c:/SRIM2013/SRIM Outputs')
+        SRIMdir = QLineEdit('c:/SRIM2013') #QLineEdit('c:/SRIM2013')
+        TRIMOutDir = QLineEdit('c:/SRIM2013/SRIM Outputs') #QLineEdit('c:/SRIM2013/SRIM Outputs')
         Stats = QLineEdit('100')
 
         bar = QMenuBar(self)

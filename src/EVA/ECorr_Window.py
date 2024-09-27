@@ -19,8 +19,7 @@ class Correction_E(QWidget):
         super(Correction_E,self).__init__(parent)
         #label = QLabel("Energy Correction ", self)
 
-        self.resize(850, 500)
-        self.setMinimumSize(850, 500)
+        self.setMaximumSize(850, 500)
         self.setWindowTitle("Energy Correction ")
 
         # setting up buttons
