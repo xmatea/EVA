@@ -55,6 +55,7 @@ class MainWindow(QMainWindow):
     def __init__(self, parent = None):
         super(MainWindow,self).__init__(parent)
         self.wp = None
+        self.wTrim = None
         globals.we = None
 
         print(config.parser["GE1"])
@@ -396,17 +397,9 @@ class MainWindow(QMainWindow):
 
     def RunTrim(self):
         ''' Launch TRIM Window'''
-        print('in TRIM')
-        # self.show(Correction_Energy())
-        if globals.wTrim is None:
-            globals.wTrim = TRIM_Window.RunSimTRIMSRIM()
-            print('self,wp = none')
-            # self.we.resize(1200, 600)
-            # self.we.setWindowTitle("Plot Window: "+globals.RunNum)
-            globals.wTrim.show()
 
-        else:
-            print('window exists')
+        self.wTrim = TRIM_Window.RunSimTRIMSRIM()
+        self.wTrim.showMaximized()
 
     def Corr_Eff(self):
         print('in Corr_Eff')

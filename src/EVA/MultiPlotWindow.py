@@ -20,7 +20,6 @@ class MultiPlotWindow(QWidget):
 
         """
 
-
     def __init__(self, parent = None):
         super(MultiPlotWindow,self).__init__(parent)
 
@@ -42,10 +41,8 @@ class MultiPlotWindow(QWidget):
         # set size constraints
         self.side_panel.setMaximumWidth(400)
 
-        # create empty plot widget as placeholfrt
+        # create empty plot widget as placeholder
         self.plot = plot_widget.PlotWidget()
-
-        self.plot_nav_bar = NavigationToolbar2QT(self.plot, self)
 
         # sets up button
         self.plot_multi = QPushButton('Load and Plot Multi Spectra')
@@ -81,8 +78,7 @@ class MultiPlotWindow(QWidget):
 
         self.setLayout(self.layout)
         self.layout.addWidget(self.side_panel, 0, 0, 0, 1)
-        self.layout.addWidget(self.plot_nav_bar, 0, 1)
-        self.layout.addWidget(self.plot, 1, 1)
+        self.layout.addWidget(self.plot, 0, 1)
 
     def loadandplot(self):
         #print('hello')
@@ -140,15 +136,4 @@ class MultiPlotWindow(QWidget):
         fig, ax = MultiPlot.MultiPlot(datax_GE1, datay_GE1, datax_GE2, datay_GE2, datax_GE3, datay_GE3, datax_GE4, datay_GE4,
                             RunList, offset)
 
-        self.layout.removeWidget(self.plot)
-        self.layout.removeWidget(self.plot_nav_bar)
-
-        # hopefully this is ok!
-        self.plot_nav_bar.deleteLater()
-        self.plot.deleteLater()
-
-        self.plot = plot_widget.PlotWidget(fig=fig, axs=ax)
-        self.plot_nav_bar = NavigationToolbar2QT(self.plot, self)
-
-        self.layout.addWidget(self.plot_nav_bar, 0, 1)
-        self.layout.addWidget(self.plot, 1, 1)
+        self.plot.update_plot(fig, ax)

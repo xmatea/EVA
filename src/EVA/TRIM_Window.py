@@ -1,3 +1,10 @@
+import numpy as np
+
+from EVA.RunTrimExample import ScanMom
+from srim import TRIM, Ion, Layer, Target
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
+
 from PyQt6.QtWidgets import (
     QLabel,
     QPushButton,
@@ -10,11 +17,11 @@ from PyQt6.QtWidgets import (
     QTableWidgetItem,
     QMenuBar,
     QFileDialog,
+    QVBoxLayout,
+    QFormLayout
 )
-from EVA import globals
-import numpy as np
-from srim import TRIM, Ion, Layer, Target
-import matplotlib.pyplot as plt
+from EVA import globals, plot_widget
+
 
 
 class RunSimTRIMSRIM(QWidget):
@@ -22,18 +29,9 @@ class RunSimTRIMSRIM(QWidget):
     def __init__(self, parent = None):
         #print('here')
         super(RunSimTRIMSRIM, self).__init__(parent)
-        #print('here')
-        if globals.scn_res == 1:
-            self.resize(1500, 1600)
-            self.setMinimumSize(1400, 1400)
-        elif globals.scn_res == 2:
-            self.resize(900, 1600)
-            self.setMinimumSize(1000, 1400)
-        else:
-            self.resize(1500, 1600)
-            self.setMinimumSize(1400, 1400)
 
         self.setWindowTitle("TRIM Simulations")
+        self.setMinimumSize(1100, 600)
 
         # setting up buttons
         self.RunTrimSimulation = QPushButton("Run Simulations")
@@ -50,8 +48,6 @@ class RunSimTRIMSRIM(QWidget):
                                     TRIMOutDir,
                                     Stats,
                                     ))
-
-        #print('done a button')
 
         # Setting up defaults (to add load from file)
         SampleName = QLineEdit('Cu')
@@ -70,9 +66,11 @@ class RunSimTRIMSRIM(QWidget):
         TRIMOutDir = QLineEdit('c:/SRIM2013/SRIM Outputs') #QLineEdit('c:/SRIM2013/SRIM Outputs')
         Stats = QLineEdit('100')
 
-        bar = QMenuBar(self)
-        file = bar.addMenu('File')
-        bar.setFixedHeight(75)
+        self.bar = QMenuBar()
+        #self.bar.setFixedHeight(25)
+
+        file = self.bar.addMenu('File')
+
         file_load = file.addAction('Load SRIM Settings')
         file_save = file.addAction('Save SRIM Settings')
         file_save.triggered.connect(lambda: RunSimTRIMSRIM.file_save(self, SampleName, SimType, Momentum,
@@ -84,75 +82,56 @@ class RunSimTRIMSRIM(QWidget):
                                                                      MomentumSpread, ScanType, MinMomentum,
                                                                      MaxMomentum, StepMomentum, SRIMdir,
                                                                      TRIMOutDir, Stats))
-        bar.show()
 
-        self.layout = QGridLayout()
-        self.layout.addWidget(QLabel(' '), 0, 0)
-        self.layout.addWidget(QLabel('Sample Name'), 1, 0)
-        self.layout.addWidget(QLabel('Simulation Type'), 2, 0)
-        self.layout.addWidget(QLabel('Momentum'), 3, 0)
-        self.layout.addWidget(QLabel('Momentum Spread'), 4, 0)
-        self.layout.addWidget(QLabel('Scan Momentum'), 5, 0)
-        self.layout.addWidget(QLabel('Min Momentum'), 6, 0)
-        self.layout.addWidget(QLabel('Max Momentum'), 7, 0)
-        self.layout.addWidget(QLabel('Momentum Step'), 8, 0)
-        self.layout.addWidget(QLabel('SRIM.exe directory'), 9, 0)
-        self.layout.addWidget(QLabel('TRIM output directory'), 10, 0)
-        self.layout.addWidget(QLabel('Stats for optimal Run'), 11, 0)
+        # set up containers and layouts
+        self.trim_settings_container = QWidget()
+        self.trim_settings_layout = QFormLayout()
 
-        self.layout.addWidget(SampleName, 1, 1)
-        self.layout.addWidget(SimType, 2, 1)
-        self.layout.addWidget(Momentum, 3, 1)
-        self.layout.addWidget(MomentumSpread, 4, 1)
-        self.layout.addWidget(ScanType, 5, 1)
-        self.layout.addWidget(MinMomentum, 6, 1)
-        self.layout.addWidget(MaxMomentum, 7, 1)
-        self.layout.addWidget(StepMomentum, 8, 1)
-        self.layout.addWidget(SRIMdir, 9, 1)
-        self.layout.addWidget(TRIMOutDir, 10, 1)
-        self.layout.addWidget(Stats, 11, 1)
-        #print(SampleName.text())
+        # main layout to hold menu bar and page contents
+        self.main_layout = QVBoxLayout()
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
 
+        # content container to hold page contents
+        self.content_layout = QGridLayout()
+        self.content_container = QWidget()
 
-        self.layout.addWidget(self.RunTrimSimulation, 12, 0)
+        self.tab1_layout = QVBoxLayout()
+        self.tab2_layout = QVBoxLayout()
 
-        #print('done a button')
+        # size constraints
+        self.trim_settings_container.setFixedWidth(600)
+
+        # set up plot window
+        self.plot = plot_widget.PlotWidget()
+
+        # set up trim settings panel
+        self.trim_settings_layout.addRow(QLabel('Sample Name'), SampleName)
+        self.trim_settings_layout.addRow(QLabel('Simulation Type'), SimType)
+        self.trim_settings_layout.addRow(QLabel('Momentum'), Momentum)
+        self.trim_settings_layout.addRow(QLabel('Momentum Spread'), MomentumSpread)
+        self.trim_settings_layout.addRow(QLabel('Scan Momentum'), ScanType)
+        self.trim_settings_layout.addRow(QLabel('Min Momentum'), MinMomentum)
+        self.trim_settings_layout.addRow(QLabel('Max Momentum'), MaxMomentum)
+        self.trim_settings_layout.addRow(QLabel('Momentum Step'), StepMomentum)
+        self.trim_settings_layout.addRow(QLabel('SRIM.exe directory'), SRIMdir)
+        self.trim_settings_layout.addRow(QLabel('TRIM output directory'), TRIMOutDir)
+        self.trim_settings_layout.addRow(QLabel('Stats for optimal Run'), Stats)
+
+        self.trim_settings_layout.addRow(self.RunTrimSimulation)
 
         # Initialize tab screen
-        #print('initialising tabs')
-        self.layout.addWidget(QLabel(' '), 13, 0)
+
         self.tabs = QTabWidget()
-        #self.layout.addWidget(self.tabs, 13, 1)
+        self.tabs.setFixedWidth(600)
+
         self.tab1 = QWidget()
         self.tab2 = QWidget()
-        if globals.scn_res == 1:
-            self.tabs.resize(1200, 1200)
-        elif globals.scn_res == 2:
-            self.tabs.resize(600, 1200)
-        else:
-            self.tabs.resize(1200, 1200)
-
-        self.tabs.move(0, 0)
-
 
         # Add tabs
         self.tabs.addTab(self.tab1, "Layers")
         self.tabs.addTab(self.tab2, "Results")
 
-        if globals.scn_res == 1:
-            self.tabs.resize(1000, 1000)
-        elif globals.scn_res == 2:
-            self.tabs.resize(600, 600)
-        else:
-            self.tabs.resize(1000, 1000)
-
         self.tab1.table_TRIMsetup = QTableWidget(self.tab1)
-        if globals.scn_res == 1:
-            self.tab1.table_TRIMsetup.resize(1100, 600)
-        elif globals.scn_res == 2:
-            self.tab1.table_TRIMsetup.resize(600, 600)
-        else:
-            self.tab1.table_TRIMsetup.resize(1100, 600)
 
         self.tab1.table_TRIMsetup.setShowGrid(True)
         self.tab1.table_TRIMsetup.setColumnCount(3)
@@ -170,13 +149,11 @@ class RunSimTRIMSRIM(QWidget):
         self.tab1.table_TRIMsetup.setItem(3, 1, QTableWidgetItem('0.5'))
         self.tab1.table_TRIMsetup.setItem(3, 2, QTableWidgetItem('6.7'))
 
+        # adding tab1 components to layout
+        self.tab1_layout.addWidget(self.tab1.table_TRIMsetup)
+        self.tab1.setLayout(self.tab1_layout)
+
         self.tab2.table_PlotRes = QTableWidget(self.tab2)
-        if globals.scn_res == 1:
-            self.tab2.table_PlotRes.resize(1100, 600)
-        elif globals.scn_res == 2:
-            self.tab2.table_PlotRes.resize(850, 600)
-        else:
-            self.tab2.table_PlotRes.resize(1100, 600)
 
         self.tab2.table_PlotRes.setShowGrid(True)
         self.tab2.table_PlotRes.setColumnCount(5)
@@ -203,18 +180,27 @@ class RunSimTRIMSRIM(QWidget):
                     btn.setText('Save ' + str(index + 1))
                 self.tab2.table_PlotRes.setCellWidget(index, col+2, btn)
 
-        self.layout.addWidget(self.tabs)
-        self.setLayout(self.layout)
+        # adding tab2 components to layout
+        self.tab2_layout.addWidget(self.tab2.table_PlotRes)
+        self.tab2.setLayout(self.tab2_layout)
 
-        self.show()
+        # set layouts to containers
+        self.trim_settings_container.setLayout(self.trim_settings_layout)
+        self.content_container.setLayout(self.content_layout)
+
+        self.content_layout.addWidget(self.trim_settings_container, 0, 0)
+        self.content_layout.addWidget(self.plot, 0, 1, 2, 1)
+        self.content_layout.addWidget(self.tabs, 1, 0)
+
+        self.setLayout(self.main_layout)
+        self.main_layout.addWidget(self.bar)
+        self.main_layout.addWidget(self.content_container)
 
     def closeEvent(self, event):
         # close window cleanly
         #print(event)
         globals.wTrim = None
         return None
-
-
 
     def RunTrimSim(self, SampleName, SimType, Momentum, MomentumSpread, ScanType, MinMomentum, MaxMomentum,
                    StepMomentum, SRIMdir, TRIMOutDir, Stats):
@@ -505,8 +491,7 @@ class RunSimTRIMSRIM(QWidget):
         try:
             if y == 2:
                 # plot components
-                figt = plt.figure()
-                axx = figt.subplots()
+                figt, axx = plt.subplots()
                 axx.plot(globals.TRIMRes_x[x], globals.TRIMRes_y[x])
                 axx.set_xlabel('Depth ($mm$)')
                 axx.set_ylabel('Number of muons')
@@ -519,8 +504,8 @@ class RunSimTRIMSRIM(QWidget):
                 for i in range(len(globals.sample_layers)):
                     sumdis += xposlist[i+1]
 
-                    plt.axvline(x=sumdis, color='k', linestyle='--')
-                    plt.text(sumdis, 0, globals.sample_name[i], horizontalalignment='left', rotation='vertical')
+                    axx.axvline(x=sumdis, color='k', linestyle='--')
+                    axx.text(sumdis, 5, globals.sample_name[i], horizontalalignment='left', rotation='vertical')
 
                 # break output down to components
                 comp = RunSimTRIMSRIM.getcomp(self, xposlist, x)
@@ -529,11 +514,10 @@ class RunSimTRIMSRIM(QWidget):
                 for i in range(len(globals.sample_layers)):
                     axx.plot(globals.TRIMRes_x[0], comp[i])
 
-                plt.show()
+                self.plot.update_plot(fig=figt, axs=axx)
 
             else:
-                figt = plt.figure()
-                axx = figt.subplots()
+                figt, axx = plt.subplots()
                 axx.plot(globals.TRIMRes_x[x], globals.TRIMRes_y[x])
                 axx.set_xlabel('Depth ($mm$)')
                 axx.set_ylabel('Number of muons')
@@ -545,12 +529,11 @@ class RunSimTRIMSRIM(QWidget):
                 for i in range(len(globals.sample_layers)):
                     sumdis += xposlist[i + 1]
 
-                    plt.axvline(x=sumdis, color='k', linestyle='--')
-                    plt.text(sumdis, 0, globals.sample_name[i], horizontalalignment='left', rotation='vertical')
+                    axx.axvline(x=sumdis, color='k', linestyle='--')
+                    axx.text(sumdis, 5, globals.sample_name[i], horizontalalignment='left', rotation='vertical')
                     print('sample_layers', globals.sample_layers[i])
 
-                plt.show()
-
+                self.plot.update_plot(fig=figt, axs=axx)
 
         except:
             print('plot error')
@@ -742,8 +725,6 @@ class RunSimTRIMSRIM(QWidget):
                     self.tab1.table_TRIMsetup.setItem(j, i, QTableWidgetItem(line[i]))
                 except:
                     print('load finished')
-
-
 
         file2.close()
 
