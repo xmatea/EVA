@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
-from EVA import globals, config
+from EVA import globals
+from EVA.app import get_config, get_app
 
 def How_many_plot():
     """
@@ -28,6 +29,7 @@ def Plot_Peak_Location(axs,peaks,x,i):
 
 def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4,title_lab):
     #plots spectra as defined by the plot spectra
+    config = get_config()
     numplots=How_many_plot()
     print('numplots', numplots)
     print(globals.Normalise_spill, globals.Normalise_counts)

@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QApplication
 
-from EVA import config, MainWindow
+from EVA import config
 
 
 def get_app():
@@ -21,7 +21,7 @@ class App(QApplication):
         super().__init__(*args, **kwargs)
 
         # A reference to all windows will be stored within the app class
-        self.main_window = MainWindow.MainWindow()
+        self.main_window = None
         self.multiplot_window = None
         self.manual_window = None
         self.peakfit_window = None
@@ -30,6 +30,7 @@ class App(QApplication):
 
         # store config in app
         self.config = config.Config()
+        self.config.load()
 
         # create dataloader
         self.data_loader = None

@@ -1,67 +1,102 @@
-#import array as arr
-from EVA import globals, Normalise, Energy_Corrections, config
 import numpy as np
+from dataclasses import dataclass
+from EVA import globals, Normalise, Energy_Corrections, loadcomment
+from EVA.app import get_config
 
-def loaddata(RunNum):
+channels = {
+    "GE1": "2099",
+    "GE2": "3099",
+    "GE3": "4099",
+    "GE4": "5099"
+}
+
+@dataclass
+class Dataset:
+    """
+    The Dataset class holds the data from a single detector and a single run.
+    """
+    x: np.ndarray
+    y: np.ndarray
+    detector: str
+
+
+@dataclass
+class Run:
+    """
+    The Run class holds lists of Datasets from all the detectors from a single run, as well as the run number,
+    normalisation status and the comment from a single run.
+    """
+    raw: list[Dataset]  # List of data from each detector with no normalisation or energy calibration
+    detectors: list[str]  # List of detectors present in run
+    run_num: int
+    start_time: int
+    end_time: int
+    events: int
+    comment: str
+
+    norm_none: list[Dataset] = None  # This holds a copy of the data with no normalisation
+    norm_counts: list[Dataset] = None  # This holds a copy of the data normalised by counts
+    norm_events: list[Dataset] = None  # This holds a copy of the data normalised by spill events
+
+    data: list[Dataset] = None  # List of data from each detector with default calibration applied
+    normalisation: str = "none"  # Which normalisation is applied in 'data'
+
+
+def loaddata(run_num):
+    config = get_config()
     working_directory = config.parser["general"]["working_directory"]
-    flag = 1
 
-    filename_det = [working_directory + '/ral0' + str(RunNum) + '.rooth2099.dat',
-                    working_directory + '/ral0' + str(RunNum) + '.rooth3099.dat',
-                    working_directory + '/ral0' + str(RunNum) + '.rooth4099.dat',
-                    working_directory + '/ral0' + str(RunNum) + '.rooth5099.dat']
+    # Load metadata from comment
+    flag, comment_data = loadcomment.loadcomment(run_num)
 
-    try:
-        globals.dataset_GE1 = np.loadtxt(filename_det[0], delimiter=" ")
-        globals.x_GE1, globals.y_GE1 = np.loadtxt(filename_det[0], delimiter=" ", unpack=True)
-        globals.flag_d_GE1 = 1
+    if flag:
+        print("Failed to load comment")
 
-    except IOError:
-        globals.flag_d_GE1 = 0
-        print('2099 file not found')
+    raw = []
+    norm_none = []
+    norm_counts = []
+    norm_spill = []
+    detectors = []
 
-    try:
-        globals.dataset_GE2 = np.loadtxt(filename_det[1], delimiter=" ")
-        globals.x_GE2, globals.y_GE2 = np.loadtxt(filename_det[1], delimiter=" ", unpack=True)
-        #print(globals.x_GE2[100],' ',globals.y_GE2[100])
-        globals.flag_d_GE2 = 1
-    except IOError:
-        globals.flag_d_GE2 = 0
-        print('3099 file not found')
+    for detector, channel in channels.items():
+        filename = f"{working_directory}/ral0{run_num}.rooth{channel}.dat"
 
-    try:
-        globals.dataset_GE3 = np.loadtxt(filename_det[2], delimiter=" ")
-        globals.x_GE3, globals.y_GE3 = np.loadtxt(filename_det[2], delimiter=" ", unpack=True)
-        #print(globals.x_GE3[100],' ',globals.y_GE3[100])
-        globals.flag_d_GE3 = 1
-    except IOError:
-        globals.flag_d_GE3 = 0
-        print('4099 file not found')
+        try:
+            xdata, ydata = np.loadtxt(filename, delimiter=" ", unpack=True)
+            dataset = Dataset(xdata, ydata, detector)
+            raw.append(dataset)
+            detectors.append(detector)
 
-    try:
-        globals.dataset_GE4 = np.loadtxt(filename_det[3], delimiter=" ")
-        globals.x_GE4, globals.y_GE4 = np.loadtxt(filename_det[3], delimiter=" ", unpack=True)
-        #print(globals.x_GE4[100],' ',globals.y_GE4[100])
-        globals.flag_d_GE1 = 1
+        except FileNotFoundError:
+            print(f'{channel} file not found')
 
-        globals.flag_d_GE4 = 1
-    except IOError:
-        globals.flag_d_GE4 = 0
-        print('5099 file not found')
+    # Return now if no data was found
+    if len(detectors) == 0:
+        return 1, None
 
-    # Temporary fix until array issue is resolved
-    if not all([globals.flag_d_GE1, globals.flag_d_GE2, globals.flag_d_GE3, globals.flag_d_GE4]):
-        return 0
+    # Add everything into a Run object
+    run = Run(raw, detectors, run_num, start_time=comment_data[0], end_time=comment_data[1], events=comment_data[2],
+              comment=comment_data[3])
 
+    # Apply energy calibration and normalise
     print('Going to Energy correction')
-    Energy_Corrections.Energy_Corrections()
-
-    print('going to Normalise')
-
-    Normalise.Normalise()
-
+    run.norm_none = Energy_Corrections.Energy_Corrections(run.raw)
 
     print('Going to Efficiency corrections')
+    run.norm_counts = Normalise.normalise_counts(run.norm_none)
 
-    return flag
+    run.norm_events = Normalise.normalise_events(run.norm_none)
+
+    # Set run.data equal to default calibration
+    if config.parser["normalisation"]["counts"]:
+        run.normalisation = "counts"
+        run.data = run.norm_counts
+    elif config.parser["normalisation"]["events"]:
+        run.normalisation = "events"
+        run.data = run.norm_events
+    else:
+        run.normalisation = "none"
+        run.data = run.norm_none
+
+    return 0, run
     # Load data and store in globals

@@ -32,8 +32,9 @@ from EVA import (
     RunTrimExample,
     TRIM_Window,
     manual_window,
-    config
 )
+
+from EVA.app import get_app, get_config
 
 class Color(QWidget):
 
@@ -58,15 +59,12 @@ class MainWindow(QMainWindow):
         self.wTrim = None
         globals.we = None
 
-        print(config.parser["GE1"])
-
         #if globals.scn_res == 1:
         #    self.resize(1000, 500)
         #elif globals.scn_res == 2:
         #    self.resize(700, 300)
         #else:
         #    self.resize(1000,500)
-
 
         self.setWindowTitle("Elemental Analysis")
         self.setMinimumSize(QSize(650, 300))
@@ -174,8 +172,8 @@ class MainWindow(QMainWindow):
         help_manual.triggered.connect(lambda: self.show_manual())
 
         # setting up the actions
-
-        file_exit.triggered.connect(lambda: self.closeit(app))
+        config = get_config()
+        file_exit.triggered.connect(lambda: self.closeit(get_app()))
         file_browse_dir.triggered.connect(lambda: self.Browse_dir())
         file_loaddef.triggered.connect(config.restore_defaults)
         plot_which_det_GE1.triggered.connect(lambda: self.setplotGE1(plot_which_det_GE1.isChecked()))
@@ -605,6 +603,7 @@ class MainWindow(QMainWindow):
         RunNum_text.setText(str(int(RunNum_text.text()) - 1))
 
     def Browse_dir(self):
+        config = get_config()
         dir_path = QFileDialog.getExistingDirectory(self, "Choose Directory", "C:\\")
         print(dir_path)
         config.parser["general"]["working_directory"] = dir_path

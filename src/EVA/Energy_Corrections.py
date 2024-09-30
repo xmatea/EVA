@@ -1,20 +1,24 @@
-from EVA import globals
+from EVA.app import get_config
+from EVA.loaddata import Dataset
 
-def Energy_Corrections():
+def Energy_Corrections(data):
+    config = get_config()
 
-    #print(globals.E_Corr_GE1_apply)
+    corrected = []
+    # For each dataset in the list, return energy corrected data if energy correction is wanted
+    for dataset in data:
+        detector = dataset.detector
+        if config.parser[detector]["use_energy_correction"]:
+            gradient = config.parser[detector]["e_corr_gradient"]
+            offset = config.parser[detector]["e_corr_offset"]
+            xdata = lincorr(dataset.x, gradient, offset)
+        else:
+            xdata = dataset.x
 
-    if globals.E_Corr_GE1_apply:
-        globals.x_GE1 = lincorr(globals.x_GE1, globals.E_Corr_GE1_gradient, globals.E_Corr_GE1_offset)
+        # Create new datasets
+        corrected.append(Dataset(xdata, dataset.y, detector))
 
-    if globals.E_Corr_GE2_apply:
-        globals.x_GE2 = lincorr(globals.x_GE2, globals.E_Corr_GE2_gradient, globals.E_Corr_GE2_offset)
-
-    if globals.E_Corr_GE3_apply:
-        globals.x_GE3 = lincorr(globals.x_GE3, globals.E_Corr_GE3_gradient, globals.E_Corr_GE3_offset)
-
-    if globals.E_Corr_GE4_apply:
-        globals.x_GE4 = lincorr(globals.x_GE4, globals.E_Corr_GE4_gradient, globals.E_Corr_GE4_offset)
+    return corrected
 
 
 def lincorr(x, m, c):
