@@ -32,8 +32,8 @@ class App(QApplication):
         self.config = config.Config()
         self.config.load()
 
-        # create dataloader
-        self.data_loader = None
+        # store the loaded run in the app
+        self.loaded_run = None
 
 
 
