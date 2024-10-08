@@ -8,6 +8,11 @@ class Config:
     def __init__(self):
         self.parser = ConfigParser()
 
+    # This magic function allows the parser to be accessed when indexing directly into a config object:
+    # Ex: it makes 'Config()["plot"]["fill_colour"]' equivalent to 'Config().parser["plot"]["fill_colour"]'
+    def __getitem__(self, field: str):
+        return self.parser[field]
+
     def load(self):
         self.parser.read("./src/EVA/config.ini")
 
