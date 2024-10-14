@@ -27,6 +27,54 @@ def Plot_Peak_Location(axs,peaks,x,i):
     peak_pos = x[peaks[0]]
     axs[i].scatter(peak_pos, height, color='r', s=20, marker='X', label='peaks')
 
+def plot_run(run):
+    config = get_config()
+
+    # count how many detectors should be plotted to allocate correct number of subplots size
+    all_detectors = config["general"]["all_detectors"].split(" ")
+    plot_detectors = [detector for detector in all_detectors if config[detector]["show_plot"] == "yes"]
+    numplots = len(plot_detectors)
+
+    if numplots > 1:
+        #print('more than one plot')
+        fig, axs = plt.subplots(nrows=numplots, figsize=(16,7))
+
+    else:
+        #annoying matplotlib fix for one figure in a subplot
+        print('only one plot')
+        fig, temp = plt.subplots(nrows=1, figsize=(16, 7), squeeze=False)
+
+        axs = [temp[0][0]]
+
+    fig.suptitle(f"Run Number: {run.run_num} {run.comment}")
+    fig.supxlabel("Energy (keV)")
+
+    # sets the correct labels
+    if config.parser["general"]["normalisation"] == "counts":
+        fig.supylabel("Intensity Normalised to Counts (10^5)")
+    elif config.parser["general"]["normalisation"] == "events":
+        fig.supylabel("Intensity Normalised to Spills (10^5)")
+    else:
+        fig.supylabel("Intensity")
+
+    i = 0
+    for dataset in run.data:
+        # Will plot empty axes if settings are set to show plot for a detector which is not loaded
+        if config[dataset.detector]["show_plot"] == "yes":
+            print("plotting", dataset.detector)
+            axs[i].fill_between(dataset.x, dataset.y, step='mid', color=config.parser["plot"]["fill_colour"])
+            axs[i].step(dataset.x, dataset.y, where='mid', color='black')
+            axs[i].set_ylim(0.0)
+            axs[i].set_xlim(0.0)
+            axs[i].set_title(dataset.detector)
+            print(f"here plot {dataset.detector}")
+            i += 1
+
+    plt.subplots_adjust(top=0.9, bottom=0.1, left=0.1, right=0.9, hspace=0.45, wspace=0.23)
+    # fig.tight_layout()
+    return fig, axs
+
+
 def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4,title_lab):
     #plots spectra as defined by the plot spectra
     config = get_config()

@@ -12,7 +12,7 @@ from PyQt6.QtWidgets import (
     QFileDialog,
     QMessageBox,
     QGridLayout,
-    QSizePolicy,
+    QSizePolicy, QErrorMessage,
 )
 from PyQt6.QtGui import QPalette, QColor
 import sys
@@ -33,7 +33,7 @@ from EVA import (
     TRIM_Window,
     manual_window,
 )
-
+from EVA.Normalise import normalise_counts, normalise_events
 from EVA.app import get_app, get_config
 
 class Color(QWidget):
@@ -83,54 +83,49 @@ class MainWindow(QMainWindow):
         plot_det = plot.addMenu('Select detectors')
         plot_multi = plot.addAction('Multi-Run Plot')
 
+        config = get_config()
+
         plot_which_det_GE1 = plot_det.addAction('GE1')
         plot_which_det_GE1.setCheckable(True)
-        print('plot_ge1', globals.plot_GE1)
-        plot_which_det_GE1.setChecked(globals.plot_GE1)
+        plot_which_det_GE1.setChecked(config.parser.getboolean("GE1", "show_plot"))
         plot_which_det_GE1.setShortcut("Alt+1")
 
         plot_which_det_GE2 = plot_det.addAction('GE2')
         plot_which_det_GE2.setCheckable(True)
-        plot_which_det_GE2.setChecked(globals.plot_GE2)
+        plot_which_det_GE2.setChecked(config.parser.getboolean("GE2", "show_plot"))
         plot_which_det_GE2.setShortcut("Alt+2")
 
         plot_which_det_GE3 = plot_det.addAction('GE3')
         plot_which_det_GE3.setCheckable(True)
         plot_which_det_GE3.setChecked(True)
-        plot_which_det_GE3.setChecked(globals.plot_GE3)
+        plot_which_det_GE3.setChecked(config.parser.getboolean("GE3", "show_plot"))
         plot_which_det_GE3.setShortcut("Alt+3")
 
         plot_which_det_GE4 = plot_det.addAction('GE4')
         plot_which_det_GE4.setCheckable(True)
-        plot_which_det_GE4.setChecked(globals.plot_GE4)
+        plot_which_det_GE4.setChecked(config.parser.getboolean("GE4", "show_plot"))
         plot_which_det_GE4.setShortcut("Alt+4")
 
         plot_multi.triggered.connect(lambda: self.multiplot())
 
-        Normalise = bar.addMenu('Normalisation')
-        Normalise_do_not = Normalise.addAction('Use Raw Data')
-        Normalise_do_not.setCheckable(True)
-        Normalise_do_not.setShortcut("Alt+D")
-        Normalise_do_not.setChecked(False)
-        Normalise_do_not.triggered.connect(lambda: self.N_do_not(Normalise_do_not.isChecked(),
-                                                                  Normalise_total_counts, Normalise_total_spills
-                                                                 , Normalise_do_not))
+        self.Normalise = bar.addMenu('Normalisation')
+        self.Normalise_do_not = self.Normalise.addAction('Use Raw Data')
+        self.Normalise_do_not.setCheckable(True)
+        self.Normalise_do_not.setShortcut("Alt+D")
+        self.Normalise_do_not.setChecked(config["general"]["normalisation"] == "none")
+        self.Normalise_do_not.triggered.connect(lambda: self.N_do_not(self.Normalise_do_not.isChecked()))
 
-        Normalise_total_counts = Normalise.addAction('Normalise by total Counts')
-        Normalise_total_counts.setCheckable(True)
-        Normalise_total_counts.setShortcut("Alt+C")
-        Normalise_total_counts.setChecked(True)
-        Normalise_total_counts.triggered.connect(lambda: self.NTC(Normalise_total_counts.isChecked(),
-                                                                  Normalise_total_counts, Normalise_total_spills
-                                                                  , Normalise_do_not))
+        self.Normalise_total_counts = self.Normalise.addAction('Normalise by total Counts')
+        self.Normalise_total_counts.setCheckable(True)
+        self.Normalise_total_counts.setShortcut("Alt+C")
+        self.Normalise_total_counts.setChecked(config["general"]["normalisation"] == "counts")
+        self.Normalise_total_counts.triggered.connect(lambda: self.NTC(self.Normalise_total_counts.isChecked()))
 
-        Normalise_total_spills = Normalise.addAction('Normalise by spills')
-        Normalise_total_spills.setCheckable(True)
-        Normalise_total_spills.setShortcut("Alt+S")
-        Normalise_total_spills.setChecked(False)
-        Normalise_total_spills.triggered.connect(lambda: self.NTS(Normalise_total_spills.isChecked(),
-                                                                  Normalise_total_counts, Normalise_total_spills
-                                                                  , Normalise_do_not))
+        self.Normalise_total_spills = self.Normalise.addAction('Normalise by spills')
+        self.Normalise_total_spills.setCheckable(True)
+        self.Normalise_total_spills.setShortcut("Alt+S")
+        self.Normalise_total_spills.setChecked(config["general"]["normalisation"] == "events")
+        self.Normalise_total_spills.triggered.connect(lambda: self.NTS(self.Normalise_total_spills.isChecked()))
 
         Corr = bar.addMenu('Corrections')
         Corr_eff = Corr.addAction('Efficiency Corrections')
@@ -176,10 +171,10 @@ class MainWindow(QMainWindow):
         file_exit.triggered.connect(lambda: self.closeit(get_app()))
         file_browse_dir.triggered.connect(lambda: self.Browse_dir())
         file_loaddef.triggered.connect(config.restore_defaults)
-        plot_which_det_GE1.triggered.connect(lambda: self.setplotGE1(plot_which_det_GE1.isChecked()))
-        plot_which_det_GE2.triggered.connect(lambda: self.setplotGE2(plot_which_det_GE2.isChecked()))
-        plot_which_det_GE3.triggered.connect(lambda: self.setplotGE3(plot_which_det_GE3.isChecked()))
-        plot_which_det_GE4.triggered.connect(lambda: self.setplotGE4(plot_which_det_GE4.isChecked()))
+        plot_which_det_GE1.triggered.connect(lambda: self.set_plot_detector(plot_which_det_GE1.isChecked(), "GE1"))
+        plot_which_det_GE2.triggered.connect(lambda: self.set_plot_detector(plot_which_det_GE2.isChecked(), "GE2"))
+        plot_which_det_GE3.triggered.connect(lambda: self.set_plot_detector(plot_which_det_GE3.isChecked(), "GE3"))
+        plot_which_det_GE4.triggered.connect(lambda: self.set_plot_detector(plot_which_det_GE4.isChecked(), "GE4"))
 
         # setting up the layout
 
@@ -258,7 +253,7 @@ class MainWindow(QMainWindow):
         #font = QFont()
         #font.setPointSize(8)
         #RunNum_Text.setFont(font)
-        RunNum_Text.setText('2630')
+        RunNum_Text.setText(config["general"]["run_num"])
         #if globals.scn_res == 1:
         #    RunNum_Text.resize(220, 70)
         #    RunNum_Text.move(350, 350)
@@ -434,88 +429,102 @@ class MainWindow(QMainWindow):
         globals.wManual.show()
 
 
-    def N_do_not(self,checked,Norm_Counts,Norm_Spills,Normalise_do_not):
+    def N_do_not(self,checked):
         print(checked)
+        config = get_config()
+        app = get_app()
         if checked:
-            Norm_Spills.setChecked(False)
-            Norm_Counts.setChecked(False)
-            Normalise_do_not.setChecked(True)
-            globals.Normalise_do_not = True
+            self.Normalise_total_spills.setChecked(False)
+            self.Normalise_total_counts.setChecked(False)
+            self.Normalise_do_not.setChecked(True)
 
+            # Update config
+            config["general"]["normalisation"] = "none"
+
+            # Apply new normalisation to data (if data is already loaded)
+            if app.loaded_run is not None:
+                app.loaded_run.data = app.loaded_run.raw_e_corr
         else:
-            Norm_Spills.setChecked(globals.Normalise_spill)
-            Norm_Counts.setChecked(globals.Normalise_counts)
-            Normalise_do_not.setChecked(False)
-            globals.Normalise_do_not = False
+            self.Normalise_do_not.setChecked(True)
 
+        # Save settings to file
+        #config.save_config()
 
-
-
-    def NTC(self,checked,Norm_Counts,Norm_Spills,Normalise_do_not):
+    def NTC(self,checked):
         print(checked)
+        config = get_config()
+        app = get_app()
+
         if checked:
-            Norm_Spills.setChecked(False)
-            Normalise_do_not.setChecked(False)
-            globals.Normalise_counts = True
-            globals.Normalise_spill = False
-            globals.Normalise_do_not = False
+            self.Normalise_total_spills.setChecked(False)
+            self.Normalise_do_not.setChecked(False)
+
+            # Update config
+            config["general"]["normalisation"] = "counts"
+
+            # Apply new normalisation to data (if data is already loaded)
+            if app.loaded_run is not None:
+                app.loaded_run.data = normalise_counts(app.loaded_run.raw_e_corr)
         else:
-            Norm_Spills.setChecked(True)
-            globals.Normalise_counts = False
-            globals.Normalise_spill = True
-            Normalise_do_not.setChecked(False)
+            self.Normalise_total_counts.setChecked(True)
 
+    def NTS(self,checked):
+        config = get_config()
+        app = get_app()
 
-    def NTS(self,checked,Norm_Counts,Norm_Spills,Normalise_do_not):
         if checked:
-            Norm_Counts.setChecked(False)
-            Normalise_do_not.setChecked(False)
-            globals.Normalise_counts = False
-            globals.Normalise_spill = True
-            globals.Normalise_do_not = False
-        else:
-            Norm_Counts.setChecked(True)
-            globals.Normalise_counts = True
-            globals.Normalise_spill = False
-            Normalise_do_not.setChecked(False)
+            self.Normalise_total_counts.setChecked(False)
+            self.Normalise_do_not.setChecked(False)
 
+            # Update config
+            config["general"]["normalisation"] = "events"
+
+            # Apply new normalisation to data (if data is already loaded)
+            if app.loaded_run is not None:
+                app.loaded_run.data, flag = normalise_events(app.loaded_run.raw_e_corr, app.loaded_run.events_str)
+
+                if flag: # Normalisation failed - apply default normalisation instead
+                    message = QErrorMessage(self)
+                    message.setWindowTitle("Normalisation Error")
+                    message.showMessage("Cannot set normalisation by spills when comment file has not been loaded.")
+                    message.show()
+
+                    # Remove normalisation
+                    self.N_do_not(True)
+
+        else:
+            self.Normalise_total_spills.setChecked(True)
 
     def closeEvent(self, event):
         #close window cleanly
-
         widgetList = QApplication.topLevelWidgets()
         numWindows = len(widgetList)
         if numWindows > 0:
-            event.accept()
-            QApplication.quit()
-        else:
-            event.ignore()
+            quit_msg = "Would you like to save your changes?"
+            reply = QMessageBox.question(self, 'Message', quit_msg, QMessageBox.StandardButton.No,
+                                         QMessageBox.StandardButton.Yes)
+            if reply == QMessageBox.StandardButton.Yes:
+                get_config().save_config()
+                event.accept()
+                QApplication.quit()
+            else:
+                event.ignore()
 
-    def closeit(self, app):
+    def closeit(self):
         print('here')
         quit_msg = "Are you sure you want to quit?"
         reply = QMessageBox.question(self, 'Message', quit_msg,
-                                               QMessageBox.Yes, QMessageBox.No)
-        if reply == QMessageBox.Yes:
+                                               QMessageBox.StandardButton.Yes, QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
             QApplication.quit()
             return
 
-    def setplotGE1(self,value):
-        print('in here self.plot_which_det_GE1',value)
-        globals.plot_GE1 = value
-
-    def setplotGE2(self,value):
-        print('in here self.plot_which_det_GE2',value)
-        globals.plot_GE2 = value
-
-    def setplotGE3(self,value):
-        print('in here self.plot_which_det_GE3',value)
-        globals.plot_GE3 = value
-
-    def setplotGE4(self,value):
-        print('in here self.plot_which_det_GE4',value)
-        globals.plot_GE4 = value
-
+    def set_plot_detector(self, value, detector):
+        config = get_config()
+        if value:
+            config[detector]["show_plot"] = "yes"
+        else:
+            config[detector]["show_plot"] = "no"
 
     def Decr_RunNumandload(self, RunNum, RunNum_text):
         print('in decr')
@@ -535,54 +544,75 @@ class MainWindow(QMainWindow):
         self.loadcom(RunNum)
         print('Im back')
 
+
     def loadcom(self, RunNum):
-        print('load data and comment')
-        globals.RunNum = RunNum
-        flag, rtn_str = loadcomment.loadcomment(RunNum)
-        print(flag, rtn_str)
-        if flag == 1:
-            mapping = dict.fromkeys(range(32))
+        app = get_app()
+        config = app.config
 
-            pr_str = rtn_str[0].translate(mapping)
-            self.label_Start.setText("Start Time:    " + pr_str[20:] + "")
+        flags, data = loaddata.load_run(RunNum)
 
-            pr_str = rtn_str[1].translate(mapping)
-            self.label_End.setText("End Time:      " + pr_str[20:])
+        # update and store the loaded run in app
+        app.loaded_run = data
 
-            pr_str = rtn_str[2].translate(mapping)
-            self.label_Events.setText("Events:          " + pr_str[19:])
-
-            pr_str = rtn_str[3].translate(mapping)
-            self.label_Com.setText("Comment:      " + pr_str[10:])
-        else:
+        if flags[0]: #  no data was loaded - return now
+            # Update GUI
+            self.label_RN.setText("Run Number:   File load failed")
             self.label_Com.setText("Comment:      Comment file not found")
             self.label_Start.setText("Start Time:    ")
             self.label_End.setText("End Time:       ")
             self.label_Events.setText("Events:")
+            return
 
-        flag = loaddata.loaddata(RunNum)
-        if (globals.flag_d_GE1 == 0 or globals.flag_d_GE2 == 0 or globals.flag_d_GE3 == 0 or globals.flag_d_GE4 == 0):
-            print('oh no')
-            self.label_RN.setText("Run Number:   File load failed")
-        else:
-            print ('yeah!')
+        else: # update run number field in gui and in config
             self.label_RN.setText("Run Number:   " + str(RunNum))
 
-            self.Show_Plot_Window()
-            self.PeakFit_menu.setDisabled(False)
+            # Update run number in config
+            config["general"]["run_num"] = RunNum
 
+        if flags[1]: # Comment file was not found
+            self.label_Com.setText("Comment:      Comment file not found")
+            self.label_Start.setText("Start Time:    ")
+            self.label_End.setText("End Time:       ")
+            self.label_Events.setText("Events:")
+        else: # write comment info to GUI
+            mapping = dict.fromkeys(range(32))
 
+            pr_str = app.loaded_run.start_time.translate(mapping)
+            self.label_Start.setText("Start Time:    " + pr_str[20:] + "")
+
+            pr_str = app.loaded_run.end_time.translate(mapping)
+            self.label_End.setText("End Time:      " + pr_str[20:])
+
+            pr_str = app.loaded_run.events_str.translate(mapping)
+            self.label_Events.setText("Events:          " + pr_str[19:])
+
+            pr_str = app.loaded_run.comment.translate(mapping)
+            self.label_Com.setText("Comment:      " + pr_str[10:])
+
+        if flags[2]:  # normalisation by spills failed - return now
+            # set normalisation to none
+            self.N_do_not(True)
+
+            # display error message
+            message = QErrorMessage(self)
+            message.setWindowTitle("Load Error")
+            message.showMessage("Cannot use normalisation by spills when comment file has not been loaded. Normalisation has been set to none.")
+            message.show()
+            return
+
+        self.Show_Plot_Window()
+        self.PeakFit_menu.setDisabled(False)
 
     def Show_Plot_Window(self):
-
         print('in Show_plot_window')
         print(self.wp)
+        config = get_config()
 
         if self.wp is None:
             self.wp = Plot_Window.PlotWindow()
             print('self,wp = none')
            # self.wp.resize(850, 550)
-            self.wp.setWindowTitle("Plot Window: " + globals.RunNum)
+            self.wp.setWindowTitle("Plot Window: " + config["general"]["run_num"])
             self.wp.showMaximized()
 
         else:
@@ -590,7 +620,7 @@ class MainWindow(QMainWindow):
             self.wp = Plot_Window.PlotWindow()
             print('self,wp = none')
             #self.wp.resize(850, 550)
-            self.wp.setWindowTitle("Plot Window" + globals.RunNum)
+            self.wp.setWindowTitle("Plot Window" + config["general"]["run_num"])
             self.wp.showMaximized()
 
 
@@ -606,7 +636,7 @@ class MainWindow(QMainWindow):
         config = get_config()
         dir_path = QFileDialog.getExistingDirectory(self, "Choose Directory", "C:\\")
         print(dir_path)
-        config.parser["general"]["working_directory"] = dir_path
+        config["general"]["working_directory"] = dir_path
         #config.save_config()
 
     def onMyToolBarButtonClick(self, s):
@@ -624,3 +654,4 @@ class MainWindow(QMainWindow):
 
     lg.loadgamma()
     print('loading gamma end',time.time())
+
