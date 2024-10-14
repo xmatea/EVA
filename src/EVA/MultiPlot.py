@@ -1,7 +1,68 @@
 import matplotlib.pyplot as plt
 from EVA import Plot_Spectra
 from EVA import globals
+from EVA.app import get_app, get_config
 
+def is_empty(detector):
+    return all(dataset.x.size == 0 for dataset in detector)
+
+def multi_plot(runs, offset):
+    config = get_config()
+
+    # Sort the runs in the run list by detector to make it easier to plot
+    detectors = list(zip(*[run.data for run in runs]))
+
+    # Remove detectors which either contain no data or are set to not be plotted by config
+    plot_detectors = [detector_data for detector_data in detectors if not is_empty(detector_data)
+               and config[detector_data[0].detector]["show_plot"] == "yes"]
+
+    numplots = len(plot_detectors)
+    print("len plot detectors", numplots)
+
+    if numplots > 1:
+        #print('more than one plot')
+        fig, axs = plt.subplots(nrows=numplots, figsize=(16, 7))
+
+    else:
+        #annoying matplotlib fix for one figure in a subplot
+        print('only one plot')
+        fig, temp = plt.subplots(nrows=1, figsize=(16, 7), squeeze=False)
+        axs = [temp[0][0]]
+
+        # labels figures
+        fig.suptitle("MultiPlot")
+        fig.supxlabel("Energy (keV)")
+
+    # sets correct y-axis label
+    if config["general"]["normalisation"] == "none":
+        fig.supylabel("Intensity")
+    elif config["general"]["normalisation"] == "counts":
+        fig.supylabel("Intensity Normalised to Counts (10^5)")
+    elif config["general"]["normalisation"] == "events":
+        fig.supylabel("Intensity Normalised to Spills (10^5)")
+
+    # loop through each detector
+    for i, detector_data in enumerate(plot_detectors):
+
+        # loop through each run in the detector
+        j = 0
+        for dataset in detector_data:
+            # get next colour (this will ensure that a color is skipped if data is not plotted)
+            next_color = axs[i]._get_lines.get_next_color()
+            # only plot if data is not zero
+            if dataset.x.size != 0:
+                axs[i].step(dataset.x, dataset.y+j*offset, where='mid', label=dataset.run_number, color=next_color)
+                j += 1
+
+        detector_name = detector_data[0].detector
+        axs[i].set_ylim(0.0)
+        axs[i].set_xlim(0.0)
+        axs[i].set_title(detector_name)
+        axs[i].legend()
+        #axs[i].legend(loc="center left", bbox_to_anchor=(1, 0.5))
+
+    plt.subplots_adjust(top=0.9, bottom=0.1, left=0.1, right=0.9, hspace=0.45, wspace=0.23)
+    return fig, axs
 
 def MultiPlot(x1, y1, x2, y2, x3, y3, x4, y4, RunList, offset):
     """plots multiple runs from runlist and with a y-axis offset"""

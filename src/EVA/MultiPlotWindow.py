@@ -103,11 +103,9 @@ class MultiPlotWindow(QWidget):
                 step = 0
             line.append([start,end,step])
 
-        #print(line)
+
         # generates a list of runs to load and plot
         RunList = GenReadList.GenReadList(line)
-
-        print(RunList)
 
         if not RunList:
             error_message = QErrorMessage(self)
@@ -122,8 +120,7 @@ class MultiPlotWindow(QWidget):
         #print('offset', offset)
 
         # reads data and returns as each detector and as an array
-        flag, datax_GE1, datay_GE1, datax_GE2, datay_GE2, datax_GE3, datay_GE3, datax_GE4, datay_GE4\
-            = ReadMultiRun.ReadMultiRun(RunList)
+        flag, runs = ReadMultiRun.read_multi_run(RunList)
 
         # if readmultirun returned 1, return error message
         if flag:
@@ -133,7 +130,6 @@ class MultiPlotWindow(QWidget):
             return
 
         # plots multiple runs from the runlist and with a y offset
-        fig, ax = MultiPlot.MultiPlot(datax_GE1, datay_GE1, datax_GE2, datay_GE2, datax_GE3, datay_GE3, datax_GE4, datay_GE4,
-                            RunList, offset)
+        fig, ax = MultiPlot.multi_plot(runs, offset)
 
         self.plot.update_plot(fig, ax)
