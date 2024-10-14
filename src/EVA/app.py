@@ -20,14 +20,6 @@ class App(QApplication):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # A reference to all windows will be stored within the app class
-        self.main_window = None
-        self.multiplot_window = None
-        self.manual_window = None
-        self.peakfit_window = None
-        self.plot_window = None
-        self.srim_window = None
-
         # store config in app
         self.config = config.Config()
         self.config.load()
@@ -35,5 +27,14 @@ class App(QApplication):
         # store the loaded run in the app
         self.loaded_run = None
 
+        # store databases in app
+        self.gamma_database = None
+        self.muon_database = None
 
-
+    """
+    # Convenience function to load run, set the currently loaded run and update config
+    def set_loaded_run(self, run_num):
+        flags, run = loaddata.load_run(run_num)
+        self.config["general"]["run_num"] = run_num
+        self.loaded_run = run
+    """

@@ -1,6 +1,63 @@
 import json
 from EVA import globals
 
+def load_mudirac_data():
+    with open('./src/EVA/Databases/Muonic X-rays/mudirac_data.json', 'r') as read_file:
+        print('Loading mudirac database...')
+
+        data = json.load(read_file)
+        primary_energies = {}
+        secondary_energies = {}
+        all_energies = {}
+        peak_data = {}
+
+        # sort data
+        for element in data:
+            for isotope in data[element]["Isotopes"]:
+                primary_energy = {}
+                secondary_energy = {}
+                for p_trans in data[element]["Isotopes"][isotope]["Primary"]:
+                    primary_energy[p_trans] = data[element]["Isotopes"][isotope]["Primary"][p_trans]["E"]
+
+                for s_trans in data[element]["Isotopes"][isotope]["Secondary"]:
+                    secondary_energy[s_trans] = data[element]["Isotopes"][isotope]["Secondary"][s_trans]["E"]
+
+                primary_energies[isotope] = primary_energy
+                secondary_energies[isotope] = secondary_energy
+                all_energies[isotope] = dict(primary_energy, **secondary_energy)
+
+        peak_data['Primary energy'] = primary_energies
+        peak_data['Secondary energy'] = secondary_energies
+        peak_data['All energies'] = all_energies
+
+        return peak_data
+
+def load_legacy_data():
+    with open('./src/EVA/Databases/Muonic X-rays/peak_data.json', 'r') as read_file:
+        print('Loading legacy database...')
+        data = json.load(read_file)
+
+        primary_energies = {}
+        secondary_energies = {}
+        all_energies = {}
+        peak_data = {}
+
+        # sort data
+        for element in data:
+            primary_energy = [float(x[1]) for x in list(data[element]['Primary'].items())]
+            secondary_energy = [float(x[1]) for x in list(data[element]['Secondary'].items())]
+            primary_trans = [x[0] for x in list(data[element]['Primary'].items())]
+            secondary_trans = [x[0] for x in list(data[element]['Secondary'].items())]
+
+            primary_energies[element] = dict(zip(primary_trans, primary_energy))
+            secondary_energies[element] = dict(zip(secondary_trans, secondary_energy))
+            all_energies[element] = dict(zip(primary_trans + secondary_trans,
+                                             primary_energy + secondary_energy))
+        peak_data['Primary energy'] = primary_energies
+        peak_data['Secondary energy'] = secondary_energies
+        peak_data['All energies'] = all_energies
+
+        return peak_data
 
 
 def loadDatabaseFile():

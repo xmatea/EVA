@@ -19,7 +19,7 @@ from PyQt6.QtWidgets import (
 )
 
 from EVA import getmatch, Plot_Spectra, FindPeaks, SortMatch, globals
-
+from EVA.app import get_app
 import time
 
 from EVA.plot_widget import PlotWidget
@@ -61,7 +61,7 @@ class PlotWindow(QWidget):
         self.tabs.addTab(self.findpeaks, "Element Search")
 
         # set up plot window and navigator
-        self.plot = self.PlotSpectra()
+        self.plot = self.plot_spectra()
         plt.connect('button_press_event', self.on_click)
 
         # Add everything to main window layout (gridlayout)
@@ -321,6 +321,18 @@ class PlotWindow(QWidget):
 
         return findpeaks
 
+    def update_legend(self):
+        for i in range(len(self.plot.canvas.axs)):
+            # get all unique labels for the legend to avoid duplicates when plotting multiple lines with same name
+            h, l = self.plot.canvas.axs[i].get_legend_handles_labels()
+            by_label = dict(zip(l, h))
+
+            # remove legend if there are no labels left
+            if len(by_label) == 0 and self.plot.canvas.axs[i].get_legend() is not None:
+                self.plot.canvas.axs[i].get_legend().remove()
+            else:
+                self.plot.canvas.axs[i].legend(by_label.values(), by_label.keys(), loc="upper right")
+
 
     def remove_line(self, row: int, col: int):
         cell_contents = self.clickpeaks.table_plotted_lines.item(row, col)
@@ -340,7 +352,10 @@ class PlotWindow(QWidget):
             for j in range(num):
                 lines_to_remove[j].remove()
 
+
+        self.update_legend()
         self.plot.canvas.draw() # update figure
+
         self.clickpeaks.table_plotted_lines.removeRow(row)
         #self.clickpeaks.table_plotted_lines.setRowCount(10)
         self.numoflines -= 1
@@ -362,15 +377,18 @@ class PlotWindow(QWidget):
                     self.plot.canvas.axs[i].axvline(
                         float(rowres[1]), color=next_color, linestyle='--', label=str(Ele))
 
+
         if col == 1:  # plots just one transition
             res = getmatch.getmatchesgammastrans_clicked(Ele, En)
             for match in res:
                 rowres = [match['Element'], match['Energy'], match['Intensity'], match['lifetime']]
-                for i in range(len(self.axs)):
+                for i in range(len(self.plot.canvas.axs)):
                     self.plot.canvas.axs[i].axvline(
                         float(rowres[1]), color=self.plot.canvas.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
 
+
         # update figure
+        self.update_legend()
         self.plot.canvas.draw()
 
         # increment number of lines in table
@@ -379,6 +397,7 @@ class PlotWindow(QWidget):
         # update table
         self.clickpeaks.table_plotted_lines.setRowCount(self.numoflines)
         self.clickpeaks.table_plotted_lines.setItem(self.numoflines-1, 1, QTableWidgetItem(Ele))
+
 
     def clickpeaks_table_clickpeaks_sec(self, row, col):
         table = self.clickpeaks.table_muon_sec
@@ -402,11 +421,12 @@ class PlotWindow(QWidget):
             res = getmatch.get_matches_Trans(Ele, Trans)
             for match in res:
                 rowres = [match['element'], match['energy'], match['transition']]
-                for i in range(len(self.axs)):
+                for i in range(len(self.plot.canvas.axs)):
                     self.plot.canvas.axs[i].axvline(
                         float(rowres[1]), color=self.plot.canvas.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
 
         # update figure
+        self.update_legend()
         self.plot.canvas.draw()
 
         # increment number of lines in table
@@ -439,11 +459,12 @@ class PlotWindow(QWidget):
             res = getmatch.get_matches_Trans(Ele, Trans)
             for match in res:
                 rowres = [match['element'], match['energy'], match['transition']]
-                for i in range(len(self.axs)):
+                for i in range(len(self.plot.canvas.axs)):
                     self.plot.canvas.axs[i].axvline(
                         float(rowres[1]), color=self.plot.canvas.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
 
         # update figure
+        self.update_legend()
         self.plot.canvas.draw()
 
         # increment number of lines in table
@@ -478,10 +499,11 @@ class PlotWindow(QWidget):
             print(res)
             for match in res:
                 rowres = [match['element'], match['energy'], match['transition']]
-                for i in range(len(self.axs)):
+                for i in range(len(self.plot.canvas.axs)):
                     self.plot.canvas.axs[i].axvline(
                         float(rowres[1]), color=self.plot.canvas.axs[i]._get_lines.get_next_color(), linestyle='--', label=str(Ele))
         # update figure
+        self.update_legend()
         self.plot.canvas.draw()
 
         # increment number of lines in table
@@ -512,6 +534,10 @@ class PlotWindow(QWidget):
 
 
     def find_peaks_automatically(self):
+        app = get_app()
+        data = app.loaded_run.data
+        config = app.config
+
         if self.findpeaks.useDef_checkbox.isChecked():
             h=10
             t=15
@@ -526,6 +552,24 @@ class PlotWindow(QWidget):
         i = 0
 
         if self.findpeaks.peakfindroutine.currentText() == "find peaks (dev)":
+            for dataset in data:
+                if config.parser.getboolean(dataset.detector, "show_plot"):
+                    peaks, peaks_pos = FindPeaks.Findpeak_with_bck_removed(dataset.x, dataset.y)
+                    default_peaks = peaks[0]
+
+                    default_sigma = [2.0] * len(default_peaks)
+                    input_data = list(zip(default_peaks, default_sigma))
+                    match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
+
+                    Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks, dataset.x, i)
+                    out = SortMatch.SortMatch(match_GE1)
+                    self.findpeaks.table_peaks.setItem(i, 0, QTableWidgetItem(dataset.detector))
+                    self.findpeaks.table_peaks.setItem(i, 1, QTableWidgetItem(str(dict(list(out.items())))))
+                    # print('after table_peaks')
+                    i += 1
+                    self.plot.canvas.draw()
+
+            """              
             if globals.plot_GE1:
                 peaks_GE1, peak_pos_GE1 = FindPeaks.Findpeak_with_bck_removed(globals.x_GE1, globals.y_GE1)
                 default_peaks = peaks_GE1[0]
@@ -544,57 +588,26 @@ class PlotWindow(QWidget):
                 #print('after table_peaks')
                 i += 1
                 self.plot.canvas.draw()
-
+        """
         if self.findpeaks.peakfindroutine.currentText() == "scipy.FindPeak":
-            if globals.plot_GE1:
-                peaks_GE1, peak_pos_GE1 = FindPeaks.FindPeaks(globals.x_GE1, globals.y_GE1, h, t, d)
-                default_peaks = peaks_GE1[0]
-               # print('dp',default_peaks)
-                default_sigma = [2.0] * len(default_peaks)
-                input_data = list(zip(default_peaks, default_sigma))
-                match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
+            for dataset in data:
+                if data is not None and config.parser.getboolean(dataset.detector, "show_plot"):
+                    peaks, peaks_pos = FindPeaks.FindPeaks(dataset.x, dataset.y, h, t, d)
+                    default_peaks = peaks[0]
+                    # print('dp',default_peaks)
+                    default_sigma = [2.0] * len(default_peaks)
+                    input_data = list(zip(default_peaks, default_sigma))
+                    match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
 
-                Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE1, globals.x_GE1, i)
-                #Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, globals.x_GE1,i)
-                #Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, peak_pos_GE1, i)
+                    Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks, dataset.x, i)
+                    # Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, globals.x_GE1,i)
+                    # Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, peak_pos_GE1, i)
 
-                out = SortMatch.SortMatch(match_GE1)
-                self.findpeaks.table_peaks.setItem(i, 0, QTableWidgetItem("Detector 1"))
-                self.findpeaks.table_peaks.setItem(i, 1, QTableWidgetItem(str(dict(list(out.items())))))
-                #print('after table_peaks')
-                i += 1
-
-            if globals.plot_GE2:
-                peaks_GE2, peak_pos_GE2 = FindPeaks.FindPeaks(globals.x_GE2, globals.y_GE2, h, t, d)
-                default_peaks = peaks_GE2[0]
-                default_sigma = [2.0] * len(default_peaks)
-                input_data = list(zip(default_peaks, default_sigma))
-                match_GE2, res_PM, res_SM = getmatch.get_matches(input_data)
-                print('match_GE2', match_GE2)
-                Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE2, globals.x_GE2, i)
-                i += 1
-
-
-            if globals.plot_GE3:
-                peaks_GE3, peak_pos_GE3 = FindPeaks.FindPeaks(globals.x_GE3, globals.y_GE3, h, t, d)
-                default_peaks = peaks_GE3[0]
-                default_sigma = [2.0] * len(default_peaks)
-                input_data = list(zip(default_peaks, default_sigma))
-                match_GE3, res_PM, res_SM = getmatch.get_matches(input_data)
-                print('match_GE3',match_GE3)
-                Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE3, globals.x_GE3, i)
-                i += 1
-
-            if globals.plot_GE4:
-                peaks_GE4, peak_pos_GE4 = FindPeaks.FindPeaks(globals.x_GE4, globals.y_GE4, h, t, d)
-                default_peaks = peaks_GE4[0]
-                default_sigma = [2.0] * len(default_peaks)
-                input_data = list(zip(default_peaks, default_sigma))
-                match_GE4, res_PM, res_SM = getmatch.get_matches(input_data)
-                print('match_GE4',match_GE4)
-                Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE4, globals.x_GE4, i)
-                i += 1
-
+                    out = SortMatch.SortMatch(match_GE1)
+                    self.findpeaks.table_peaks.setItem(i, 0, QTableWidgetItem(dataset.detector))
+                    self.findpeaks.table_peaks.setItem(i, 1, QTableWidgetItem(str(dict(list(out.items())))))
+                    # print('after table_peaks')
+                    i += 1
             self.plot.canvas.draw()
 
         if self.findpeaks.peakfindroutine.currentText() == "scipy.Find_Peak_Cwt":
@@ -651,28 +664,10 @@ class PlotWindow(QWidget):
             self.plot.canvas.draw()
 
 
-    def PlotSpectra(self):
-        if globals.Normalise_do_not:
-            self.fig,self.axs = Plot_Spectra.Plot_Spectra3(globals.x_GE1, globals.y_GE1,
-                                                                    globals.x_GE2, globals.y_GE2,
-                                                                    globals.x_GE3, globals.y_GE3,
-                                                                    globals.x_GE4, globals.y_GE4,
-                                                     "Plot of Data: " + str(globals.RunNum))
-        elif globals.Normalise_counts:
-            self.fig,self.axs = Plot_Spectra.Plot_Spectra3(globals.x_GE1_Ncounts, globals.y_GE1_Ncounts,
-                                                                    globals.x_GE2_Ncounts, globals.y_GE2_Ncounts,
-                                                                    globals.x_GE3_Ncounts, globals.y_GE3_Ncounts,
-                                                                    globals.x_GE4_Ncounts, globals.y_GE4_Ncounts,
-                                                     "Plot of Data: " + str(globals.RunNum))
-        elif globals.Normalise_spill:
-            self.fig,self.axs = Plot_Spectra.Plot_Spectra3(globals.x_GE1_NEvents, globals.y_GE1_NEvents,
-                                                                    globals.x_GE2_NEvents, globals.y_GE2_NEvents,
-                                                                    globals.x_GE3_NEvents, globals.y_GE3_NEvents,
-                                                                    globals.x_GE4_NEvents, globals.y_GE4_NEvents,
-                                                     "Plot of Data: " + str(globals.RunNum))
-
-
-        return PlotWidget(self.fig, self.axs)
+    def plot_spectra(self):
+        run = get_app().loaded_run
+        fig, axs = Plot_Spectra.plot_run(run)
+        return PlotWidget(fig, axs)
 
 
     def on_click(self, event):
