@@ -1,14 +1,15 @@
-from EVA import globals
+from EVA.app import get_config
 
 # shows RunNum is integer and the output is int and a string (python typing)
-def loadcomment(RunNum:int) -> list[int, str]:
+def loadcomment(RunNum:int) -> tuple[list[str], int]:
     '''
     This routine load the comments from comment.dat
     needs input the run number (integer)
     returns success flag and the string
     '''
+    config = get_config()
     try:
-        fd = open(globals.workingdirectory + '/comment.dat', 'r')
+        fd = open(config["general"]["working_directory"] + '/comment.dat', 'r')
         #commenttext = open(globals.workingdirectory + '/comment.dat', 'r').readlines()
         commenttext = fd.readlines()
 
@@ -36,6 +37,5 @@ def loadcomment(RunNum:int) -> list[int, str]:
         rtn_str = [" ", " ", " ", " "]
         flag = 1
 
+    return rtn_str, flag
 
-
-    return flag, rtn_str

@@ -1,7 +1,7 @@
 import numpy as np
-from dataclasses import dataclass
-from EVA import globals, Normalise, Energy_Corrections, loadcomment
+from EVA import Normalise, Energy_Corrections, loadcomment
 from EVA.app import get_config
+from EVA.data_structures import Dataset, Run
 
 channels = {
     "GE1": "2099",
@@ -10,93 +10,54 @@ channels = {
     "GE4": "5099"
 }
 
-@dataclass
-class Dataset:
+def load_run(run_num):
     """
-    The Dataset class holds the data from a single detector and a single run.
+    Loads the specified run by searching for the run in the working directory.
+    Creates Datasets to store the data from each channel (detector).
+    Calls loadcomment() to get run info and stores metadata and lists of Datasets (for each detector) in a Run object.
+    Calls normalise() and energy_correction() to normalise the data and stores the normalised data under run.data.
+    Returns the loaded Run object and error flags.
     """
-    x: np.ndarray
-    y: np.ndarray
-    detector: str
-
-
-@dataclass
-class Run:
-    """
-    The Run class holds lists of Datasets from all the detectors from a single run, as well as the run number,
-    normalisation status and the comment from a single run.
-    """
-    raw: list[Dataset]  # List of data from each detector with no normalisation or energy calibration
-    detectors: list[str]  # List of detectors present in run
-    run_num: int
-    start_time: int
-    end_time: int
-    events: int
-    comment: str
-
-    norm_none: list[Dataset] = None  # This holds a copy of the data with no normalisation
-    norm_counts: list[Dataset] = None  # This holds a copy of the data normalised by counts
-    norm_events: list[Dataset] = None  # This holds a copy of the data normalised by spill events
-
-    data: list[Dataset] = None  # List of data from each detector with default calibration applied
-    normalisation: str = "none"  # Which normalisation is applied in 'data'
-
-
-def loaddata(run_num):
     config = get_config()
-    working_directory = config.parser["general"]["working_directory"]
+    working_directory = config["general"]["working_directory"]
 
     # Load metadata from comment
-    flag, comment_data = loadcomment.loadcomment(run_num)
-
-    if flag:
-        print("Failed to load comment")
+    comment_data, comment_flag = loadcomment.loadcomment(run_num)
 
     raw = []
-    norm_none = []
-    norm_counts = []
-    norm_spill = []
     detectors = []
+
+    none_loaded_flag = 1
 
     for detector, channel in channels.items():
         filename = f"{working_directory}/ral0{run_num}.rooth{channel}.dat"
-
+        print("searching for", filename)
         try:
             xdata, ydata = np.loadtxt(filename, delimiter=" ", unpack=True)
-            dataset = Dataset(xdata, ydata, detector)
+            dataset = Dataset(detector=detector, run_number=run_num, x=xdata, y=ydata)
             raw.append(dataset)
-            detectors.append(detector)
+            detectors.append(detectors)
+            none_loaded_flag = 0
 
         except FileNotFoundError:
             print(f'{channel} file not found')
+            # Append empty arrays to dataset if data file is not found for the given detector
+            raw.append(Dataset(detector=detector, run_number=run_num, x=np.array([]), y=np.array([])))
 
-    # Return now if no data was found
-    if len(detectors) == 0:
-        return 1, None
+    if none_loaded_flag:
+        return [1], None # Return None now if all data failed to load
 
     # Add everything into a Run object
-    run = Run(raw, detectors, run_num, start_time=comment_data[0], end_time=comment_data[1], events=comment_data[2],
-              comment=comment_data[3])
+    run = Run(raw, loaded_detectors=detectors, run_num=run_num, start_time=comment_data[0], end_time=comment_data[1],
+              events_str=comment_data[2], comment=comment_data[3])
 
     # Apply energy calibration and normalise
     print('Going to Energy correction')
-    run.norm_none = Energy_Corrections.Energy_Corrections(run.raw)
+    run.raw_e_corr = Energy_Corrections.Energy_Corrections(run.raw)
 
-    print('Going to Efficiency corrections')
-    run.norm_counts = Normalise.normalise_counts(run.norm_none)
+    # Apply normalisation
+    print('Going to Normalisation')
+    norm_data, norm_flag = Normalise.normalise(run.raw_e_corr, run.events_str, config["general"]["normalisation"])
+    run.data = norm_data
 
-    run.norm_events = Normalise.normalise_events(run.norm_none)
-
-    # Set run.data equal to default calibration
-    if config.parser["normalisation"]["counts"]:
-        run.normalisation = "counts"
-        run.data = run.norm_counts
-    elif config.parser["normalisation"]["events"]:
-        run.normalisation = "events"
-        run.data = run.norm_events
-    else:
-        run.normalisation = "none"
-        run.data = run.norm_none
-
-    return 0, run
-    # Load data and store in globals
+    return [none_loaded_flag, comment_flag, norm_flag], run
