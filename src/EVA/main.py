@@ -12,7 +12,6 @@ if __name__ == "__main__":
 
     # load energy databases
     app.gamma_database = loadgamma.load_gamma_data()
-    print(app.gamma_database)
 
     # set muon database as specified in config
     if app.config["database"]["mu_xray_db"] == "legacy":
@@ -20,7 +19,6 @@ if __name__ == "__main__":
 
     elif app.config["database"]["mu_xray_db"] == "mudirac":
         app.muon_database = LoadDatabaseFile.load_mudirac_data()
-
     else:
         raise ValueError()
     
