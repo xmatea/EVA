@@ -41,3 +41,11 @@ class Run:
 
     raw_e_corr: list[Dataset] = None
     data: list[Dataset] = None
+
+    def is_empty(self) -> bool:
+        # Returns a boolean indicating whether any data was loaded or not
+        return all(dataset.x.size == 0 for dataset in self.raw)
+
+    def get_nonzero_data(self) -> list[Dataset]:
+        # Returns only the loaded datasets (without empty arrays for missing detectors)
+        return [dataset for dataset in self.data if dataset.x.size != 0]
