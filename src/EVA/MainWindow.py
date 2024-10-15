@@ -507,6 +507,9 @@ class MainWindow(QMainWindow):
                 get_config().save_config()
                 event.accept()
                 QApplication.quit()
+            elif reply == QMessageBox.StandardButton.No:
+                event.accept()
+                QApplication.quit()
             else:
                 event.ignore()
 
