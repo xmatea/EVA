@@ -33,7 +33,8 @@ from EVA import (
     TRIM_Window,
     manual_window,
 )
-from EVA.Normalise import normalise_counts, normalise_events
+
+from EVA.Normalise import normalise
 from EVA.app import get_app, get_config
 
 class Color(QWidget):
@@ -428,72 +429,65 @@ class MainWindow(QMainWindow):
 
         globals.wManual.show()
 
+    def update_normalisation_menu(self):
+        config = get_config()
+        norm = config["general"]["normalisation"]
+        self.Normalise_total_counts.setChecked(norm == "counts")
+        self.Normalise_do_not.setChecked(norm == "none")
+        self.Normalise_total_spills.setChecked(norm == "events")
 
     def N_do_not(self,checked):
-        print(checked)
-        config = get_config()
         app = get_app()
+
         if checked:
-            self.Normalise_total_spills.setChecked(False)
-            self.Normalise_total_counts.setChecked(False)
-            self.Normalise_do_not.setChecked(True)
-
-            # Update config
-            config["general"]["normalisation"] = "none"
-
             # Apply new normalisation to data (if data is already loaded)
-            if app.loaded_run is not None:
-                app.loaded_run.data = app.loaded_run.raw_e_corr
-        else:
-            self.Normalise_do_not.setChecked(True)
+            if app.loaded_run is None:
+                app.config["general"]["normalisation"] = "none"
+            else:
+                app.loaded_run.data, flag = normalise("none", app.loaded_run.raw_e_corr)
+                app.config["general"]["normalisation"] = "none"
 
-        # Save settings to file
-        #config.save_config()
+        self.update_normalisation_menu()
 
     def NTC(self,checked):
-        print(checked)
-        config = get_config()
         app = get_app()
 
         if checked:
-            self.Normalise_total_spills.setChecked(False)
-            self.Normalise_do_not.setChecked(False)
-
-            # Update config
-            config["general"]["normalisation"] = "counts"
-
             # Apply new normalisation to data (if data is already loaded)
-            if app.loaded_run is not None:
-                app.loaded_run.data = normalise_counts(app.loaded_run.raw_e_corr)
-        else:
-            self.Normalise_total_counts.setChecked(True)
+            if app.loaded_run is None:
+                app.config["general"]["normalisation"] = "counts"
+            else:
+                app.loaded_run.data, flag = normalise("counts", app.loaded_run.raw_e_corr)
+
+        # update buttons
+        self.update_normalisation_menu()
 
     def NTS(self,checked):
-        config = get_config()
         app = get_app()
 
         if checked:
-            self.Normalise_total_counts.setChecked(False)
-            self.Normalise_do_not.setChecked(False)
-
-            # Update config
-            config["general"]["normalisation"] = "events"
-
             # Apply new normalisation to data (if data is already loaded)
-            if app.loaded_run is not None:
-                app.loaded_run.data, flag = normalise_events(app.loaded_run.raw_e_corr, app.loaded_run.events_str)
+            if app.loaded_run is None:
+                # if data is not loaded, only update normalisation in config
+                app.config["general"]["normalisation"] = "events"
+
+            else:
+                app.loaded_run.data, flag = normalise("events", app.loaded_run.raw_e_corr, app.loaded_run.events_str)
 
                 if flag: # Normalisation failed - apply default normalisation instead
-                    message = QErrorMessage(self)
-                    message.setWindowTitle("Normalisation Error")
-                    message.showMessage("Cannot set normalisation by spills when comment file has not been loaded.")
-                    message.show()
-
                     # Remove normalisation
                     self.N_do_not(True)
 
-        else:
-            self.Normalise_total_spills.setChecked(True)
+                    # display error message to let user know what happened
+                    err_str = "Cannot use normalisation by spills when comment file has not been loaded."
+
+                    # this will block the program until user presses "ok"
+                    _ = QMessageBox.critical(self, "Normalisation error", err_str,
+                                             buttons=QMessageBox.StandardButton.Ok,
+                                             defaultButton=QMessageBox.StandardButton.Ok)
+
+        # update gui elements
+        self.update_normalisation_menu()
 
     def closeEvent(self, event):
         #close window cleanly
@@ -507,9 +501,11 @@ class MainWindow(QMainWindow):
                 get_config().save_config()
                 event.accept()
                 QApplication.quit()
+
             elif reply == QMessageBox.StandardButton.No:
                 event.accept()
                 QApplication.quit()
+
             else:
                 event.ignore()
 
@@ -553,11 +549,9 @@ class MainWindow(QMainWindow):
         config = app.config
 
         flags, data = loaddata.load_run(RunNum)
+        app.loaded_run = data  # update and store the loaded run in app
 
-        # update and store the loaded run in app
-        app.loaded_run = data
-
-        if flags[0]: #  no data was loaded - return now
+        if flags["no_files_found"]: #  no data was loaded - return now
             # Update GUI
             self.label_RN.setText("Run Number:   File load failed")
             self.label_Com.setText("Comment:      Comment file not found")
@@ -572,11 +566,12 @@ class MainWindow(QMainWindow):
             # Update run number in config
             config["general"]["run_num"] = RunNum
 
-        if flags[1]: # Comment file was not found
+        if flags["comment_not_found"]: # Comment file was not found
             self.label_Com.setText("Comment:      Comment file not found")
             self.label_Start.setText("Start Time:    ")
             self.label_End.setText("End Time:       ")
             self.label_Events.setText("Events:")
+
         else: # write comment info to GUI
             mapping = dict.fromkeys(range(32))
 
@@ -592,16 +587,18 @@ class MainWindow(QMainWindow):
             pr_str = app.loaded_run.comment.translate(mapping)
             self.label_Com.setText("Comment:      " + pr_str[10:])
 
-        if flags[2]:  # normalisation by spills failed - return now
-            # set normalisation to none
+        if flags["normalisation_error"]:  # normalisation by spills failed - return now
+            # update gui to set normalisation to none in menu
             self.N_do_not(True)
 
-            # display error message
-            message = QErrorMessage(self)
-            message.setWindowTitle("Load Error")
-            message.showMessage("Cannot use normalisation by spills when comment file has not been loaded. Normalisation has been set to none.")
-            message.show()
-            return
+            # display error message to let user know what happened
+            err_str = ("Cannot use normalisation by spills when comment file has not been loaded. Normalisation has been "
+                       "set to none.")
+
+            # this will block the program until user presses "ok"
+            _ = QMessageBox.critical(self, "Normalisation error", err_str,
+                                           buttons=QMessageBox.StandardButton.Ok,
+                                           defaultButton=QMessageBox.StandardButton.Ok)
 
         self.Show_Plot_Window()
         self.PeakFit_menu.setDisabled(False)
