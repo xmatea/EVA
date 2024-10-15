@@ -33,31 +33,41 @@ def load_run(run_num):
         filename = f"{working_directory}/ral0{run_num}.rooth{channel}.dat"
         print("searching for", filename)
         try:
+            # Store data read from file in a Dataset object
             xdata, ydata = np.loadtxt(filename, delimiter=" ", unpack=True)
             dataset = Dataset(detector=detector, run_number=run_num, x=xdata, y=ydata)
-            raw.append(dataset)
-            detectors.append(detectors)
-            none_loaded_flag = 0
+
+            raw.append(dataset) # Add Dataset to list of datasets
+            detectors.append(detectors) # Add detector name to list of detectors
+
+            none_loaded_flag = 0 # data was found - lowering flag
 
         except FileNotFoundError:
             print(f'{channel} file not found')
-            # Append empty arrays to dataset if data file is not found for the given detector
+
+            # Append empty arrays to dataset if data file is not found for the given detector.
+            # This helps maintain a consistent detector order which makes it easier to plot and index datasets.
             raw.append(Dataset(detector=detector, run_number=run_num, x=np.array([]), y=np.array([])))
 
-    if none_loaded_flag:
-        return [1], None # Return None now if all data failed to load
 
     # Add everything into a Run object
-    run = Run(raw, loaded_detectors=detectors, run_num=run_num, start_time=comment_data[0], end_time=comment_data[1],
-              events_str=comment_data[2], comment=comment_data[3])
+    run = Run(raw=raw, loaded_detectors=detectors, run_num=run_num, start_time=comment_data[0],
+              end_time=comment_data[1], events_str=comment_data[2], comment=comment_data[3])
 
-    # Apply energy calibration and normalise
+    # Apply energy calibration on raw data and store result in run.raw_e_corr
     print('Going to Energy correction')
     run.raw_e_corr = Energy_Corrections.Energy_Corrections(run.raw)
 
-    # Apply normalisation
-    print('Going to Normalisation')
-    norm_data, norm_flag = Normalise.normalise(run.raw_e_corr, run.events_str, config["general"]["normalisation"])
-    run.data = norm_data
+    # Apply normalisation on energy corrected data and store result in run.data
 
-    return [none_loaded_flag, comment_flag, norm_flag], run
+    print('Going to Normalisation')
+    run.data, norm_flag = Normalise.normalise(config["general"]["normalisation"], run.raw_e_corr, run.events_str)
+
+    # Assemble flag dictionary to return error status
+    flags = {
+        "no_files_found": none_loaded_flag,
+        "comment_not_found": comment_flag,
+        "normalisation_error": norm_flag
+    }
+
+    return flags, run
