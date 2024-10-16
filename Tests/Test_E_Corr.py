@@ -26,22 +26,21 @@ class TestEnergyCorrection:
         print([dataset.x[100] for dataset in data.raw])
         app.loaded_run = data
 
-    def energy_correction(self, run, target_detector, m, c):
+    def energy_correction(self, run, target_detectors, m, c):
         config = get_config()
         detectors = config["general"]["all_detectors"].split(" ")
 
-        # Toggle energy correction only for target detector
+        # Toggle energy correction only for target detectors
         for detector in detectors:
-            if detector == target_detector:
+            if detector in target_detectors:
                 config[detector]["use_energy_correction"] = "yes"
             else:
                 config[detector]["use_energy_correction"] = "no"
 
-        print("target detector", target_detector)
-
-        # Set energy correction parameters in config
-        config[target_detector]["e_corr_gradient"] = str(m)
-        config[target_detector]["e_corr_offset"] = str(c)
+        for i, target_detector in enumerate(target_detectors):
+            # Set energy correction parameters in config
+            config[target_detector]["e_corr_gradient"] = str(m[i])
+            config[target_detector]["e_corr_offset"] = str(c[i])
 
         # Do energy correction on raw data
         run.raw_e_corr = Energy_Corrections.Energy_Corrections(run.raw)
@@ -53,74 +52,96 @@ class TestEnergyCorrection:
         # Manual energy calibration
         return dataset.x * m + c
 
-    def test_Energy_Correction_GE1(self):
+    def test_energy_correction_GE1_only(self):
         # Load run from file
         run = get_app().loaded_run
 
-        # Get test parameters
-        m = 2
-        c = 1
+        # Create test parameters
+        m = [2]
+        c = [1]
 
-        # Manually calculate expected result
+        # Manually apply energy calibration to run
         dataset = run.raw[0]  # Get Dataset on index 0 corresponding to GE1
         expected = self.reference_energy_correction(dataset, m, c)
 
-        # Pass the whole run and do energy correction
-        run = self.energy_correction(run=run, target_detector="GE1", m=m, c=c)
+        # Do energy correction on run
+        run = self.energy_correction(run=run, target_detectors=["GE1"], m=m, c=c)
         result = run.raw_e_corr[0].x
 
         assert np.array_equal(expected, result), "Energy correction failed for GE1"
 
-    def test_Energy_Correction_GE2(self):
+    def test_energy_correction_GE2_only(self):
         # Load run from file
         run = get_app().loaded_run
 
-        # Get test parameters
-        m = 2.13
-        c = 1.12
+        # Create test parameters
+        m = [3]
+        c = [2]
 
-        # Manually calculate expected result
-        dataset = run.raw[1] # Get Dataset on index 1 corresponding to GE2
+        # Manually apply energy calibration to run
+        dataset = run.raw[1]  # Get Dataset on index 1 corresponding to GE2
         expected = self.reference_energy_correction(dataset, m, c)
 
-        # Pass the whole run and do energy correction
-        run = self.energy_correction(run=run, target_detector="GE2", m=m, c=c)
+        # Do energy correction on run
+        run = self.energy_correction(run=run, target_detectors=["GE2"], m=m, c=c)
         result = run.raw_e_corr[1].x
 
         assert np.array_equal(expected, result), "Energy correction failed for GE2"
 
-    def test_Energy_Correction_GE3(self):
+    def test_energy_correction_GE3_only(self):
         # Load run from file
         run = get_app().loaded_run
 
-        # Get test parameters
-        m = 2.02
-        c = 1.01
+        # Create test parameters
+        m = [1.5]
+        c = [2]
 
-        # Manually calculate expected result
+        # Manually apply energy calibration to run
         dataset = run.raw[2]  # Get Dataset on index 2 corresponding to GE3
         expected = self.reference_energy_correction(dataset, m, c)
 
-        # Pass the whole run and do energy correction
-        run = self.energy_correction(run=run, target_detector="GE3", m=m, c=c)
+        # Do energy correction on run
+        run = self.energy_correction(run=run, target_detectors=["GE3"], m=m, c=c)
         result = run.raw_e_corr[2].x
 
         assert np.array_equal(expected, result), "Energy correction failed for GE3"
 
-    def test_Energy_Correction_GE4(self):
+    def test_energy_correction_GE4_only(self):
         # Load run from file
         run = get_app().loaded_run
 
-        # Get test parameters
-        m = 2.034
-        c = 1.034
+        # Create test parameters
+        m = [4]
+        c = [1.5]
 
-        # Manually calculate expected result
+        # Manually apply energy calibration to run
         dataset = run.raw[3]  # Get Dataset on index 3 corresponding to GE4
         expected = self.reference_energy_correction(dataset, m, c)
 
-        # Pass the whole run and do energy correction
-        run = self.energy_correction(run=run, target_detector="GE4", m=m, c=c)
+        # Do energy correction on run
+        run = self.energy_correction(run=run, target_detectors=["GE4"], m=m, c=c)
         result = run.raw_e_corr[3].x
 
         assert np.array_equal(expected, result), "Energy correction failed for GE4"
+
+    def test_energy_correction_all_detectors(self):
+        # Load run from file
+        run = get_app().loaded_run
+
+        # Create test parameters
+        m = [2, 3, 4, 5]
+        c = [1, 2, 3, 4]
+
+        # Manually apply energy calibration to each dataset
+        expected = []
+        for i in range(len(m)):
+            dataset = run.raw[i]
+            expected.append(self.reference_energy_correction(dataset, m[i], c[i]))
+
+        # Do energy correction on run
+        run = self.energy_correction(run=run, target_detectors=["GE1", "GE2", "GE3", "GE4"], m=m, c=c)
+
+        # assert if energy correction is equal to manual correction for each dataset
+        is_equal = [np.array_equal(dataset.x, expected[i]) for i, dataset in enumerate(run.raw_e_corr)]
+
+        assert all(is_equal), "Energy correction failed for all detectors"
