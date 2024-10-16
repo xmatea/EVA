@@ -1,137 +1,126 @@
-import unittest
-from EVA import loaddata, globals, Energy_Corrections
+import numpy as np
+
+from EVA import Energy_Corrections
+from EVA.app import get_app, get_config
+import pytest
+from EVA.loaddata import load_run
+
+params = {
+    # m, c
+    "GE1": [2.0, 1],
+    "GE2": [2.13, 1.12],
+    "GE3": [2.02, 1.01],
+    "GE4": [2.034, 1.034]
+}
+
+class TestEnergyCorrection:
+    @pytest.fixture(autouse=True)
+    def setup(self, qtbot):
+        # loading database and sample data
+        app = get_app()
+
+        run_num = 2630
+        app.config["general"]["run_num"] = str(run_num)
+        data, flags = load_run(run_num)
+
+        print([dataset.x[100] for dataset in data.raw])
+        app.loaded_run = data
+
+    def energy_correction(self, run, target_detector, m, c):
+        config = get_config()
+        detectors = config["general"]["all_detectors"].split(" ")
+
+        # Toggle energy correction only for target detector
+        for detector in detectors:
+            if detector == target_detector:
+                config[detector]["use_energy_correction"] = "yes"
+            else:
+                config[detector]["use_energy_correction"] = "no"
+
+        print("target detector", target_detector)
+
+        # Set energy correction parameters in config
+        config[target_detector]["e_corr_gradient"] = str(m)
+        config[target_detector]["e_corr_offset"] = str(c)
+
+        # Do energy correction on raw data
+        run.raw_e_corr = Energy_Corrections.Energy_Corrections(run.raw)
+
+        return run
 
 
-class MyTestCase(unittest.TestCase):
+    def reference_energy_correction(self, dataset, m, c):
+        # Manual energy calibration
+        return dataset.x * m + c
 
     def test_Energy_Correction_GE1(self):
-        RunNum = 2630
-        loaddata.loaddata(RunNum)
-        #print(globals.flag_d_GE1)
+        # Load run from file
+        run = get_app().loaded_run
 
-        globals.E_Corr_GE1_apply = True
-        globals.E_Corr_GE2_apply = False
-        globals.E_Corr_GE3_apply = False
-        globals.E_Corr_GE4_apply = False
+        # Get test parameters
+        m = 2
+        c = 1
 
-        m = 2.0
-        c = 1.0
+        # Manually calculate expected result
+        dataset = run.raw[0]  # Get Dataset on index 0 corresponding to GE1
+        expected = self.reference_energy_correction(dataset, m, c)
 
-        expected_result = globals.x_GE1 * m + c
-        globals.E_Corr_GE1_gradient = 2.0
-        globals.E_Corr_GE1_offset = 1.0
-        Energy_Corrections.Energy_Corrections()
+        # Pass the whole run and do energy correction
+        run = self.energy_correction(run=run, target_detector="GE1", m=m, c=c)
+        result = run.raw_e_corr[0].x
 
-        self.assertEqual(globals.x_GE1[100], expected_result[100], 'Error in Energy Corrections')
+        assert np.array_equal(expected, result), "Energy correction failed for GE1"
 
     def test_Energy_Correction_GE2(self):
-        RunNum = 2630
-        loaddata.loaddata(RunNum)
-        # print(globals.flag_d_GE1)
+        # Load run from file
+        run = get_app().loaded_run
 
-        globals.E_Corr_GE1_apply = False
-        globals.E_Corr_GE2_apply = True
-        globals.E_Corr_GE3_apply = False
-        globals.E_Corr_GE4_apply = False
-
+        # Get test parameters
         m = 2.13
         c = 1.12
 
-        expected_result = globals.x_GE2 * m + c
-        globals.E_Corr_GE2_gradient = 2.13
-        globals.E_Corr_GE2_offset = 1.12
-        Energy_Corrections.Energy_Corrections()
+        # Manually calculate expected result
+        dataset = run.raw[1] # Get Dataset on index 1 corresponding to GE2
+        expected = self.reference_energy_correction(dataset, m, c)
 
-        self.assertEqual(globals.x_GE2[100], expected_result[100], 'Error in Energy Corrections')
+        # Pass the whole run and do energy correction
+        run = self.energy_correction(run=run, target_detector="GE2", m=m, c=c)
+        result = run.raw_e_corr[1].x
+
+        assert np.array_equal(expected, result), "Energy correction failed for GE2"
 
     def test_Energy_Correction_GE3(self):
-        RunNum = 2630
-        loaddata.loaddata(RunNum)
-        # print(globals.flag_d_GE1)
+        # Load run from file
+        run = get_app().loaded_run
 
-        globals.E_Corr_GE1_apply = False
-        globals.E_Corr_GE2_apply = False
-        globals.E_Corr_GE3_apply = True
-        globals.E_Corr_GE4_apply = False
-
+        # Get test parameters
         m = 2.02
         c = 1.01
 
-        expected_result = globals.x_GE3 * m + c
-        globals.E_Corr_GE3_gradient = 2.02
-        globals.E_Corr_GE3_offset = 1.01
-        Energy_Corrections.Energy_Corrections()
+        # Manually calculate expected result
+        dataset = run.raw[2]  # Get Dataset on index 2 corresponding to GE3
+        expected = self.reference_energy_correction(dataset, m, c)
 
-        self.assertEqual(globals.x_GE3[100], expected_result[100], 'Error in Energy Corrections')
+        # Pass the whole run and do energy correction
+        run = self.energy_correction(run=run, target_detector="GE3", m=m, c=c)
+        result = run.raw_e_corr[2].x
+
+        assert np.array_equal(expected, result), "Energy correction failed for GE3"
 
     def test_Energy_Correction_GE4(self):
-        RunNum = 2630
-        loaddata.loaddata(RunNum)
-        # print(globals.flag_d_GE1)
+        # Load run from file
+        run = get_app().loaded_run
 
-        globals.E_Corr_GE1_apply = False
-        globals.E_Corr_GE2_apply = False
-        globals.E_Corr_GE3_apply = False
-        globals.E_Corr_GE4_apply = True
-
+        # Get test parameters
         m = 2.034
         c = 1.034
 
-        expected_result = globals.x_GE4 * m + c
-        globals.E_Corr_GE4_gradient = 2.034
-        globals.E_Corr_GE4_offset = 1.034
-        Energy_Corrections.Energy_Corrections()
+        # Manually calculate expected result
+        dataset = run.raw[3]  # Get Dataset on index 3 corresponding to GE4
+        expected = self.reference_energy_correction(dataset, m, c)
 
-        self.assertEqual(globals.x_GE4[100], expected_result[100], 'Error in Energy Corrections')
+        # Pass the whole run and do energy correction
+        run = self.energy_correction(run=run, target_detector="GE4", m=m, c=c)
+        result = run.raw_e_corr[3].x
 
-    def test_Energy_Correction_GEAll(self):
-        RunNum = 2630
-        loaddata.loaddata(RunNum)
-        # print(globals.flag_d_GE1)
-
-        globals.E_Corr_GE1_apply = True
-        globals.E_Corr_GE2_apply = True
-        globals.E_Corr_GE3_apply = True
-        globals.E_Corr_GE4_apply = True
-
-        m = 2.023
-        c = 1.023
-
-        expected_result = globals.x_GE1 * m + c
-        globals.E_Corr_GE1_gradient = 2.023
-        globals.E_Corr_GE1_offset = 1.023
-        Energy_Corrections.Energy_Corrections()
-
-        self.assertEqual(globals.x_GE1[100], expected_result[100], 'Error in Energy Corrections')
-
-        m = 2.032
-        c = 1.032
-
-        expected_result = globals.x_GE2 * m + c
-        globals.E_Corr_GE2_gradient = 2.032
-        globals.E_Corr_GE2_offset = 1.032
-        Energy_Corrections.Energy_Corrections()
-
-        self.assertEqual(globals.x_GE2[100], expected_result[100], 'Error in Energy Corrections')
-
-        m = 2.052
-        c = 1.052
-
-        expected_result = globals.x_GE3 * m + c
-        globals.E_Corr_GE3_gradient = 2.052
-        globals.E_Corr_GE3_offset = 1.052
-        Energy_Corrections.Energy_Corrections()
-
-        self.assertEqual(globals.x_GE3[100], expected_result[100], 'Error in Energy Corrections')
-
-        m = 2.099
-        c = 1.099
-
-        expected_result = globals.x_GE4 * m + c
-        globals.E_Corr_GE4_gradient = 2.099
-        globals.E_Corr_GE4_offset = 1.099
-        Energy_Corrections.Energy_Corrections()
-
-        self.assertEqual(globals.x_GE4[100], expected_result[100], 'Error in Energy Corrections')
-
-
+        assert np.array_equal(expected, result), "Energy correction failed for GE4"
