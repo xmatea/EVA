@@ -1,9 +1,7 @@
 import numpy as np
 
-from EVA.RunTrimExample import ScanMom
 from srim import TRIM, Ion, Layer, Target
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
 
 from PyQt6.QtWidgets import (
     QLabel,
@@ -20,12 +18,12 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QFormLayout
 )
-from EVA import globals, plot_widget
+from EVA import globals, plot_widget, srim_settings
+from EVA.app import get_config
 
 
 
 class RunSimTRIMSRIM(QWidget):
-
     def __init__(self, parent = None):
         #print('here')
         super(RunSimTRIMSRIM, self).__init__(parent)
@@ -223,8 +221,8 @@ class RunSimTRIMSRIM(QWidget):
 
         targetsample = Target(Sample_layer)
 
-        globals.TRIMRes_x = []
-        globals.TRIMRes_y = []
+        srim_settings.TRIMRes_x = []
+        srim_settings.TRIMRes_y = []
 
         if ScanType.currentText() == 'No':
             #if No then single momentum used
@@ -239,8 +237,8 @@ class RunSimTRIMSRIM(QWidget):
             else:
                 print('error')
 
-            globals.TRIMRes_x.append(x)
-            globals.TRIMRes_y.append(y)
+            srim_settings.TRIMRes_x.append(x)
+            srim_settings.TRIMRes_y.append(y)
 
             if MonoorSpread == 'Mono':
                 self.tab2.table_PlotRes.setItem(0, 0, QTableWidgetItem(str(Mom)))
@@ -251,7 +249,7 @@ class RunSimTRIMSRIM(QWidget):
             comp = RunSimTRIMSRIM.getcomp(self, xposlist, 0)
             perlayer = RunSimTRIMSRIM.getperlayer(self, comp)
             outstr = ''
-            for index in range(len(globals.sample_layers)):
+            for index in range(len(srim_settings.sample_layers)):
                 outstr += '[' + str(index + 1) + '] ' + str(round(perlayer[index], 3)) + ' '
 
             self.tab2.table_PlotRes.setItem(0, 1, QTableWidgetItem(outstr))
@@ -271,9 +269,9 @@ class RunSimTRIMSRIM(QWidget):
                 else:
                     print('error')
 
-                globals.TRIMRes_x.append(x)
-                globals.TRIMRes_y.append(y)
-                # globals.TRIMRes_e.append(e)
+                srim_settings.TRIMRes_x.append(x)
+                srim_settings.TRIMRes_y.append(y)
+                # srim_settings.TRIMRes_e.append(e)
 
                 self.tab2.table_PlotRes.setItem(MomIndex, 0, QTableWidgetItem(str(Mom)))
 
@@ -282,7 +280,7 @@ class RunSimTRIMSRIM(QWidget):
                 comp = RunSimTRIMSRIM.getcomp(self, xposlist, MomIndex)
                 perlayer = RunSimTRIMSRIM.getperlayer(self, comp)
                 outstr = ''
-                for index in range(len(globals.sample_layers)):
+                for index in range(len(srim_settings.sample_layers)):
                     outstr += '[' + str(index + 1) + '] ' + str(round(perlayer[index], 3)) + ' '
 
                 self.tab2.table_PlotRes.setItem(MomIndex, 1, QTableWidgetItem(outstr))
@@ -324,7 +322,7 @@ class RunSimTRIMSRIM(QWidget):
                                               'surface': 2.0}},
                                        density=1.4, width=LayerThickness * 1e7, phase=0)
                     Sample_layer.append(beamwindow)
-                    globals.sample_name.append('Beamline Window')
+                    srim_settings.sample_name.append('Beamline Window')
 
                 elif sampleName == 'Air (compressed)':
 
@@ -345,7 +343,7 @@ class RunSimTRIMSRIM(QWidget):
                                 # air layer compressed from 150mm to 0.1mm to optimise bins
                                 phase=1)
                     Sample_layer.append(air)
-                    globals.sample_name.append('Air (compressed)')
+                    srim_settings.sample_name.append('Air (compressed)')
                     print('done air')
                     print(Sample_layer)
                 else:
@@ -356,15 +354,15 @@ class RunSimTRIMSRIM(QWidget):
                                                           phase=0)
 
                     Sample_layer.append(thislayer)  # 0.016 mm = 160000Athick sample holder
-                    globals.sample_name.append(sampleName)
+                    srim_settings.sample_name.append(sampleName)
 
                 i += 1
 
         except:
            print('error in setting up the table')
 
-        globals.sample_layers = Sample_layer
-        #print('Sample Layer', globals.sample_layers[1])
+        srim_settings.sample_layers = Sample_layer
+        #print('Sample Layer', srim_settings.sample_layers[1])
 
         return Sample_layer, TotalThickness
 
@@ -430,41 +428,41 @@ class RunSimTRIMSRIM(QWidget):
         writes the results of SRIM TRIM calcs
         '''
         print('In WriteSim')
-        print(globals.workingdirectory)
+        print(get_config()["general"]["working_directory"])
         print('')
         print('')
-        save_file = globals.workingdirectory + '/SRIM_' + self.tab2.table_PlotRes.item(x, 0).text() + '_MeVc.dat'
+        save_file = get_config()["general"]["working_directory"] + '/SRIM_' + self.tab2.table_PlotRes.item(x, 0).text() + '_MeVc.dat'
         print('Sve_file',save_file)
         file2 = open(save_file, "w")
 
         sumdis = 0.0
         xposlist = RunSimTRIMSRIM.getxpos(self)
 
-        for i in range(len(globals.sample_layers)):
+        for i in range(len(srim_settings.sample_layers)):
             sumdis += xposlist[i + 1]
-            print(globals.sample_name[i] + ' = ' + str(sumdis) + '\n')
-            file2.writelines(globals.sample_name[i] + ' = ' + str(sumdis) + '\n')
+            print(srim_settings.sample_name[i] + ' = ' + str(sumdis) + '\n')
+            file2.writelines(srim_settings.sample_name[i] + ' = ' + str(sumdis) + '\n')
 
 
 
 
-        for i in range(len(globals.TRIMRes_x[x])):
-            file2.writelines(str(globals.TRIMRes_x[x][i]) + ',' + str(globals.TRIMRes_y[x][i]) + '\n')
-        '''file2.writelines(str(globals.TRIMRes_x[x]) + ',' + str(globals.TRIMRes_y[x]))
+        for i in range(len(srim_settings.TRIMRes_x[x])):
+            file2.writelines(str(srim_settings.TRIMRes_x[x][i]) + ',' + str(srim_settings.TRIMRes_y[x][i]) + '\n')
+        '''file2.writelines(str(srim_settings.TRIMRes_x[x]) + ',' + str(srim_settings.TRIMRes_y[x]))
         '''
         file2.close()
         print('save_file_fin')
 
         print('In WriteSim')
-        print(globals.workingdirectory)
+        print(get_config()["general"]["working_directory"])
         print('')
         print('')
         comp = RunSimTRIMSRIM.getcomp(self, xposlist, x)
 
         # plot layers
-        for i in range(len(globals.sample_layers)):
+        for i in range(len(srim_settings.sample_layers)):
 
-            save_file = (globals.workingdirectory + '/SRIM_'
+            save_file = (get_config()["general"]["working_directory"] + '/SRIM_'
                          + self.tab2.table_PlotRes.item(x, 0).text() + '_MeVc_' + str(i) + '.dat')
             print('Sve_file', save_file)
             file2 = open(save_file, "w")
@@ -472,14 +470,14 @@ class RunSimTRIMSRIM(QWidget):
             sumdis = 0.0
             xposlist = RunSimTRIMSRIM.getxpos(self)
 
-            for k in range(len(globals.sample_layers)):
+            for k in range(len(srim_settings.sample_layers)):
                 sumdis += xposlist[k + 1]
-                print(globals.sample_name[k] + ' = ' + str(sumdis) + '\n')
-                file2.writelines(globals.sample_name[k] + ' = ' + str(sumdis) + '\n')
+                print(srim_settings.sample_name[k] + ' = ' + str(sumdis) + '\n')
+                file2.writelines(srim_settings.sample_name[k] + ' = ' + str(sumdis) + '\n')
 
-            for j in range(len(globals.TRIMRes_x[x])):
-                file2.writelines(str(globals.TRIMRes_x[x][j]) + ',' + str(comp[i][j]) + '\n')
-        '''file2.writelines(str(globals.TRIMRes_x[x]) + ',' + str(globals.TRIMRes_y[x]))
+            for j in range(len(srim_settings.TRIMRes_x[x])):
+                file2.writelines(str(srim_settings.TRIMRes_x[x][j]) + ',' + str(comp[i][j]) + '\n')
+        '''file2.writelines(str(srim_settings.TRIMRes_x[x]) + ',' + str(srim_settings.TRIMRes_y[x]))
         '''
         file2.close()
         print('save_file_fin')
@@ -492,7 +490,7 @@ class RunSimTRIMSRIM(QWidget):
             if y == 2:
                 # plot components
                 figt, axx = plt.subplots()
-                axx.plot(globals.TRIMRes_x[x], globals.TRIMRes_y[x])
+                axx.plot(srim_settings.TRIMRes_x[x], srim_settings.TRIMRes_y[x])
                 axx.set_xlabel('Depth ($mm$)')
                 axx.set_ylabel('Number of muons')
                 axx.set_title('SRIM Simulation at ' + self.tab2.table_PlotRes.item(x,0).text() + ' MeV/c')
@@ -501,24 +499,24 @@ class RunSimTRIMSRIM(QWidget):
 
                 #plot layers out plot
                 sumdis = 0.0
-                for i in range(len(globals.sample_layers)):
+                for i in range(len(srim_settings.sample_layers)):
                     sumdis += xposlist[i+1]
 
                     axx.axvline(x=sumdis, color='k', linestyle='--')
-                    axx.text(sumdis, 5, globals.sample_name[i], horizontalalignment='left', rotation='vertical')
+                    axx.text(sumdis, 5, srim_settings.sample_name[i], horizontalalignment='left', rotation='vertical')
 
                 # break output down to components
                 comp = RunSimTRIMSRIM.getcomp(self, xposlist, x)
 
                 # plot layers
-                for i in range(len(globals.sample_layers)):
-                    axx.plot(globals.TRIMRes_x[0], comp[i])
+                for i in range(len(srim_settings.sample_layers)):
+                    axx.plot(srim_settings.TRIMRes_x[0], comp[i])
 
                 self.plot.update_plot(fig=figt, axs=axx)
 
             else:
                 figt, axx = plt.subplots()
-                axx.plot(globals.TRIMRes_x[x], globals.TRIMRes_y[x])
+                axx.plot(srim_settings.TRIMRes_x[x], srim_settings.TRIMRes_y[x])
                 axx.set_xlabel('Depth ($mm$)')
                 axx.set_ylabel('Number of muons')
                 axx.set_title('SRIM Simulation at ')
@@ -526,12 +524,12 @@ class RunSimTRIMSRIM(QWidget):
 
                 # plot layers out plot
                 sumdis = 0.0
-                for i in range(len(globals.sample_layers)):
+                for i in range(len(srim_settings.sample_layers)):
                     sumdis += xposlist[i + 1]
 
                     axx.axvline(x=sumdis, color='k', linestyle='--')
-                    axx.text(sumdis, 5, globals.sample_name[i], horizontalalignment='left', rotation='vertical')
-                    print('sample_layers', globals.sample_layers[i])
+                    axx.text(sumdis, 5, srim_settings.sample_name[i], horizontalalignment='left', rotation='vertical')
+                    print('sample_layers', srim_settings.sample_layers[i])
 
                 self.plot.update_plot(fig=figt, axs=axx)
 
@@ -582,9 +580,9 @@ class RunSimTRIMSRIM(QWidget):
         '''gets xpos from layers must be an easier way'''
         xposlist = []
         xposlist.append(0.0)
-        #print(globals.sample_layers)
-        for i in range(len(globals.sample_layers)):
-            temp = globals.sample_layers[i]
+        #print(srim_settings.sample_layers)
+        for i in range(len(srim_settings.sample_layers)):
+            temp = srim_settings.sample_layers[i]
             loc = str(temp).find('width:')
             xpos = float(str(temp)[loc + 6:].strip('>')) / 1e7
             xposlist.append(xpos)
@@ -596,15 +594,15 @@ class RunSimTRIMSRIM(QWidget):
         comp = []
         sum1 = 0.0
         sum2 = 0.0
-        print('globals.TRIMRes_x', globals.TRIMRes_x)
-        print('globals.TRIMRes_y', globals.TRIMRes_y)
-        for i in range(len(globals.sample_layers)):
+        print('srim_settings.TRIMRes_x', srim_settings.TRIMRes_x)
+        print('srim_settings.TRIMRes_y', srim_settings.TRIMRes_y)
+        for i in range(len(srim_settings.sample_layers)):
             templist = []
             sum1 += xposlist[i]
             sum2 = sum1 + xposlist[i+1]
-            for j in range(len(globals.TRIMRes_y[MomIndex])):
-                if globals.TRIMRes_x[MomIndex][j] >= sum1 and globals.TRIMRes_x[MomIndex][j] < sum2 :
-                    templist.append(globals.TRIMRes_y[MomIndex][j])
+            for j in range(len(srim_settings.TRIMRes_y[MomIndex])):
+                if srim_settings.TRIMRes_x[MomIndex][j] >= sum1 and srim_settings.TRIMRes_x[MomIndex][j] < sum2 :
+                    templist.append(srim_settings.TRIMRes_y[MomIndex][j])
                 else:
                     templist.append(0.0)
             comp.append(templist)
@@ -616,12 +614,12 @@ class RunSimTRIMSRIM(QWidget):
         perlayer = []
         totalsumlayer = 0.0
 
-        for index in range(len(globals.sample_layers)):
+        for index in range(len(srim_settings.sample_layers)):
             sumlayer = np.sum(comp[index])
             perlayer.append(sumlayer)
             totalsumlayer += sumlayer
 
-        for index in range(len(globals.sample_layers)):
+        for index in range(len(srim_settings.sample_layers)):
             perlayer[index] = perlayer[index] / totalsumlayer
         print('perlayer', perlayer)
 

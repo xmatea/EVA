@@ -2,7 +2,7 @@ import unittest
 from EVA import globals, Eff_Window
 
 
-class MyTestCase(unittest.TestCase):
+class TestSaveEfficiencies(unittest.TestCase):
     def test_saveeffparaGE1(self):
         Eff_Window.Correction_Eff.save_GE_Eff_settings(self, "GE1", 100, 101, 102, 103, 104)
 
