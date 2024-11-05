@@ -1,4 +1,3 @@
-import numpy as np
 import pytest
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget
@@ -6,8 +5,6 @@ from pytestqt.plugin import qtbot
 from matplotlib.backend_bases import MouseButton
 
 from EVA.Plot_Window import PlotWindow
-from EVA.loaddata import load_run
-from EVA import LoadDatabaseFile, loadgamma
 from EVA.app import get_app
 
 import Tests.GUI.test_util_gui as util
@@ -19,16 +16,8 @@ class TestPlotWindow:
     def setup(self):
         # loading database and sample data
         app = get_app()
-
-        run_num = 2630
-        # app.config["database"]["mu_xray_db"] = "legacy"
-        app.config["general"]["run_num"] = str(run_num)
-        flags, data = load_run(run_num)
-        app.loaded_run = data
-
-        # load databases
-        app.muon_database = LoadDatabaseFile.load_legacy_data() # load legacy data
-        app.gamma_database = loadgamma.load_gamma_data()
+        app.set_loaded_run(2630)
+        app.use_legacy_muon_db()
 
     # test if the expected data is displayed in gamma table when clicking a specific peak in the figure
     def test_clickpeaks_gammas(self, qtbot):
@@ -154,3 +143,65 @@ class TestPlotWindow:
             qtbot.wait(250)
 
         assert len(list(window.plot.canvas.axs[1].lines)) == 1, "Failed to remove all plot lines"
+
+    # TODO: Make this work properly
+    """
+    def test_find_peaks_plotting_on_button_click(self, qtbot):
+        config = get_config()
+        app = get_app()
+
+        config["GE1"]["show_plot"] = "yes"
+        config["GE2"]["show_plot"] = "no"
+        config["GE3"]["show_plot"] = "yes"
+        config["GE4"]["show_plot"] = "no"
+
+        peaks_ax0 = [(47.5, 116),
+                (66.5, 652),
+                (72.5, 151),
+                (75.5, 201),
+                (84.5, 134),
+                (102.5, 203),
+                (121.5, 312),
+                (131.5, 309),
+                (146.5, 135),
+                (179.5, 101),
+                (190.5, 575),
+                (199.5,  88),
+                (202.5,  92),
+                (252.5,  70),
+                (281.5,  65),
+                (286.5,  97),
+                (364.5,  65),
+                (395.5,  51),
+                (405.5,  47),
+                (519.5,  59),
+                (596.5,  44),
+                (643.5,  43),
+                (653.5,  40),
+                (931.5, 195),
+                (1189.5,  27)]
+
+        peaks_ax1 = [(71.1875, 25), (96.6875, 83), (120.938, 97)]
+
+        widget = QWidget()
+        window = PlotWindow(widget)
+        qtbot.addWidget(window)
+
+        # click on peak fitting button - ONLY TESTS SCIPY FIND PEAKS METHOD
+        qtbot.mouseClick(window.findpeaks.find_peaks_button, Qt.MouseButton.LeftButton)
+
+        data_ax0 = window.plot.canvas.axs[0].collections[1].get_offsets().data
+        data_ax1 = window.plot.canvas.axs[1].collections[1].get_offsets().data
+
+        print(data_ax0)
+
+
+        # check if the expected points were scattered on the figure
+        assert all([elem[0] == peaks_ax0[i][0] for i, elem in enumerate(data_ax0)]), \
+            "Marker positions on figure after peakfit did not match expected results"
+        assert all([elem[0] == peaks_ax1[i][0] for i, elem in enumerate(data_ax1)]), \
+            "Marker positions on figure after peakfit did not match expected results"
+
+        assert 0
+    
+        """
