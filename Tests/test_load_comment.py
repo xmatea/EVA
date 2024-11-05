@@ -1,5 +1,5 @@
 import unittest
-from EVA import loadcomment, globals
+from EVA import loadcomment
 
 
 class LoadComment(unittest.TestCase):
@@ -8,10 +8,10 @@ class LoadComment(unittest.TestCase):
         print('hello')'''
     def test_loadcomment(self):
         #print('loadcomment test')
-        globals.workingdirectory= './TestData/'
+        directory = './TestData/'
         RunNum=2630
-        flag, rtnstr = loadcomment.loadcomment(RunNum)
-        self.assertEqual(flag, 1, 'did return flag')
+        rtnstr, flag = loadcomment.loadcomment(RunNum, directory)
+        self.assertEqual(flag, 0, 'did return flag')
         self.assertEqual(rtnstr,['Start Time        :  Thu May 3 13:08:56 2018\n',
                                  'End   Time        :  Thu May 3 13:58:33 2018\n',
                                  'Number of Events  : 118466\n',
@@ -20,18 +20,18 @@ class LoadComment(unittest.TestCase):
 
     def test_loadcomment2(self):
         #print('loadcomment2 test')
-        globals.workingdirectory= './TestData/'
+        directory = './TestData/'
         RunNum=999
-        flag, rtnstr = loadcomment.loadcomment(RunNum)
-        self.assertEqual(flag, 0, 'did return flag')
+        rtnstr, flag = loadcomment.loadcomment(RunNum, directory)
+        self.assertEqual(flag, 1, 'did return flag')
         self.assertEqual(rtnstr,[" ", " ", " ", " "],
                          'didnt load comment file')
 
     def test_loadcomment3(self):
         #print('loadcomment3 test')
-        globals.workingdirectory= './'
+        directory= './'
         RunNum=2631
-        flag,rtnstr = loadcomment.loadcomment(RunNum)
-        self.assertEqual(flag, 0, 'did return flag')
+        rtnstr, flag = loadcomment.loadcomment(RunNum, directory)
+        self.assertEqual(flag, 1, 'did return flag')
         self.assertEqual(rtnstr,[" ", " ", " ", " "],
                          'didnt load commnet file')
