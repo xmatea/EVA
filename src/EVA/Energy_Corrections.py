@@ -1,7 +1,7 @@
 import numpy as np
-from EVA.app import get_config
-from EVA.data_structures import Dataset
+#from EVA.app import get_config
 
+"""
 def Energy_Corrections(data):
     config = get_config()
 
@@ -13,7 +13,7 @@ def Energy_Corrections(data):
             offset = config.parser[detector]["e_corr_offset"]
             dataset.x = lincorr(dataset.x, gradient, offset)
     return data
+"""
 
 def lincorr(x, m, c):
-    new_x = x*float(m)+float(c)
-    return new_x
+    return x*float(m)+float(c)
