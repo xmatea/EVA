@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from EVA import globals
-from EVA.app import get_config, get_app
+from EVA.app import get_config
+
 
 def How_many_plot():
     """
@@ -50,19 +51,20 @@ def plot_run(run):
     fig.supxlabel("Energy (keV)")
 
     # sets the correct labels
-    if config.parser["general"]["normalisation"] == "counts":
+    if run.normalisation == "counts":
         fig.supylabel("Intensity Normalised to Counts (10^5)")
-    elif config.parser["general"]["normalisation"] == "events":
+    elif run.normalisation == "events":
         fig.supylabel("Intensity Normalised to Spills (10^5)")
     else:
         fig.supylabel("Intensity")
 
     i = 0
     for dataset in run.data:
+        print(dataset.y)
         # Will plot empty axes if settings are set to show plot for a detector which is not loaded
         if config[dataset.detector]["show_plot"] == "yes":
             print("plotting", dataset.detector)
-            axs[i].fill_between(dataset.x, dataset.y, step='mid', color=config.parser["plot"]["fill_colour"])
+            axs[i].fill_between(dataset.x, dataset.y, step='mid', color=config["plot"]["fill_colour"])
             axs[i].step(dataset.x, dataset.y, where='mid', color='black')
             axs[i].set_ylim(0.0)
             axs[i].set_xlim(0.0)

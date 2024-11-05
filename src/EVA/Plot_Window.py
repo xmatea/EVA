@@ -1,6 +1,5 @@
 from matplotlib import pyplot as plt
 from matplotlib.backend_bases import MouseButton
-from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
@@ -19,11 +18,10 @@ from PyQt6.QtWidgets import (
 )
 
 from EVA import getmatch, Plot_Spectra, FindPeaks, SortMatch, globals
-from EVA.app import get_app
+from EVA.app import get_app, get_config
 import time
 
 from EVA.plot_widget import PlotWidget
-
 
 class PlotWindow(QWidget):
     """
@@ -33,13 +31,14 @@ class PlotWindow(QWidget):
 
     def __init__(self, parent=None):
         super(PlotWindow, self).__init__(parent)
+        self.scn_res = int(get_config()["display"]["screen_resolution"])
 
         # the size of this widget is currently set to maximised from MainWindow
         """
-        if globals.scn_res == 1:
+        if self.scn_res == 1:
             self.resize(1800, 900)
             self.setMinimumSize(1600, 700)
-        elif globals.scn_res == 2:
+        elif self.scn_res == 2:
             self.resize(1600, 900)
             self.setMinimumSize(1400, 700)
         else:
@@ -109,9 +108,9 @@ class PlotWindow(QWidget):
         clickpeaks.tab3 = QWidget()
         clickpeaks.tab4 = QWidget()
 
-        if globals.scn_res == 1:
+        if self.scn_res == 1:
             clickpeaks.tab_muon.setMinimumSize(MIN_WIDTH1, MIN_HEIGHT1)
-        elif globals.scn_res == 2:
+        elif self.scn_res == 2:
             clickpeaks.tab_muon.setMinimumSize(MIN_WIDTH2, MIN_HEIGHT2)
         else:
             clickpeaks.tab_muon.setMinimumSize(MIN_WIDTH1, MIN_HEIGHT1)
@@ -126,9 +125,9 @@ class PlotWindow(QWidget):
         clickpeaks.table_plotted_lines.setColumnCount(2)
         clickpeaks.table_plotted_lines.setRowCount(10)
 
-        if globals.scn_res == 1:
+        if self.scn_res == 1:
             clickpeaks.table_plotted_lines.setMinimumSize(600, MIN_HEIGHT1)
-        elif globals.scn_res == 2:
+        elif self.scn_res == 2:
             clickpeaks.table_plotted_lines.setMinimumSize(MIN_WIDTH2,  MIN_HEIGHT2)
         else:
             clickpeaks.table_plotted_lines.setMinimumSize(600, MIN_HEIGHT1)
@@ -149,9 +148,9 @@ class PlotWindow(QWidget):
         clickpeaks.table_muon.setColumnWidth(2, COLWIDTH_MUON)
 
 
-        if globals.scn_res == 1:
+        if self.scn_res == 1:
             clickpeaks.table_muon.setMinimumSize(MIN_WIDTH1, MIN_HEIGHT1)
-        elif globals.scn_res == 2:
+        elif self.scn_res == 2:
             clickpeaks.table_muon.setMinimumSize(MIN_WIDTH2, MIN_HEIGHT2)
         else:
             clickpeaks.table_muon.setMinimumSize(MIN_WIDTH1, MIN_HEIGHT1)
@@ -169,9 +168,9 @@ class PlotWindow(QWidget):
         clickpeaks.table_muon_prim.setColumnWidth(1, COLWIDTH_MUON)
         clickpeaks.table_muon_prim.setColumnWidth(2, COLWIDTH_MUON)
 
-        if globals.scn_res == 1:
+        if self.scn_res == 1:
             clickpeaks.table_muon_prim.setMinimumSize(MIN_WIDTH1, MIN_HEIGHT1)
-        elif globals.scn_res == 2:
+        elif self.scn_res == 2:
             clickpeaks.table_muon_prim.setMinimumSize(MIN_WIDTH2, MIN_HEIGHT2)
         else:
             clickpeaks.table_muon_prim.setMinimumSize(MIN_WIDTH1, MIN_HEIGHT1)
@@ -189,9 +188,9 @@ class PlotWindow(QWidget):
         clickpeaks.table_muon_sec.setColumnWidth(1, COLWIDTH_MUON)
         clickpeaks.table_muon_sec.setColumnWidth(2, COLWIDTH_MUON)
 
-        if globals.scn_res == 1:
+        if self.scn_res == 1:
             clickpeaks.table_muon_sec.setMinimumSize(MIN_WIDTH1, MIN_HEIGHT1)
-        elif globals.scn_res == 2:
+        elif self.scn_res == 2:
             clickpeaks.table_muon_sec.setMinimumSize(MIN_WIDTH2, MIN_HEIGHT2)
         else:
             clickpeaks.table_muon_sec.setMinimumSize(MIN_WIDTH1, MIN_HEIGHT1)
@@ -223,9 +222,9 @@ class PlotWindow(QWidget):
         clickpeaks.table_gamma.setColumnWidth(3, COLWIDTH_GAMMA)
         clickpeaks.table_gamma.setColumnWidth(4, COLWIDTH_GAMMA)
 
-        if globals.scn_res == 1:
+        if self.scn_res == 1:
             clickpeaks.table_gamma.setMinimumSize(MIN_WIDTH1, MIN_HEIGHT1)
-        elif globals.scn_res == 2:
+        elif self.scn_res == 2:
             clickpeaks.table_gamma.setMinimumSize(MIN_WIDTH2, MIN_HEIGHT2)
         else:
             clickpeaks.table_gamma.setMinimumSize(MIN_WIDTH1, MIN_HEIGHT1)
@@ -486,7 +485,6 @@ class PlotWindow(QWidget):
 
         if col == 0:  # plot all the lines from an element
             res = getmatch.get_matches_Element(Ele)
-            print(res)
             next_color = self.plot.canvas.axs[0]._get_lines.get_next_color()
             for match in res:
                 rowres = [match['element'], match['energy'], match['transition']]
@@ -496,7 +494,6 @@ class PlotWindow(QWidget):
 
         if col == 1:  # plots just one transition
             res = getmatch.get_matches_Trans(Ele, Trans)
-            print(res)
             for match in res:
                 rowres = [match['element'], match['energy'], match['transition']]
                 for i in range(len(self.plot.canvas.axs)):
@@ -636,7 +633,6 @@ class PlotWindow(QWidget):
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE2, res_PM, res_SM = getmatch.get_matches(input_data)
-                print('match_GE2', match_GE2)
                 Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE2, globals.x_GE2, i)
                 i+=1
 
@@ -647,7 +643,6 @@ class PlotWindow(QWidget):
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE3, res_PM, res_SM = getmatch.get_matches(input_data)
-                print('match_GE3',match_GE3)
                 Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE3, globals.x_GE3, i)
                 i += 1
 
@@ -657,7 +652,6 @@ class PlotWindow(QWidget):
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
                 match_GE4, res_PM, res_SM = getmatch.get_matches(input_data)
-                print('match_GE4',match_GE4)
                 Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE4, globals.x_GE4, i)
                 i+=1
     
@@ -697,7 +691,6 @@ class PlotWindow(QWidget):
 
                 res = getmatch.getmatchesgammas(input_data)
                 print('end peak find', time.time())
-                print(res)
                 if res == []:
                     self.clickpeaks.table_gamma.setItem(0, 0, QTableWidgetItem('No match'))
                 else:
@@ -736,9 +729,11 @@ class PlotWindow(QWidget):
                                            + str(default_sigma[0]))
                 input_data = list(zip(default_peaks, default_sigma))
                 res, res_PM, res_SM = getmatch.get_matches(input_data)
+                """
                 print('res',res)
                 print('res_PM',res_PM)
                 print('res_SM',res_SM)
+                """
 
                 temp = res[0]
                 i = 0
@@ -758,12 +753,9 @@ class PlotWindow(QWidget):
 
                 temp = res_PM
                 i = 0
-                print('res_PM',res_PM)
+                #print('res_PM',res_PM)
                 if len(res_PM) != 0:
                     self.clickpeaks.table_muon_prim.setRowCount(len(res_PM))
-
-                    print('temp prim', temp)
-
                     for match in temp:
 
                         row_PM = [match['peak_centre'], match['energy'], match['element'],
@@ -783,7 +775,6 @@ class PlotWindow(QWidget):
 
                 temp = res_SM
                 i = 0
-                print(len(res_SM))
                 if len(res_PM) != 0:
 
                     self.clickpeaks.table_muon_sec.setRowCount(len(res_SM))

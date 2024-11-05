@@ -12,15 +12,11 @@ from PyQt6.QtWidgets import (
     QFileDialog,
     QMessageBox,
     QGridLayout,
-    QSizePolicy, QErrorMessage,
-)
+    QSizePolicy, )
 from PyQt6.QtGui import QPalette, QColor
-import sys
 
 from EVA import (
     PeakFit,
-    loaddata,
-    loadcomment,
     globals,
     loadsettings as ls,
     Eff_Window,
@@ -34,7 +30,6 @@ from EVA import (
     manual_window,
 )
 
-from EVA.Normalise import normalise
 from EVA.app import get_app, get_config
 
 class Color(QWidget):
@@ -56,9 +51,6 @@ class Color(QWidget):
 class MainWindow(QMainWindow):
     def __init__(self, parent = None):
         super(MainWindow,self).__init__(parent)
-        self.wp = None
-        self.wTrim = None
-        globals.we = None
 
         #if globals.scn_res == 1:
         #    self.resize(1000, 500)
@@ -169,7 +161,7 @@ class MainWindow(QMainWindow):
 
         # setting up the actions
         config = get_config()
-        file_exit.triggered.connect(lambda: self.closeit(get_app()))
+        file_exit.triggered.connect(lambda: self.close())
         file_browse_dir.triggered.connect(lambda: self.Browse_dir())
         file_loaddef.triggered.connect(config.restore_defaults)
         plot_which_det_GE1.triggered.connect(lambda: self.set_plot_detector(plot_which_det_GE1.isChecked(), "GE1"))
@@ -391,32 +383,35 @@ class MainWindow(QMainWindow):
 
     def RunTrim(self):
         ''' Launch TRIM Window'''
-
-        self.wTrim = TRIM_Window.RunSimTRIMSRIM()
-        self.wTrim.showMaximized()
+        app = get_app()
+        app.TRIM_window = TRIM_Window.RunSimTRIMSRIM()
+        app.TRIM_window.showMaximized()
 
     def Corr_Eff(self):
         print('in Corr_Eff')
+        app = get_app()
+
         #self.show(Correction_Energy())
-        if globals.weff is None:
-            globals.weff = Eff_Window.Correction_Eff()
+        if app.efficiency_correction_window is None:
+            app.efficiency_correction_window = Eff_Window.Correction_Eff()
             print('self,wp = none')
             #self.we.resize(1200, 600)
             #self.we.setWindowTitle("Plot Window: "+globals.RunNum)
-            globals.weff.show()
-
+            app.efficiency_correction_window.show()
         else:
             print('window exists')
 
     def Corr_Energy(self):
         print('in Corr_Energy')
         #self.show(Correction_Energy())
-        if globals.we is None:
-            globals.we = ECorr_Window.Correction_E()
+        app = get_app()
+
+        if app.energy_correction_window is None:
+            app.energy_correction_window = ECorr_Window.Correction_E()
             print('self,wp = none')
             #self.we.resize(1200, 600)
             #self.we.setWindowTitle("Plot Window: "+globals.RunNum)
-            globals.we.show()
+            app.energy_correction_window.show()
 
         else:
             print('window exists')
@@ -424,10 +419,10 @@ class MainWindow(QMainWindow):
     def show_manual(self):
         """ Display Manual page"""
         print("showing manual")
-        if globals.wManual is None:
-            globals.wManual = manual_window.ManualWindow()
-
-        globals.wManual.show()
+        app = get_app()
+        if app.manual_window is None:
+            app.manual_window = manual_window.ManualWindow()
+            app.manual_window.show()
 
     def update_normalisation_menu(self):
         config = get_config()
@@ -441,11 +436,10 @@ class MainWindow(QMainWindow):
 
         if checked:
             # Apply new normalisation to data (if data is already loaded)
-            if app.loaded_run is None:
-                app.config["general"]["normalisation"] = "none"
-            else:
-                app.loaded_run.data, flag = normalise("none", app.loaded_run.raw_e_corr)
-                app.config["general"]["normalisation"] = "none"
+            if app.loaded_run is not None:
+                app.loaded_run.set_normalisation("none")
+
+            app.config["general"]["normalisation"] = "none"
 
         self.update_normalisation_menu()
 
@@ -454,10 +448,10 @@ class MainWindow(QMainWindow):
 
         if checked:
             # Apply new normalisation to data (if data is already loaded)
-            if app.loaded_run is None:
-                app.config["general"]["normalisation"] = "counts"
-            else:
-                app.loaded_run.data, flag = normalise("counts", app.loaded_run.raw_e_corr)
+            if app.loaded_run is not None:
+                app.loaded_run.set_normalisation("counts")
+
+            app.config["general"]["normalisation"] = "counts"
 
         # update buttons
         self.update_normalisation_menu()
@@ -472,10 +466,8 @@ class MainWindow(QMainWindow):
                 app.config["general"]["normalisation"] = "events"
 
             else:
-                app.loaded_run.data, flag = normalise("events", app.loaded_run.raw_e_corr, app.loaded_run.events_str)
-
-                if flag: # Normalisation failed - apply default normalisation instead
-                    # Remove normalisation
+                flag = app.loaded_run.set_normalisation("events")
+                if flag: # Normalisation failed - set normalisation to none instead
                     self.N_do_not(True)
 
                     # display error message to let user know what happened
@@ -486,6 +478,9 @@ class MainWindow(QMainWindow):
                                              buttons=QMessageBox.StandardButton.Ok,
                                              defaultButton=QMessageBox.StandardButton.Ok)
 
+                else:
+                    app.config["general"]["normalisation"] = "events" # update config if all is ok
+
         # update gui elements
         self.update_normalisation_menu()
 
@@ -493,21 +488,26 @@ class MainWindow(QMainWindow):
         #close window cleanly
         widgetList = QApplication.topLevelWidgets()
         numWindows = len(widgetList)
+
         if numWindows > 0:
-            quit_msg = "Would you like to save your changes?"
-            reply = QMessageBox.question(self, 'Message', quit_msg, QMessageBox.StandardButton.No,
-                                         QMessageBox.StandardButton.Yes)
-            if reply == QMessageBox.StandardButton.Yes:
-                get_config().save_config()
+            if get_config().is_changed(): # Show save prompt window if any changes has been made to the config file
+                quit_msg = "Would you like to save your changes?"
+                reply = QMessageBox.question(self, 'Message', quit_msg, QMessageBox.StandardButton.No,
+                                             QMessageBox.StandardButton.Yes)
+                if reply == QMessageBox.StandardButton.Yes:
+                    get_config().save_config()
+                    event.accept()
+                    QApplication.quit()
+
+                elif reply == QMessageBox.StandardButton.No:
+                    event.accept()
+                    QApplication.quit()
+
+                else:
+                    event.ignore()
+            else: # quit immediately if no changes have been made
                 event.accept()
                 QApplication.quit()
-
-            elif reply == QMessageBox.StandardButton.No:
-                event.accept()
-                QApplication.quit()
-
-            else:
-                event.ignore()
 
     def closeit(self):
         print('here')
@@ -548,8 +548,7 @@ class MainWindow(QMainWindow):
         app = get_app()
         config = app.config
 
-        flags, data = loaddata.load_run(RunNum)
-        app.loaded_run = data  # update and store the loaded run in app
+        flags = app.set_loaded_run(RunNum)
 
         if flags["no_files_found"]: #  no data was loaded - return now
             # Update GUI
@@ -587,8 +586,8 @@ class MainWindow(QMainWindow):
             pr_str = app.loaded_run.comment.translate(mapping)
             self.label_Com.setText("Comment:      " + pr_str[10:])
 
-        if flags["normalisation_error"]:  # normalisation by spills failed - return now
-            # update gui to set normalisation to none in menu
+        if flags["norm_by_spills_error"]:  # normalisation by spills failed
+            # set normalisation to none instead
             self.N_do_not(True)
 
             # display error message to let user know what happened
@@ -605,23 +604,22 @@ class MainWindow(QMainWindow):
 
     def Show_Plot_Window(self):
         print('in Show_plot_window')
-        print(self.wp)
-        config = get_config()
+        app = get_app()
+        config = app.config
 
-        if self.wp is None:
-            self.wp = Plot_Window.PlotWindow()
-            print('self,wp = none')
+        if app.plot_window is None:
+            app.plot_window = Plot_Window.PlotWindow()
            # self.wp.resize(850, 550)
-            self.wp.setWindowTitle("Plot Window: " + config["general"]["run_num"])
-            self.wp.showMaximized()
+            app.plot_window.setWindowTitle("Plot Window: " + config["general"]["run_num"])
+            app.plot_window.showMaximized()
 
         else:
             print('window exists')
-            self.wp = Plot_Window.PlotWindow()
+            app.plot_window = Plot_Window.PlotWindow()
             print('self,wp = none')
             #self.wp.resize(850, 550)
-            self.wp.setWindowTitle("Plot Window" + config["general"]["run_num"])
-            self.wp.showMaximized()
+            app.plot_window.setWindowTitle("Plot Window" + config["general"]["run_num"])
+            app.plot_window.showMaximized()
 
 
     def Incr_RunNum(self, RunNum_text):

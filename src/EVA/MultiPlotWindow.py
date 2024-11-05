@@ -120,14 +120,29 @@ class MultiPlotWindow(QWidget):
         #print('offset', offset)
 
         # reads data and returns as each detector and as an array
-        flag, runs = ReadMultiRun.read_multi_run(RunList)
+        runs, empty_runs, norm_error_runs = ReadMultiRun.read_multi_run(RunList)
 
-        # if readmultirun returned 1, return error message
-        if flag:
+        # error handling
+        err_msg = ""
+
+        if len(empty_runs) != 0:
+            run_numbers_str = ", ".join([run.run_num for run in empty_runs])
+
             error_message = QErrorMessage(self)
             error_message.setWindowTitle("Multi-run plot error")
-            error_message.showMessage("Error: Failed to load specified run(s).")
-            return
+            error_message.showMessage(f"Error: No files found for following run(s): {run_numbers_str}")
+
+            if len(runs) == 0:
+                return # Quit now if all runs failed to load
+
+        if len(norm_error_runs) != 0:
+            run_numbers_str = ", ".join([run.run_num for run in norm_error_runs])
+
+            error_message = QErrorMessage(self)
+            error_message.setWindowTitle("Multi-run plot error")
+            error_message.showMessage(f"Error: Could not normalise the following run(s): "
+                                      f"{run_numbers_str}.\nCannot use normalisation by spills if no data is found in "
+                                      f"comment.dat for specified run(s).")
 
         # plots multiple runs from the runlist and with a y offset
         fig, ax = MultiPlot.multi_plot(runs, offset)

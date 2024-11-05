@@ -36,7 +36,7 @@ def getmatchesgammastrans_clicked(Ele, En):
                 #print('hello',delme)
                 delme += 1
 
-    print('all_matches', all_matches)
+    #print('all_matches', all_matches)
 
     return all_matches
 
@@ -74,7 +74,7 @@ def getmatchesgammastrans_clicked_old(Ele, En):
                 #print('hello',delme)
                 delme += 1
 
-    print('all_matches', all_matches)
+    #print('all_matches', all_matches)
 
     return all_matches
 
@@ -102,7 +102,7 @@ def getmatchesgammas_clicked(Ele):
                 data['lifetime'] = raw_data[3]
                 #print(data)
                 all_matches.append(data)
-    print('all_matches', all_matches)
+    #print('all_matches', all_matches)
 
     return all_matches
 
@@ -129,7 +129,7 @@ def getmatchesgammas_clicked_old(Ele):
                 data['lifetime'] = raw_data[3]
                 #print(data)
                 all_matches.append(data)
-    print('all_matches', all_matches)
+    #print('all_matches', all_matches)
 
     return all_matches
 
@@ -168,7 +168,7 @@ def get_matches_Element_PrimorSec(input_element, PrimorSec):
         print('Secmatch')
         rtn_matches = Secondary_matches
 
-    print(rtn_matches)
+    #print(rtn_matches)
 
     return rtn_matches
 
@@ -223,7 +223,7 @@ def get_matches_Element(input_element):
                     data['transition'] = transition
                     matches.append(data)
 
-    print(matches)
+    #print(matches)
 
     return matches
 
@@ -300,16 +300,15 @@ def get_matches(input_peaks):
                         matches.append(data)
 
         matches = sorted(matches, key=lambda o: o['diff'])
-        print(matches)
+        #print(matches)
         if x == 'Primary energy':
             Primary_matches = matches
         if x == 'Secondary energy':
             Secondary_matches = matches
-    print('PM', Primary_matches)
-    print('SM', Secondary_matches)
+    #print('PM', Primary_matches)
+    #print('SM', Secondary_matches)
     all_matches.append(matches)
-    print('kkk')
-    print(all_matches)
+    #print(all_matches)
     return all_matches, Primary_matches, Secondary_matches
 
 def get_matches_old(input_peaks):
@@ -364,16 +363,15 @@ def get_matches_old(input_peaks):
                         matches.append(data)
 
         matches = sorted(matches, key=lambda o: o['diff'])
-        print(matches)
+        #print(matches)
         if x == 'Primary energy':
             Primary_matches = matches
         if x == 'Secondary energy':
             Secondary_matches = matches
-    print('PM', Primary_matches)
-    print('SM', Secondary_matches)
+    #print('PM', Primary_matches)
+    #print('SM', Secondary_matches)
     all_matches.append(matches)
-    print('kkk')
-    print(all_matches)
+    #print(all_matches)
     return all_matches, Primary_matches, Secondary_matches
 
 def getmatchesgammas(input_peaks):

@@ -1,18 +1,29 @@
-from EVA import globals, loaddata, Normalise
-from EVA.app import get_app, get_config
-from EVA.data_structures import Run
+from EVA import globals, loaddata
+from EVA.app import get_config
 
 
 def read_multi_run(run_list):
-    runs = [loaddata.load_run(run_num)[1] for run_num in run_list]
+    config = get_config()
+    result = [loaddata.load_run(run_num, config) for run_num in run_list]
 
-    # remove all runs that failed to load (are None)
-    use_runs = [run for run in runs if run is not None]
+    runs, flags = list(zip(*result))
+    print(runs)
 
-    if len(use_runs) == 0:
-        return 1, None
+    # iterate through loaded runs to remove failed ones:
+    blank_runs = []
+    norm_failed_runs = []
+    good_runs = []
 
-    return 0, use_runs
+    for i, run in enumerate(runs):
+        if flags[i]["no_files_found"]:
+            blank_runs.append(run)
+        else:
+            if flags[i]["norm_by_spills_error"]: # if normalisation failed, remove run
+                norm_failed_runs.append(run)
+            else:
+                good_runs.append(run)
+
+    return good_runs, blank_runs, norm_failed_runs
 
 def ReadMultiRun(RunList):
     #print('in ReadMultiRun')

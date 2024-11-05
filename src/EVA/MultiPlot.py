@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from EVA import Plot_Spectra
 from EVA import globals
-from EVA.app import get_app, get_config
+from EVA.app import get_config
 
 def is_empty(detector):
     return all(dataset.x.size == 0 for dataset in detector)
