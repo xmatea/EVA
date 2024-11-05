@@ -31,6 +31,11 @@ class RunSimTRIMSRIM(QWidget):
         self.setWindowTitle("TRIM Simulations")
         self.setMinimumSize(1100, 600)
 
+        # Load default directories from config
+        config = get_config()
+        default_SRIM_directory = config["SRIM"]["installation_directory"]
+        default_SRIM_output_directory = config["SRIM"]["output_directory"]
+
         # setting up buttons
         self.RunTrimSimulation = QPushButton("Run Simulations")
         self.RunTrimSimulation.clicked.connect(
@@ -60,8 +65,8 @@ class RunSimTRIMSRIM(QWidget):
         MinMomentum = QLineEdit('21.0')
         MaxMomentum = QLineEdit('30.0')
         StepMomentum = QLineEdit('1.0')
-        SRIMdir = QLineEdit('c:/SRIM2013') #QLineEdit('c:/SRIM2013')
-        TRIMOutDir = QLineEdit('c:/SRIM2013/SRIM Outputs') #QLineEdit('c:/SRIM2013/SRIM Outputs')
+        SRIMdir = QLineEdit(default_SRIM_directory) #QLineEdit('c:/SRIM2013')
+        TRIMOutDir = QLineEdit(default_SRIM_output_directory) #QLineEdit('c:/SRIM2013/SRIM Outputs')
         Stats = QLineEdit('100')
 
         self.bar = QMenuBar()
@@ -213,6 +218,11 @@ class RunSimTRIMSRIM(QWidget):
         MomMin = float(MinMomentum.text())
         MomMax = float(MaxMomentum.text())
         MomStep = float(StepMomentum.text())
+
+        # Save specified SRIM directories to config
+        config = get_config()
+        config["SRIM"]["installation_directory"] = SRIMexedir
+        config["SRIM"]["output_directory"] = TRIMoutputdir
 
         # Get Sample information
         Sample_layer, TotalThickness = RunSimTRIMSRIM.SetupSample(self)
