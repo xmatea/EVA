@@ -1,3 +1,4 @@
+import math
 from EVA import globals
 from EVA.app import get_app
 
@@ -245,7 +246,51 @@ def get_matches_Element_old(input_element):
 
     return matches
 
+
+# new faster version
 def get_matches(input_peaks):
+    app = get_app()
+    peak_data = app.muon_database
+
+    all_matches = []
+    Primary_matches = []
+    Secondary_matches = []
+    for x in peak_data: # X = PRIMARY, SECONDARY OR ALL_ENERGIES
+        raw_data = peak_data[x]
+
+        matches = []
+        for peak, sigma in input_peaks:
+            for element in raw_data:
+                for transition, energy in raw_data[element].items():
+                    diff = abs(peak - energy)
+
+                    error = math.ceil(diff/sigma) * sigma
+
+                    if diff <= 3*sigma:
+                        data = {
+                            "element": element,
+                            "energy": energy,
+                            "error": error,
+                            "peak_centre": peak,
+                            "transition": transition,
+                            "diff": diff
+                        }
+
+                        matches.append(data)
+
+        matches = sorted(matches, key=lambda o: o['diff'])
+        #print(matches)
+        if x == 'Primary energy':
+            Primary_matches = matches
+        if x == 'Secondary energy':
+            Secondary_matches = matches
+    #print('PM', Primary_matches)
+    #print('SM', Secondary_matches)
+    all_matches.append(matches)
+    #print(all_matches)
+    return all_matches, Primary_matches, Secondary_matches
+
+def get_matches_slow(input_peaks):
     app = get_app()
     peak_data = app.muon_database
 
@@ -290,7 +335,8 @@ def get_matches(input_peaks):
                         data['diff'] = abs(peak - energy)
                         matches.append(data)
 
-                    elif peak >= (energy - 3 * sigma) and peak <= (energy - 3 * sigma):
+                    elif peak >= (energy - 3 * sigma) and peak <= (energy + 3 * sigma):
+                        data = {}
                         data['element'] = element
                         data['energy'] = energy
                         data['error'] = 3 * sigma
