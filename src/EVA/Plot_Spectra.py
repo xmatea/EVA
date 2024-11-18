@@ -37,12 +37,10 @@ def plot_run(run):
     numplots = len(plot_detectors)
 
     if numplots > 1:
-        #print('more than one plot')
         fig, axs = plt.subplots(nrows=numplots, figsize=(16,7))
 
     else:
         #annoying matplotlib fix for one figure in a subplot
-        print('only one plot')
         fig, temp = plt.subplots(nrows=1, figsize=(16, 7), squeeze=False)
 
         axs = [temp[0][0]]
@@ -60,16 +58,13 @@ def plot_run(run):
 
     i = 0
     for dataset in run.data:
-        print(dataset.y)
         # Will plot empty axes if settings are set to show plot for a detector which is not loaded
         if config[dataset.detector]["show_plot"] == "yes":
-            print("plotting", dataset.detector)
             axs[i].fill_between(dataset.x, dataset.y, step='mid', color=config["plot"]["fill_colour"])
             axs[i].step(dataset.x, dataset.y, where='mid', color='black')
             axs[i].set_ylim(0.0)
             axs[i].set_xlim(0.0)
             axs[i].set_title(dataset.detector)
-            print(f"here plot {dataset.detector}")
             i += 1
 
     plt.subplots_adjust(top=0.9, bottom=0.1, left=0.1, right=0.9, hspace=0.45, wspace=0.23)

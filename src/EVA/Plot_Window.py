@@ -1,3 +1,5 @@
+from turtledemo.penrose import start
+
 from matplotlib import pyplot as plt
 from matplotlib.backend_bases import MouseButton
 
@@ -534,6 +536,7 @@ class PlotWindow(QWidget):
         app = get_app()
         data = app.loaded_run.data
         config = app.config
+        start_time = time.time_ns()
 
         if self.findpeaks.useDef_checkbox.isChecked():
             h=10
@@ -591,7 +594,7 @@ class PlotWindow(QWidget):
                 if data is not None and config.parser.getboolean(dataset.detector, "show_plot"):
                     peaks, peaks_pos = FindPeaks.FindPeaks(dataset.x, dataset.y, h, t, d)
                     default_peaks = peaks[0]
-                    # print('dp',default_peaks)
+                    print('dp',default_peaks)
                     default_sigma = [2.0] * len(default_peaks)
                     input_data = list(zip(default_peaks, default_sigma))
                     match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
@@ -605,6 +608,7 @@ class PlotWindow(QWidget):
                     self.findpeaks.table_peaks.setItem(i, 1, QTableWidgetItem(str(dict(list(out.items())))))
                     # print('after table_peaks')
                     i += 1
+
             self.plot.canvas.draw()
 
         if self.findpeaks.peakfindroutine.currentText() == "scipy.Find_Peak_Cwt":
@@ -657,6 +661,9 @@ class PlotWindow(QWidget):
     
             self.plot.canvas.draw()
 
+        end_time = time.time_ns()
+        print(f"Found all peaks and plotted results in {(end_time - start_time) / 1e9} s.")
+
 
     def plot_spectra(self):
         run = get_app().loaded_run
@@ -665,7 +672,6 @@ class PlotWindow(QWidget):
 
 
     def on_click(self, event):
-        print("here")
         if event.button is MouseButton.RIGHT:
             #Find possible gamma peaks
             x, y = event.xdata, event.ydata
@@ -729,16 +735,10 @@ class PlotWindow(QWidget):
                                            + str(default_sigma[0]))
                 input_data = list(zip(default_peaks, default_sigma))
                 res, res_PM, res_SM = getmatch.get_matches(input_data)
-                """
-                print('res',res)
-                print('res_PM',res_PM)
-                print('res_SM',res_SM)
-                """
 
-                temp = res[0]
                 i = 0
-                self.clickpeaks.table_muon.setRowCount(len(res[0]))
-                for match in temp:
+                self.clickpeaks.table_muon.setRowCount(len(res))
+                for match in res:
 
                     row = [match['peak_centre'], match['energy'], match['element'],
                            match['transition'], match['error'], match['diff']]

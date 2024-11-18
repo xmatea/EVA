@@ -11,9 +11,8 @@ def meanfilter(data, filter_size=9):
     '''
     return np.convolve(data, np.ones(filter_size)/filter_size, mode='same')
 
-
+# Keith's peak finder
 def Findpeak_with_bck_removed(x,y):
-    print('here in Keiths peak finder')
 
     spectrum = y
 
@@ -47,8 +46,6 @@ def Findpeak_with_bck_removed(x,y):
 
     ## Pick peaks on bg removed signal
     peaks = find_peaks(bg_removed, height=PEAK_THRESH)
-    print('pos',peaks)
-    #print('params',params)
     '''strong_pos, params = find_peaks(bg_removed, height=10)
     peaks = np.zeros(shape=len(spectrum))
     peaks[pos] = 30
@@ -56,45 +53,25 @@ def Findpeak_with_bck_removed(x,y):
     strong_peaks[strong_pos] = 50'''
     #height = peaks[1]['peak_heights']
     height = y[peaks[0]]
-    print(height)
-    print(len(height))
     peak_pos = x[peaks[0]]
-
-    print(peak_pos)
-    print(len(peak_pos))
     figx = plt.figure()
-    print('hello')
     axx = figx.subplots()
-    print('ahh')
     axx.plot(x, y)
-    print('hmmm')
     axx.scatter(peak_pos, height, color='r', s=40, marker='X', label='peaks')
-    print('scatter')
-    #plt.show()
-    print('returning')
+
     return peaks, peak_pos
 
 def FindPeaks(x,y,h,t,d):
-    print('here in Findpeaks')
     peaks = find_peaks(y,height=h,threshold = t, distance = d)
-    print(peaks)
-    height = peaks[1]['peak_heights']
-    print(height)
-    print(len(height))
+    #height = peaks[1]['peak_heights']
     peak_pos = x[peaks[0]]
 
-    print(peak_pos)
-    print(len(peak_pos))
+    """
     figx = plt.figure()
-    print('hello')
     axx = figx.subplots()
-    print('ahh')
     axx.plot(x,y)
-    print('hmmm')
     axx.scatter(peak_pos,height, color = 'r', s = 40, marker = 'X', label = 'peaks')
-    print('scatter')
-    #plt.show()
-    print('returning')
+    """
     return peaks, peak_pos
 
 def FindPeaksCwt(x,y,h,t,d):
