@@ -3,9 +3,7 @@ from enum import Enum
 
 import numpy as np
 from copy import deepcopy
-from pandas.core.apply import normalize_keyword_aggregation
 
-from EVA.Energy_Corrections import lincorr
 from EVA.Normalise import normalise_events, normalise_counts
 
 # Useful Enum class for binding array indices and detector names
