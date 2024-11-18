@@ -5,8 +5,10 @@ from PyQt6.QtWidgets import (
     QWidget,
     QLineEdit,
     QGridLayout,
+    QMessageBox
 )
-from EVA import globals
+
+from EVA.app import get_app, get_config
 
 class Correction_Eff(QWidget):
 
@@ -16,159 +18,94 @@ class Correction_Eff(QWidget):
         self.setMaximumSize(1200, 500)
         self.setWindowTitle("Efficiency Correction ")
 
-        # setting up buttons
-        self.save_GE1_Effsettings = QPushButton("Save Detector 1")
-        self.save_GE1_Effsettings.clicked.connect(
-            lambda: self.save_GE_Eff_settings('GE1', LE_GE1_P0.text(), LE_GE1_P1.text(),
-                                              LE_GE1_P2.text(), LE_GE1_P3.text(), LE_GE1_P4.text()))
-        self.save_GE2_Effsettings = QPushButton("Save Detector 2")
-        self.save_GE2_Effsettings.clicked.connect(
-            lambda: self.save_GE_Eff_settings('GE2', LE_GE2_P0.text(), LE_GE2_P1.text(),
-                                              LE_GE2_P2.text(), LE_GE2_P3.text(), LE_GE2_P4.text()))
-        self.save_GE3_Effsettings = QPushButton("Save Detector 3")
-        self.save_GE3_Effsettings.clicked.connect(
-            lambda: self.save_GE_Eff_settings('GE3', LE_GE3_P0.text(), LE_GE3_P1.text(),
-                                              LE_GE3_P2.text(), LE_GE3_P3.text(), LE_GE3_P4.text()))
-        self.save_GE4_Effsettings = QPushButton("Save Detector 4")
-        self.save_GE4_Effsettings.clicked.connect(
-            lambda: self.save_GE_Eff_settings('GE4', LE_GE4_P0.text(), LE_GE4_P1.text(),
-                                              LE_GE4_P2.text(), LE_GE4_P3.text(), LE_GE4_P4.text()))
-        self.save_All_Effsettings = QPushButton("Save Detector 4")
-        self.save_All_Effsettings.clicked.connect(
-            lambda: self.save_GE_Eff_settings('All'))
-
-        # Setting up Checkboxes
-        GE1_apply = QCheckBox()
-        GE1_apply.setChecked(globals.Eff_Corr_GE1_apply)
-        # GE1_apply.text('GE1')
-        GE1_apply.stateChanged.connect(lambda: self.set_Eff_corr_apply('GE1', GE1_apply))
-        GE2_apply = QCheckBox()
-        GE2_apply.setChecked(globals.Eff_Corr_GE2_apply)
-        GE2_apply.stateChanged.connect(lambda: self.set_Eff_corr_apply('GE2', GE2_apply))
-        GE3_apply = QCheckBox()
-        GE3_apply.setChecked(globals.Eff_Corr_GE3_apply)
-        GE3_apply.stateChanged.connect(lambda: self.set_Eff_corr_apply('GE3', GE3_apply))
-        GE4_apply = QCheckBox()
-        GE4_apply.setChecked(globals.Eff_Corr_GE4_apply)
-        GE4_apply.stateChanged.connect(lambda: self.set_Eff_corr_apply('GE4', GE4_apply))
-
-        # Setting up Line edits
-        LE_GE1_P0 = QLineEdit(str(globals.Eff_Corr_GE1_P0))
-        LE_GE1_P1 = QLineEdit(str(globals.Eff_Corr_GE1_P1))
-        LE_GE1_P2 = QLineEdit(str(globals.Eff_Corr_GE1_P2))
-        LE_GE1_P3 = QLineEdit(str(globals.Eff_Corr_GE1_P3))
-        LE_GE1_P4 = QLineEdit(str(globals.Eff_Corr_GE1_P4))
-
-        LE_GE2_P0 = QLineEdit(str(globals.Eff_Corr_GE2_P0))
-        LE_GE2_P1 = QLineEdit(str(globals.Eff_Corr_GE2_P1))
-        LE_GE2_P2 = QLineEdit(str(globals.Eff_Corr_GE2_P2))
-        LE_GE2_P3 = QLineEdit(str(globals.Eff_Corr_GE2_P3))
-        LE_GE2_P4 = QLineEdit(str(globals.Eff_Corr_GE2_P4))
-
-        LE_GE3_P0 = QLineEdit(str(globals.Eff_Corr_GE3_P0))
-        LE_GE3_P1 = QLineEdit(str(globals.Eff_Corr_GE3_P1))
-        LE_GE3_P2 = QLineEdit(str(globals.Eff_Corr_GE3_P2))
-        LE_GE3_P3 = QLineEdit(str(globals.Eff_Corr_GE3_P3))
-        LE_GE3_P4 = QLineEdit(str(globals.Eff_Corr_GE3_P4))
-
-        LE_GE4_P0 = QLineEdit(str(globals.Eff_Corr_GE4_P0))
-        LE_GE4_P1 = QLineEdit(str(globals.Eff_Corr_GE4_P1))
-        LE_GE4_P2 = QLineEdit(str(globals.Eff_Corr_GE4_P2))
-        LE_GE4_P3 = QLineEdit(str(globals.Eff_Corr_GE4_P3))
-        LE_GE4_P4 = QLineEdit(str(globals.Eff_Corr_GE4_P4))
+        config = get_config()
+        self.detector_list = config["general"]["all_detectors"].split(" ")
 
         self.layout = QGridLayout()
-        self.layout.addWidget(QLabel('Detector 1'), 1, 0)
-        self.layout.addWidget(QLabel('Detector 2'), 2, 0)
-        self.layout.addWidget(QLabel('Detector 3'), 3, 0)
-        self.layout.addWidget(QLabel('Detector 4'), 4, 0)
-        self.layout.addWidget(QLabel("P0"), 0, 1)
-        self.layout.addWidget(QLabel("P1"), 0, 2)
-        self.layout.addWidget(QLabel("P2"), 0, 3)
-        self.layout.addWidget(QLabel("P3"), 0, 4)
-        self.layout.addWidget(QLabel("P4"), 0, 5)
 
-        self.layout.addWidget(QLabel("Apply"), 0, 6)
+        self.layout.addWidget(QLabel("Enable efficiency\ncorrection"), 0, 6)
 
-        self.layout.addWidget(LE_GE1_P0, 1, 1)
-        self.layout.addWidget(LE_GE1_P1, 1, 2)
-        self.layout.addWidget(LE_GE1_P2, 1, 3)
-        self.layout.addWidget(LE_GE1_P3, 1, 4)
-        self.layout.addWidget(LE_GE1_P4, 1, 5)
+        self.param_names = ["P0", "P1", "P2", "P3", "P4"]
+        self.param_line_edits = []
+        self.checkboxes = []
 
-        self.layout.addWidget(LE_GE2_P0, 2, 1)
-        self.layout.addWidget(LE_GE2_P1, 2, 2)
-        self.layout.addWidget(LE_GE2_P2, 2, 3)
-        self.layout.addWidget(LE_GE2_P3, 2, 4)
-        self.layout.addWidget(LE_GE2_P4, 2, 5)
+        for i, param in enumerate(self.param_names):
+            self.layout.addWidget(QLabel(param), 0, i + 1)
 
-        self.layout.addWidget(LE_GE3_P0, 3, 1)
-        self.layout.addWidget(LE_GE3_P1, 3, 2)
-        self.layout.addWidget(LE_GE3_P2, 3, 3)
-        self.layout.addWidget(LE_GE3_P3, 3, 4)
-        self.layout.addWidget(LE_GE3_P4, 3, 5)
+        for i, detector in enumerate(self.detector_list):
+            settings = config[detector]
+            current_params = settings["eff_corr_coeffs"].split(" ")
+            apply = settings["use_eff_corr"] == "yes"
 
-        self.layout.addWidget(LE_GE4_P0, 4, 1)
-        self.layout.addWidget(LE_GE4_P1, 4, 2)
-        self.layout.addWidget(LE_GE4_P2, 4, 3)
-        self.layout.addWidget(LE_GE4_P3, 4, 4)
-        self.layout.addWidget(LE_GE4_P4, 4, 5)
+            self.layout.addWidget(QLabel(f"Detector {detector}"), i+1, 0)
 
-        self.layout.addWidget(GE1_apply, 1, 6)
-        self.layout.addWidget(GE2_apply, 2, 6)
-        self.layout.addWidget(GE3_apply, 3, 6)
-        self.layout.addWidget(GE4_apply, 4, 6)
+            checkbox = QCheckBox()
+            checkbox.setChecked(apply)
+            checkbox.checkStateChanged.connect(self.on_checkbox_state_change)
+            self.checkboxes.append(checkbox)
+            self.layout.addWidget(checkbox, i + 1, 6)
 
-        self.layout.addWidget(self.save_GE1_Effsettings, 1, 7)
-        self.layout.addWidget(self.save_GE2_Effsettings, 2, 7)
-        self.layout.addWidget(self.save_GE3_Effsettings, 3, 7)
-        self.layout.addWidget(self.save_GE4_Effsettings, 4, 7)
+            detector_param_line_edits = []
+            for j, param in enumerate(self.param_names):
+                param_line_edit = QLineEdit(current_params[j])
+                param_line_edit.setMaximumWidth(70)
+                #param_line_edit.setEnabled(settings["use_eff_corr"] == "yes")
+                detector_param_line_edits.append(param_line_edit)
+                self.layout.addWidget(param_line_edit, i+1, j + 1)
+
+            self.param_line_edits.append(detector_param_line_edits)
+
+        self.save_button = QPushButton("Save settings")
+        self.save_button.clicked.connect(self.save_settings)
+
+        self.layout.addWidget(self.save_button, len(self.detector_list)+1, 7, 1, -1)
 
         self.setLayout(self.layout)
         self.show()
 
-    def save_GE_Eff_settings(self, det, P0, P1, P2, P3, P4):
+    def save_settings(self):
+        if not self.validate_form():
+            error = "Invalid form input."
+            _ = QMessageBox.critical(self, "Input error", error)
+            return
+        config = get_config()
+        for i, detector in enumerate(self.detector_list):
+            params = []
+            for j, param in enumerate(self.param_line_edits[i]):
+                params.append(f"{param.text()}")
 
-        if det == 'GE1':
-            globals.Eff_Corr_GE1_P0 = P0
-            globals.Eff_Corr_GE1_P1 = P1
-            globals.Eff_Corr_GE1_P2 = P2
-            globals.Eff_Corr_GE1_P3 = P3
-            globals.Eff_Corr_GE1_P4 = P4
+            paramstr = " ".join(params)
 
-        if det == 'GE2':
-            globals.Eff_Corr_GE2_P0 = P0
-            globals.Eff_Corr_GE2_P1 = P1
-            globals.Eff_Corr_GE2_P2 = P2
-            globals.Eff_Corr_GE2_P3 = P3
-            globals.Eff_Corr_GE2_P4 = P4
-        if det == 'GE3':
-            globals.Eff_Corr_GE3_P0 = P0
-            globals.Eff_Corr_GE3_P1 = P1
-            globals.Eff_Corr_GE3_P2 = P2
-            globals.Eff_Corr_GE3_P3 = P3
-            globals.Eff_Corr_GE3_P4 = P4
+            config[detector]["eff_corr_coeffs"] = paramstr
 
-        if det == 'GE4':
-            globals.Eff_Corr_GE4_P0 = P0
-            globals.Eff_Corr_GE4_P1 = P1
-            globals.Eff_Corr_GE4_P2 = P2
-            globals.Eff_Corr_GE4_P3 = P3
-            globals.Eff_Corr_GE4_P4 = P4
+            if self.checkboxes[i].isChecked():
+                config[detector]["use_eff_corr"] = "yes"
+            else:
+                config[detector]["use_eff_corr"] = "no"
+
+
 
     def closeEvent(self, event):
-        # close window cleanly
-        #print(event)
-        globals.weff = None
-        return None
+        app = get_app()
+        app.efficiency_correction_window = None
 
-    def set_Eff_corr_apply(self, det, checkbox):
+        event.accept()
 
-        if det == 'GE1':
-            globals.Eff_Corr_GE1_apply = checkbox.isChecked()
-        if det == 'GE2':
-            globals.Eff_Corr_GE2_apply = checkbox.isChecked()
-        if det == 'GE3':
-            globals.Eff_Corr_GE3_apply = checkbox.isChecked()
-        if det == 'GE4':
-            globals.Eff_Corr_GE4_apply = checkbox.isChecked()
+    def validate_form(self):
+        for i, _ in enumerate(self.detector_list):
+            for j, param in enumerate(self.param_line_edits[i]):
+                try:
+                    p = float(param.text())
+                except ValueError:
+                    return False
+        return True
+
+    def on_checkbox_state_change(self):
+        """
+        for i, box in enumerate(self.checkboxes):
+            checked = box.isChecked()
+            for j, param in enumerate(self.param_line_edits[i]):
+                param.setEnabled(checked)
+        """
+        pass
+
