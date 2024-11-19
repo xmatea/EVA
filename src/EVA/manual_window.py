@@ -1,17 +1,11 @@
 import os
 from PyQt6.QtWidgets import (
-    QGridLayout,
-    QTextEdit,
-    QPushButton,
     QVBoxLayout,
     QTextBrowser,
     QWidget,
-    QSizePolicy
 )
 
-from PyQt6.QtCore import Qt, QSize
-
-from EVA import globals
+from PyQt6.QtCore import Qt
 
 class ManualWindow(QWidget):
     def __init__(self, parent=None):
@@ -33,8 +27,6 @@ class ManualWindow(QWidget):
             self.page.setHtml(self.htmlstr)
         except FileNotFoundError:
             self.page.setText("Oops! Failed to load manual!")
-
-        self.show()
 
     def load_manual(self, path):
         with open(path, "r", encoding="utf-8") as file:

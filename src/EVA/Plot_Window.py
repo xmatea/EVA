@@ -17,7 +17,7 @@ from PyQt6.QtWidgets import (
     QComboBox
 )
 
-from EVA import getmatch, Plot_Spectra, FindPeaks, SortMatch, globals
+from EVA import getmatch, Plot_Spectra, FindPeaks, SortMatch
 from EVA.app import get_app, get_config
 import time
 
@@ -607,6 +607,7 @@ class PlotWindow(QWidget):
                     i += 1
             self.plot.canvas.draw()
 
+        """
         if self.findpeaks.peakfindroutine.currentText() == "scipy.Find_Peak_Cwt":
             # Not working at the moment
             if globals.plot_GE1:
@@ -656,6 +657,7 @@ class PlotWindow(QWidget):
                 i+=1
     
             self.plot.canvas.draw()
+        """
 
 
     def plot_spectra(self):

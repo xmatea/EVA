@@ -24,7 +24,7 @@ from PyQt6.QtWidgets import (
     QFileDialog,
 )
 from PyQt6.QtCore import Qt
-from EVA import globals, Plot_Spectra
+from EVA import Plot_Spectra
 import numpy as np
 from scipy.optimize import curve_fit
 

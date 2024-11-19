@@ -1,5 +1,4 @@
 from collections import namedtuple
-from EVA import globals
 
 def load_gamma_data():
     minA, maxA = 0, 117
@@ -22,11 +21,12 @@ def load_gamma_data():
     return gamma_data
 
 
-
+"""
 def loadgamma():
     # check if gammas have already been loaded by checking random index
     if not globals.Full_Gammas[20]:
         loadgammascan(0,117)
+"""
 
 
 def loadgammascan(minA,maxA):
@@ -83,7 +83,7 @@ def decode_gammas(filename, A, Full_Gammas):
     f.close()
     return Full_Gammas
 
-
+"""
 def decodegammas(filename, A):
     #not used keep for time being :)
     #print('A=',A)
@@ -128,6 +128,7 @@ def decodegammas(filename, A):
 
     f.close()
 
+
 def decodegammas2(filename, A):
     f = open(filename,'r')
     record = namedtuple('Isotope',
@@ -165,3 +166,4 @@ def decodegammas2(filename, A):
                         globals.Full_Gammas[A].append((nucl.SYMB, gammas.Eg, gammas.Pg, level.T_half))
 
     f.close()
+    """

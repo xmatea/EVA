@@ -11,8 +11,7 @@ from PyQt6.QtWidgets import (
     QErrorMessage
 )
 
-from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
-from EVA import MultiPlot, GenReadList, ReadMultiRun, plot_widget, globals
+from EVA import MultiPlot, GenReadList, ReadMultiRun, plot_widget
 
 class MultiPlotWindow(QWidget):
     """

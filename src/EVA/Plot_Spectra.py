@@ -1,23 +1,5 @@
 import matplotlib.pyplot as plt
-from EVA import globals
 from EVA.app import get_config
-
-
-def How_many_plot():
-    """
-    Determines how many plots in each plot
-
-    """
-    numplots = 0
-    if globals.plot_GE1:
-        numplots += 1
-    if globals.plot_GE2:
-        numplots += 1
-    if globals.plot_GE3:
-        numplots += 1
-    if globals.plot_GE4:
-        numplots += 1
-    return numplots
 
 def Plot_Peak_Location(axs,peaks,x,i):
     """
@@ -76,6 +58,21 @@ def plot_run(run):
     # fig.tight_layout()
     return fig, axs
 
+"""
+def How_many_plot():
+    
+    #Determines how many plots in each plot
+
+    numplots = 0
+    if globals.plot_GE1:
+        numplots += 1
+    if globals.plot_GE2:
+        numplots += 1
+    if globals.plot_GE3:
+        numplots += 1
+    if globals.plot_GE4:
+        numplots += 1
+    return numplots
 
 def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4,title_lab):
     #plots spectra as defined by the plot spectra
@@ -149,7 +146,7 @@ def Plot_Spectra3(x1,y1,x2,y2,x3,y3,x4,y4,title_lab):
     #fig.tight_layout()
     return fig, axs
 
-'''def Plot_Spectra2():
+    def Plot_Spectra2():
     numplots=How_many_plot()
     print('numplot', numplots)
 
@@ -246,4 +243,4 @@ def Plot_Spectra(self,x,y):
                 self.table_clickpeaks.setRowCount(i)
 
                 self.show()
-                '''
+    """

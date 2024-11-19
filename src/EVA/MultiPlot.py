@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 from EVA import Plot_Spectra
-from EVA import globals
 from EVA.app import get_config
 
 def is_empty(detector):
@@ -64,8 +63,9 @@ def multi_plot(runs, offset):
     plt.subplots_adjust(top=0.9, bottom=0.1, left=0.1, right=0.9, hspace=0.45, wspace=0.23)
     return fig, axs
 
+"""
 def MultiPlot(x1, y1, x2, y2, x3, y3, x4, y4, RunList, offset):
-    """plots multiple runs from runlist and with a y-axis offset"""
+    # plots multiple runs from runlist and with a y-axis offset
 
     numplots= Plot_Spectra.How_many_plot()
 
@@ -135,4 +135,5 @@ def MultiPlot(x1, y1, x2, y2, x3, y3, x4, y4, RunList, offset):
 
     plt.subplots_adjust(top=0.9, bottom=0.1, left=0.1, right=0.9, hspace=0.45, wspace=0.23)
     return fig, axs
+"""
 

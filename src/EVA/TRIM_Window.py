@@ -18,8 +18,8 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QFormLayout
 )
-from EVA import globals, plot_widget, srim_settings
-from EVA.app import get_config
+from EVA import plot_widget, srim_settings
+from EVA.app import get_config, get_app
 
 
 
@@ -201,9 +201,9 @@ class RunSimTRIMSRIM(QWidget):
 
     def closeEvent(self, event):
         # close window cleanly
-        #print(event)
-        globals.wTrim = None
-        return None
+        app = get_app()
+        app.trim_window = None
+        event.accept()
 
     def RunTrimSim(self, SampleName, SimType, Momentum, MomentumSpread, ScanType, MinMomentum, MaxMomentum,
                    StepMomentum, SRIMdir, TRIMOutDir, Stats):

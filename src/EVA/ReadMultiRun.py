@@ -1,4 +1,4 @@
-from EVA import globals, loaddata
+from EVA import loaddata
 from EVA.app import get_config
 
 
@@ -25,6 +25,7 @@ def read_multi_run(run_list):
 
     return good_runs, blank_runs, norm_failed_runs
 
+"""
 def ReadMultiRun(RunList):
     #print('in ReadMultiRun')
     # keep current loaddata safe
@@ -164,4 +165,4 @@ def ReadMultiRun(RunList):
 
     return flag, datax_GE1, datay_GE1, datax_GE2, datay_GE2, datax_GE3, datay_GE3, datax_GE4, datay_GE4
 
-
+"""

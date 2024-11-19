@@ -3,7 +3,6 @@ from scipy.signal import find_peaks_cwt
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from EVA import globals
 
 def meanfilter(data, filter_size=9):
     '''
