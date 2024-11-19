@@ -18,7 +18,7 @@ class Config:
         return self.parser[field]
 
     def load(self):
-        self.parser.read("./src/EVA/config.ini")
+        self.parser.read("./src/EVA/settings/config.ini")
 
     def save_config(self):
         with open("./src/EVA/config.ini", "w") as config_file:
@@ -27,14 +27,14 @@ class Config:
 
     def restore_defaults(self):
         default_parser = ConfigParser()
-        default_parser.read("./src/EVA/defaults.ini")
+        default_parser.read("./src/EVA/settings/defaults.ini")
         for section in default_parser:
             self.parser[section] = default_parser[section]
 
     # checks if config loaded in memory is different to config in file
     def is_changed(self):
         temp_parser = ConfigParser()
-        temp_parser.read("./src/EVA/config.ini")
+        temp_parser.read("./src/EVA/settings/config.ini")
 
         for section in self.parser:
             if self.parser[section] != temp_parser[section]:

@@ -4,7 +4,7 @@ from enum import Enum
 import numpy as np
 from copy import deepcopy
 
-from EVA.Normalise import normalise_events, normalise_counts
+from EVA.windows.backends.Normalise import normalise_events, normalise_counts
 
 # Useful Enum class for binding array indices and detector names
 class Detector(Enum):

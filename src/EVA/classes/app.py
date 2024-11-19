@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QApplication
 
-from EVA import config
-from EVA import LoadDatabaseFile, loadgamma, loaddata
+from EVA.classes import config
+from EVA.classes.loaders import LoadDatabaseFile, loadgamma, loaddata
 
 
 def get_app():
