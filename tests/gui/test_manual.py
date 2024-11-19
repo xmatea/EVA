@@ -1,9 +1,8 @@
 from pytestqt.plugin import qtbot
-import pytest
 import os
 
 from PyQt6.QtWidgets import QWidget
-from EVA.manual_window import ManualWindow
+from EVA.windows.manual_window import ManualWindow
 
 class TestManual:
     def test_html_load(self, qtbot):

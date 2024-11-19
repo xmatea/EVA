@@ -1,9 +1,9 @@
 import pytest
 import numpy as np
-from EVA.app import get_app
+from EVA.classes.app import get_app
 from pytestqt.plugin import qapp
 
-testdir = "TestData/"
+testdir = "test_data/"
 
 # Run containing all data, run with one detector missing, invalid run
 run_num_list = [2630, 3064, 0]

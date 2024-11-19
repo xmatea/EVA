@@ -5,8 +5,8 @@ from PyQt6.QtWidgets import QWidget, QTableWidgetItem
 from pytestqt.plugin import qtbot
 
 
-from EVA.MultiPlotWindow import MultiPlotWindow
-from EVA import app
+from EVA.windows.multi_plot_window import MultiPlotWindow
+from EVA.classes import app
 
 channels = {
     "GE1": "2099",
@@ -38,7 +38,7 @@ class TestMultiPlotWindow:
             dets = []
             for detector in detectors:
                 try:
-                    file = f"./TestData/ral0{run}.rooth{channels[detector]}.dat"
+                    file = f"./test_data/ral0{run}.rooth{channels[detector]}.dat"
                     dets.append(np.loadtxt(file, delimiter=" "))
                 except FileNotFoundError:
                     pass

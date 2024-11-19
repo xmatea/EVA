@@ -1,5 +1,5 @@
 import unittest
-from EVA import loadcomment
+from EVA.classes.loaders import loadcomment
 
 
 class LoadComment(unittest.TestCase):
@@ -8,7 +8,7 @@ class LoadComment(unittest.TestCase):
         print('hello')'''
     def test_loadcomment(self):
         #print('loadcomment test')
-        directory = './TestData/'
+        directory = './test_data/'
         RunNum=2630
         rtnstr, flag = loadcomment.loadcomment(RunNum, directory)
         self.assertEqual(flag, 0, 'did return flag')
@@ -20,7 +20,7 @@ class LoadComment(unittest.TestCase):
 
     def test_loadcomment2(self):
         #print('loadcomment2 test')
-        directory = './TestData/'
+        directory = './test_data/'
         RunNum=999
         rtnstr, flag = loadcomment.loadcomment(RunNum, directory)
         self.assertEqual(flag, 1, 'did return flag')

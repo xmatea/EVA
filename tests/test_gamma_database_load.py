@@ -1,5 +1,5 @@
 from pytestqt.plugin import qapp
-from EVA.app import get_app
+from EVA.classes.app import get_app
 
 class TestGammaDatabaseLoad:
     def test_number_of_entries_in_gamma_db(self, qapp):

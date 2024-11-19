@@ -1,7 +1,7 @@
 import unittest
-from EVA import srim_settings, TRIM_Window
+from EVA.settings import srim_settings
+from EVA.windows import trim_window
 from srim import Ion, Layer
-
 
 class MyTestCase(unittest.TestCase):
     def make_setupsample(self):
@@ -83,7 +83,7 @@ class MyTestCase(unittest.TestCase):
     def test_getxpos(self):
         SL, TT = MyTestCase.make_setupsample(self)
         correct_res = [0.0, 0.05, 0.067, 0.05, 0.5]
-        res = TRIM_Window.RunSimTRIMSRIM.getxpos(self)
+        res = trim_window.RunSimTRIMSRIM.getxpos(self)
         self.assertEqual(correct_res, res, 'xposlist failed')
 
     def test_get_comp27(self):
@@ -94,8 +94,8 @@ class MyTestCase(unittest.TestCase):
 
 
         SL, TT = MyTestCase.make_setupsample(self)
-        xposlist = TRIM_Window.RunSimTRIMSRIM.getxpos(self)
-        res = TRIM_Window.RunSimTRIMSRIM.getcomp(self, xposlist, 0)
+        xposlist = trim_window.RunSimTRIMSRIM.getxpos(self)
+        res = trim_window.RunSimTRIMSRIM.getcomp(self, xposlist, 0)
         perlayer = [0.0, 0.0, 0.0, 1.0]
 
         self.assertEqual(correct_res, res, 'comp failed')
@@ -105,7 +105,7 @@ class MyTestCase(unittest.TestCase):
 
 
         SL, TT = MyTestCase.make_setupsample(self)
-        res = TRIM_Window.RunSimTRIMSRIM.getperlayer(self, comp)
+        res = trim_window.RunSimTRIMSRIM.getperlayer(self, comp)
         correct_res = [0.0, 0.0, 0.0, 1.0]
 
         self.assertEqual(correct_res, res, 'comp failed')
@@ -118,8 +118,8 @@ class MyTestCase(unittest.TestCase):
 
 
         SL, TT = MyTestCase.make_setupsample(self)
-        xposlist = TRIM_Window.RunSimTRIMSRIM.getxpos(self)
-        res = TRIM_Window.RunSimTRIMSRIM.getcomp(self, xposlist, 0)
+        xposlist = trim_window.RunSimTRIMSRIM.getxpos(self)
+        res = trim_window.RunSimTRIMSRIM.getcomp(self, xposlist, 0)
         perlayer = [0.0, 0.0, 0.0, 1.0]
 
         self.assertEqual(correct_res, res, 'comp failed')
@@ -129,13 +129,13 @@ class MyTestCase(unittest.TestCase):
 
 
         SL, TT = MyTestCase.make_setupsample(self)
-        res = TRIM_Window.RunSimTRIMSRIM.getperlayer(self, comp)
+        res = trim_window.RunSimTRIMSRIM.getperlayer(self, comp)
         correct_res = [0.0, 0.09351550292332715, 0.8887368815249342, 0.01774761555173874]
 
         self.assertEqual(correct_res, res, 'comp failed')
 
     def test_iondef(self):
 
-        res = TRIM_Window.RunSimTRIMSRIM.iondef(27)
+        res = trim_window.RunSimTRIMSRIM.iondef(27)
         correct_res = Ion('H', 3.395245806628296*1e6, 0.11342820665593129)
         self.assertEqual(correct_res, res, 'iondef failed')

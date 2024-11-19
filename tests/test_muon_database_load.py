@@ -1,4 +1,4 @@
-from EVA.app import get_app
+from EVA.classes.app import get_app
 
 class TestMuonDatabaseLoad:
     def test_mudirac_json_loaded(self, qapp):
