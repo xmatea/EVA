@@ -1,6 +1,6 @@
 import sys
-from MainWindow import MainWindow
-from EVA.app import App
+from EVA.windows.main_window import MainWindow
+from EVA.classes.app import App
 
 if __name__ == "__main__":
     app = App(sys.argv)

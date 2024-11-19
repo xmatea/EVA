@@ -1,6 +1,6 @@
 import sys
 import pytest
-from EVA.app import App
+from EVA.classes.app import App
 
 this = sys.modules[__name__]
 this.qapplication = None
