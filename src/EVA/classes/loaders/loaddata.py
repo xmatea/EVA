@@ -1,6 +1,6 @@
 import numpy as np
-from EVA import Normalise, Energy_Corrections, loadcomment
-from EVA.data_structures import Dataset, Run
+from EVA.classes.loaders import loadcomment
+from EVA.classes.data_structures import Dataset, Run
 
 channels = {
     "GE1": "2099",
