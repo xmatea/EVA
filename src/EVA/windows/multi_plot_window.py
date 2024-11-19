@@ -11,7 +11,9 @@ from PyQt6.QtWidgets import (
     QErrorMessage
 )
 
-from EVA import MultiPlot, GenReadList, ReadMultiRun, plot_widget
+from EVA.windows.backends import GenReadList, ReadMultiRun, MultiPlot
+from EVA.classes import plot_widget
+
 
 class MultiPlotWindow(QWidget):
     """

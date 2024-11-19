@@ -1,6 +1,3 @@
-import time
-
-#from ui_EfficiencyUI import Ui_EfficienyCorrection
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtWidgets import (
     QApplication,
@@ -12,24 +9,23 @@ from PyQt6.QtWidgets import (
     QFileDialog,
     QMessageBox,
     QGridLayout,
-    QSizePolicy, )
-from PyQt6.QtGui import QPalette, QColor
-
-from EVA import (
-    PeakFit,
-    loadsettings as ls,
-    Eff_Window,
-    ECorr_Window,
-    Plot_Window,
-    MultiPlotWindow,
-    LoadDatabaseFile as ldf,
-    loadgamma as lg,
-    RunTrimExample,
-    TRIM_Window,
-    manual_window,
+    QSizePolicy
 )
 
-from EVA.app import get_app, get_config
+from PyQt6.QtGui import QPalette, QColor
+
+from EVA.windows.backends import RunTrimExample, PeakFit
+
+from EVA.windows import (
+    manual_window,
+    plot_window,
+    efficiency_correction_window,
+    energy_correction_window,
+    multi_plot_window,
+    trim_window
+)
+
+from EVA.classes.app import get_app, get_config
 
 class Color(QWidget):
 
@@ -41,12 +37,6 @@ class Color(QWidget):
         palette.setColor(QPalette.Window, QColor(color))
         self.setPalette(palette)
 
-
-
-
-
-
-
 class MainWindow(QMainWindow):
     def __init__(self, parent = None):
         super(MainWindow,self).__init__(parent)
@@ -54,7 +44,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Elemental Analysis")
         self.setMinimumSize(QSize(650, 300))
 
-        # setting up the menu bar'''
+        # setting up the menu bar
         
         #bar = QMenuBar(self)
         bar = self.menuBar()
@@ -287,7 +277,7 @@ class MainWindow(QMainWindow):
         self.PeakFit_window.showMaximized()
 
     def multiplot(self):
-        self.multiplot_window = MultiPlotWindow.MultiPlotWindow()
+        self.multiplot_window = multi_plot_window.MultiPlotWindow()
         self.multiplot_window.showMaximized()
 
     def RunTrimExample(self):
@@ -296,7 +286,7 @@ class MainWindow(QMainWindow):
     def RunTrim(self):
         ''' Launch TRIM Window'''
         app = get_app()
-        app.TRIM_window = TRIM_Window.RunSimTRIMSRIM()
+        app.TRIM_window = trim_window.RunSimTRIMSRIM()
         app.TRIM_window.showMaximized()
 
     def Corr_Eff(self):
@@ -304,14 +294,14 @@ class MainWindow(QMainWindow):
 
         #self.show(Correction_Energy())
         if app.efficiency_correction_window is None:
-            app.efficiency_correction_window = Eff_Window.Correction_Eff()
+            app.efficiency_correction_window = efficiency_correction_window.Correction_Eff()
             app.efficiency_correction_window.show()
 
     def Corr_Energy(self):
         app = get_app()
 
         if app.energy_correction_window is None:
-            app.energy_correction_window = ECorr_Window.Correction_E()
+            app.energy_correction_window = energy_correction_window.Correction_E()
             app.energy_correction_window.show()
 
     def show_manual(self):
@@ -482,20 +472,20 @@ class MainWindow(QMainWindow):
                                            buttons=QMessageBox.StandardButton.Ok,
                                            defaultButton=QMessageBox.StandardButton.Ok)
 
-        self.Show_Plot_Window()
+        self.show_plot_window()
         self.PeakFit_menu.setDisabled(False)
 
-    def Show_Plot_Window(self):
+    def show_plot_window(self):
         app = get_app()
         config = app.config
 
         if app.plot_window is None:
-            app.plot_window = Plot_Window.PlotWindow()
+            app.plot_window = plot_window.PlotWindow()
             app.plot_window.setWindowTitle("Plot Window: " + config["general"]["run_num"])
             app.plot_window.showMaximized()
 
         else:
-            app.plot_window = Plot_Window.PlotWindow()
+            app.plot_window = plot_window.PlotWindow()
             app.plot_window.setWindowTitle("Plot Window" + config["general"]["run_num"])
             app.plot_window.showMaximized()
 

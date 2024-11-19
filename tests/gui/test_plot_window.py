@@ -4,10 +4,10 @@ from PyQt6.QtWidgets import QWidget
 from pytestqt.plugin import qtbot
 from matplotlib.backend_bases import MouseButton
 
-from EVA.Plot_Window import PlotWindow
-from EVA.app import get_app
+from EVA.windows.plot_window import PlotWindow
+from EVA.classes.app import get_app
 
-import Tests.GUI.test_util_gui as util
+import tests.gui.test_util_gui as util
 
 
 class TestPlotWindow:

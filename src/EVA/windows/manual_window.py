@@ -20,7 +20,7 @@ class ManualWindow(QWidget):
         self.layout = QVBoxLayout(self)
         self.layout.addWidget(self.page)
 
-        self.path = "./src/EVA/res/manual/manual.html"
+        self.path = "./src/EVA/resources/manual/manual.html"
 
         try:
             self.htmlstr = self.load_manual(self.path)

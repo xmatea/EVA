@@ -18,8 +18,9 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QFormLayout
 )
-from EVA import plot_widget, srim_settings
-from EVA.app import get_config, get_app
+from EVA.classes import plot_widget
+from EVA.settings import srim_settings
+from EVA.classes.app import get_config, get_app
 
 
 

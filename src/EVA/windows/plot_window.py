@@ -17,11 +17,11 @@ from PyQt6.QtWidgets import (
     QComboBox
 )
 
-from EVA import getmatch, Plot_Spectra, FindPeaks, SortMatch
-from EVA.app import get_app, get_config
+from EVA.windows.backends import FindPeaks, getmatch, Plot_Spectra, SortMatch
+from EVA.classes.app import get_app, get_config
 import time
 
-from EVA.plot_widget import PlotWidget
+from EVA.classes.plot_widget import PlotWidget
 
 class PlotWindow(QWidget):
     """
