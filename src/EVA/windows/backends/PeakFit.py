@@ -1,10 +1,8 @@
 import math
-from matplotlib import pyplot as plt
-from EVA import Trimdata, plot_widget
+from EVA.classes import plot_widget
 from lmfit.models import GaussianModel, QuadraticModel
 
 from matplotlib.backend_bases import MouseButton
-from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
 
 from matplotlib import pyplot as plt
 from PyQt6.QtWidgets import (
@@ -13,7 +11,6 @@ from PyQt6.QtWidgets import (
     QWidget,
     QFormLayout,
     QVBoxLayout,
-    QHBoxLayout,
     QGridLayout,
     QLineEdit,
     QTableWidget,
@@ -23,13 +20,9 @@ from PyQt6.QtWidgets import (
     QErrorMessage,
     QFileDialog,
 )
-from PyQt6.QtCore import Qt
-from EVA import Plot_Spectra
+from EVA.windows.backends import Plot_Spectra, Trimdata, peakfit_bounds_define
 import numpy as np
 from scipy.optimize import curve_fit
-
-import peakfit_bounds_define
-
 
 class PeakFit(QWidget):
     """
@@ -497,9 +490,9 @@ class PeakFit(QWidget):
 
 
         self.fig_ana, self.axs_ana = Plot_Spectra.Plot_Spectra3(self.data_x_GE1, self.data_y_GE1,
-                                                                              self.data_x_GE2, self.data_y_GE2,
-                                                                              self.data_x_GE3, self.data_y_GE3,
-                                                                              self.data_x_GE4, self.data_y_GE4, title_lab)
+                                                                self.data_x_GE2, self.data_y_GE2,
+                                                                self.data_x_GE3, self.data_y_GE3,
+                                                                self.data_x_GE4, self.data_y_GE4, title_lab)
 
         #plt.show()
 

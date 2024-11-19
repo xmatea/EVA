@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from EVA.app import get_config
+from EVA.classes.app import get_config
 
 def Plot_Peak_Location(axs,peaks,x,i):
     """

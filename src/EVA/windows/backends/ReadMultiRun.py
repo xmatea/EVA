@@ -1,5 +1,5 @@
-from EVA import loaddata
-from EVA.app import get_config
+from EVA.classes.loaders import loaddata
+from EVA.classes.app import get_config
 
 
 def read_multi_run(run_list):

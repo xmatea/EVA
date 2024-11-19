@@ -1,4 +1,4 @@
-from EVA.app import get_app
+from EVA.classes.app import get_app
 
 def getmatchesgammastrans_clicked(Ele, En):
     app = get_app()
