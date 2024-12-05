@@ -1,6 +1,7 @@
 import numpy as np
-from EVA.classes.loaders import loadcomment
-from EVA.classes.data_structures import Dataset, Run
+from EVA.core.data_loading import loadcomment
+from EVA.core.data_structures.run import Run
+from EVA.core.data_structures.spectrum import Spectrum
 
 channels = {
     "GE1": "2099",
@@ -16,8 +17,8 @@ channels = {
 def load_run(run_num, config):
     """
     Loads the specified run by searching for the run in the working directory.
-    Creates Datasets to store the data from each channel (detector).
-    Calls loadcomment() to get run info and stores metadata and lists of Datasets (for each detector) in a Run object.
+    Creates Spectra to store the data from each channel (detector).
+    Calls loadcomment() to get run info and stores metadata and lists of Spectra (for each detector) in a Run object.
     Calls normalise() and energy_correction() to normalise the data and stores the normalised data under run.data.
     Returns the loaded Run object and error flags.
     """
@@ -34,12 +35,12 @@ def load_run(run_num, config):
     for detector, channel in channels.items():
         filename = f"{working_directory}/ral0{run_num}.rooth{channel}.dat"
         try:
-            # Store data read from file in a Dataset object
+            # Store data read from file in a Spectrum object
             xdata, ydata = np.loadtxt(filename, delimiter=" ", unpack=True)
-            dataset = Dataset(detector=detector, run_number=run_num, x=xdata, y=ydata)
+            spectrum = Spectrum(detector=detector, run_number=run_num, x=xdata, y=ydata)
 
-            raw.append(dataset) # Add Dataset to list of datasets
-            detectors.append(detectors) # Add detector name to list of detectors
+            raw.append(spectrum) # Add Spectrum to list of spectra
+            detectors.append(detector) # Add detector name to list of detectors
 
             none_loaded_flag = 0 # data was found - lowering flag
             print(f'{detector} file found')
@@ -47,9 +48,9 @@ def load_run(run_num, config):
         except FileNotFoundError:
             print(f'{detector} file not found')
 
-            # Append empty arrays to dataset if data file is not found for the given detector.
+            # Append empty arrays to spectrum if data file is not found for the given detector.
             # This maintains a consistent detector order in the list
-            raw.append(Dataset(detector=detector, run_number=run_num, x=np.array([]), y=np.array([])))
+            raw.append(Spectrum(detector=detector, run_number=run_num, x=np.array([]), y=np.array([])))
 
     # Add everything into a Run object
     run = Run(raw=raw, loaded_detectors=detectors, run_num=str(run_num), start_time=comment_data[0],
