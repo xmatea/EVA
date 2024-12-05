@@ -1,5 +1,6 @@
 import matplotlib
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg, NavigationToolbar2QT
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QWidget,
@@ -36,7 +37,7 @@ class PlotWidget(QWidget):
             self.navbar = NavigationToolbar2QT(self.canvas, self)
 
         # add navbar and plot canvas to layout
-        self.layout = QVBoxLayout()
+        self.layout = QVBoxLayout(self)
         self.layout.addWidget(self.navbar, Qt.AlignmentFlag.AlignLeft)
         self.layout.addWidget(self.canvas)
         self.setLayout(self.layout)
@@ -72,3 +73,8 @@ class PlotWidget(QWidget):
 
             self.layout.addWidget(self.navbar)
             self.layout.addWidget(self.canvas)
+
+    def release_navigation(self, event):
+        # Removes any current zoom or pan
+        self.navbar.release_zoom(event)
+        self.navbar.release_pan(event)
