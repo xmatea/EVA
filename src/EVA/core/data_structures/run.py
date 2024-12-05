@@ -1,52 +1,27 @@
-from dataclasses import dataclass
-from enum import Enum
-
-import numpy as np
 from copy import deepcopy
 
-from EVA.windows.backends.Normalise import normalise_events, normalise_counts
-
-# Useful Enum class for binding array indices and detector names
-class Detector(Enum):
-    GE1 = 0
-    GE2 = 1
-    GE3 = 2
-    GE4 = 3
-    GE5 = 4
-    GE6 = 5
-    GE7 = 6
-    GE8 = 7
-
-@dataclass
-class Dataset:
-    """
-    The 'Dataset' class holds the data from a single detector for a single run.
-    It holds the x and y data as numpy arrays.
-    It also holds the run number and detector the dataset came from.
-    """
-    detector: str
-    run_number: str
-    x: np.ndarray
-    y: np.ndarray
+from EVA.core.data_structures.spectrum import Spectrum
+from EVA.core.physics.normalisation import normalise_events, normalise_counts
+from EVA.core.physics.energy_correction import lincorr
 
 class Run:
     """
-    The 'Run' class holds lists of 'Datasets' from all the detectors from a single run, as well as the run number,
+    The 'Run' class holds lists of 'Spectra' from all the detectors from a single run, as well as the run number,
     normalisation status and the comment from a single run.
 
-    'detectors' is a list of names of the detectors in the Dataset lists. ex: ["GE1", "GE3"].
+    'detectors' is a list of names of the detectors in the Spectrum lists. ex: ["GE1", "GE3"].
 
-    'raw' contains a list of Datasets, one Dataset for each detector, with no energy calibration or normalisation
-    applied - read from the .dat files as-is. The order of the Datasets in the list corresponds to the order specified
+    'raw' contains a list of Spectra, one Spectrum for each detector, with no energy calibration or normalisation
+    applied - read from the .dat files as-is. The order of the Spectra in the list corresponds to the order specified
     in 'detectors'.
 
     'raw_e_corr' is a copy of raw but with the energy calibration applied as specified by config.ini. If no energy
     calibration is specified for any detectors in the config, it is just a copy of 'raw'.
 
-    'data' contains a list of Datasets with the energy calibration and normalisation as specified in config.ini.
+    'data' contains a list of Spectra with the energy calibration and normalisation as specified in config.ini.
     This is the main data to be used for plotting and such.
     """
-    def __init__(self, raw : list[Dataset], loaded_detectors : list[str], run_num: str, start_time: str, end_time: str,
+    def __init__(self, raw : list[Spectrum], loaded_detectors : list[str], run_num: str, start_time: str, end_time: str,
                  events_str: str, comment: str):
 
         # Main data containers
@@ -76,11 +51,11 @@ class Run:
             normalise_which = self.normalise_which
 
         if normalisation == "counts":
-            for i, dataset in enumerate(self.raw):
+            for i, spectrum in enumerate(self.raw):
 
-                # Apply normalisation to specified datasets
-                if dataset.detector in normalise_which:
-                    self.data[i].y = normalise_counts(dataset.y)
+                # Apply normalisation to specified spectra
+                if spectrum.detector in normalise_which:
+                    self.data[i].y = normalise_counts(spectrum.y)
                 else:
                     self.data[i].y = self.raw[i].y
 
@@ -92,11 +67,11 @@ class Run:
         if normalisation == "events":
             try:
                 spills = int(self.events_str[19:])
-                for i, dataset in enumerate(self.raw):
+                for i, spectrum in enumerate(self.raw):
 
-                    # Apply normalisation to specified datasets
-                    if dataset.detector in normalise_which:
-                        self.data[i].y = normalise_events(dataset.y, spills)
+                    # Apply normalisation to specified spectra
+                    if spectrum.detector in normalise_which:
+                        self.data[i].y = normalise_events(spectrum.y, spills)
                     else:
                         self.data[i].y = self.raw[i].y
 
@@ -107,7 +82,7 @@ class Run:
 
             except ValueError:
                 # If spills data is not available, revert normalisation to none
-                for i, dataset in enumerate(self.raw):
+                for i, spectrum in enumerate(self.raw):
                     self.data[i].y = self.raw[i].y
 
                 # set normalisation status to "none"
@@ -116,7 +91,7 @@ class Run:
                 return 1
 
         elif normalisation == "none":
-            for i, dataset in enumerate(self.raw):
+            for i, spectrum in enumerate(self.raw):
                 self.data[i].y = self.raw[i].y
 
             self.normalisation = normalisation
@@ -130,9 +105,9 @@ class Run:
         if e_corr_which is None:
             e_corr_which = self.e_corr_which
 
-        # Iterate through each Dataset in the run and apply energy correction if the detector is in e_corr_which
-        for i, dataset in enumerate(self.raw):
-            detector = dataset.detector
+        # Iterate through each Spectrum in the run and apply energy correction if the detector is in e_corr_which
+        for i, spectrum in enumerate(self.raw):
+            detector = spectrum.detector
 
             if detector in e_corr_which:
                 gradient = e_corr_params[i][0]
@@ -145,8 +120,8 @@ class Run:
 
     def is_empty(self) -> bool:
         # Returns a boolean indicating whether any data was loaded or not
-        return all([dataset.x.size == 0 for dataset in self.raw])
+        return all([spectrum.x.size == 0 for spectrum in self.raw])
 
-    def get_nonzero_data(self) -> list[Dataset]:
-        # Returns only the loaded datasets (without empty arrays for missing detectors)
-        return [dataset for dataset in self.data if dataset.x.size != 0]
+    def get_nonzero_data(self) -> list[Spectrum]:
+        # Returns only the loaded spectra (without empty arrays for missing detectors)
+        return [spectrum for spectrum in self.data if spectrum.x.size != 0]
