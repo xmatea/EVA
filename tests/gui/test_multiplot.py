@@ -5,8 +5,8 @@ from PyQt6.QtWidgets import QWidget, QTableWidgetItem
 from pytestqt.plugin import qtbot
 
 
-from EVA.windows.multi_plot_window import MultiPlotWindow
-from EVA.classes import app
+from EVA.widgets.multiplot.multi_plot_window import MultiPlotWindow
+from EVA.core.app import get_config
 
 channels = {
     "GE1": "2099",
@@ -22,7 +22,7 @@ class TestMultiPlotWindow:
     # this will run once before all other tests in the class
     @pytest.fixture(autouse=True)
     def setup(self):
-        config = app.get_config()
+        config = get_config()
 
         # set up test conditions
         config["general"]["normalisation"] = "none"
