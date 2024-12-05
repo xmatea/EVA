@@ -1,10 +1,10 @@
 import math
-from EVA.classes import plot_widget
-from lmfit.models import GaussianModel, QuadraticModel
-
-from matplotlib.backend_bases import MouseButton
-
+import numpy as np
 from matplotlib import pyplot as plt
+from matplotlib.backend_bases import MouseButton
+from lmfit.models import GaussianModel, QuadraticModel
+from scipy.optimize import curve_fit
+
 from PyQt6.QtWidgets import (
     QLabel,
     QPushButton,
@@ -20,245 +20,143 @@ from PyQt6.QtWidgets import (
     QErrorMessage,
     QFileDialog,
 )
-from EVA.windows.backends import Plot_Spectra, Trimdata, peakfit_bounds_define
-import numpy as np
-from scipy.optimize import curve_fit
+
+from EVA.widgets.plot import plot_widget
+from EVA.core.app import get_app, get_config
+from EVA.core.plot import plotting
+from EVA.util import Trimdata
 
 class PeakFit(QWidget):
-    """
-        This window is the GUI for the PeakFit window
+    def __init__(self, detector):
+        super().__init__()
 
-    """
-
-
-    def __init__(self, parent = None):
-        super(PeakFit,self).__init__(parent)
-
-        # get data and run info and store locally
-        # move to a separate routine
-
-        self.data_x_GE1 = 0
-        self.data_x_GE2 = 0
-        self.data_x_GE3 = 0
-        self.data_x_GE4 = 0
-        self.data_y_GE1 = 0
-        self.data_y_GE2 = 0
-        self.data_y_GE3 = 0
-        self.data_y_GE4 = 0
-        print('Norm', globals.Normalise_do_not, globals.Normalise_counts, globals.Normalise_spill)
-
-        if globals.Normalise_do_not:
-            if globals.plot_GE1:
-                self.data_x_GE1 = globals.x_GE1
-                self.data_y_GE1 = globals.y_GE1
-            if globals.plot_GE2:
-                self.data_x_GE2 = globals.x_GE2
-                self.data_y_GE2 = globals.y_GE2
-            if globals.plot_GE3:
-                self.data_x_GE3 = globals.x_GE3
-                self.data_y_GE3 = globals.y_GE3
-            if globals.plot_GE4:
-                self.data_x_GE4 = globals.x_GE4
-                self.data_y_GE4 = globals.y_GE4
-        elif globals.Normalise_counts:
-            if globals.plot_GE1:
-                self.data_x_GE1 = globals.x_GE1_Ncounts
-                self.data_y_GE1 = globals.y_GE1_Ncounts
-            if globals.plot_GE2:
-                self.data_x_GE2 = globals.x_GE2_Ncounts
-                self.data_y_GE2 = globals.y_GE2_Ncounts
-            if globals.plot_GE3:
-                self.data_x_GE3 = globals.x_GE3_Ncounts
-                self.data_y_GE3 = globals.y_GE3_Ncounts
-            if globals.plot_GE4:
-                self.data_x_GE4 = globals.x_GE4_Ncounts
-                print('GE4', self.data_x_GE4)
-                self.data_y_GE4 = globals.y_GE4_Ncounts
-        elif globals.Normalise_spill:
-            if globals.plot_GE1:
-                self.data_x_GE1 = globals.x_GE1_NEvents
-                self.data_y_GE1 = globals.y_GE1_NEvents
-            if globals.plot_GE2:
-                self.data_x_GE2 = globals.x_GE2_NEvents
-                self.data_y_GE2 = globals.y_GE2_NEvents
-            if globals.plot_GE3:
-                self.data_x_GE3 = globals.x_GE3_NEvents
-                self.data_y_GE3 = globals.y_GE3_NEvents
-            if globals.plot_GE4:
-                self.data_x_GE4 = globals.x_GE4_NEvents
-                self.data_y_GE4 = globals.y_GE4_NEvents
+        conf = get_config()
+        self.run_num = conf["general"]["run_num"]
+        self.detector = detector
 
         self.setMinimumSize(1200, 800)
-        self.setWindowTitle("Peak Fitting Window: Run Number " + str(globals.RunNum) + " Det: " + globals.whichdet)
+        self.setWindowTitle("Peak Fitting Window: Run Number " + self.run_num + " Det: " + self.detector)
+
+        # set up plot widget
+        self.title_lab = "Analysis of RunNum: " + self.run_num + "Det: " + self.detector
+        self.init_gui()
+
+    def init_gui(self):
+        app = get_app()
 
         # Set up containers and layouts
-        self.layout = QGridLayout()
-        self.setLayout(self.layout)
+        layout = QGridLayout()
+        self.setLayout(layout)
 
-        self.fit_settings_form = QWidget()
-        self.fit_settings_form_layout = QFormLayout()
+        fit_settings_form = QWidget()
+        fit_settings_form_layout = QFormLayout()
 
-        self.fitting_panel = QWidget()
-        self.fitting_panel_layout = QVBoxLayout()
+        fitting_panel = QWidget()
+        fitting_panel_layout = QVBoxLayout()
 
-        self.tabs = QTabWidget()
+        tabs = QTabWidget()
 
-        self.tab1 = QWidget()
-        self.tab1_layout = QVBoxLayout()
+        tab1 = QWidget()
+        tab1_layout = QVBoxLayout()
 
-        self.tab2 = QWidget()
-        self.tab2_layout = QVBoxLayout()
+        tab2 = QWidget()
+        tab2_layout = QVBoxLayout()
 
         # set size constraints
-        self.fitting_panel.setMaximumWidth(700)
-        self.tabs.setMinimumWidth(650)
-        self.fit_settings_form.setMaximumWidth(400)
+        fitting_panel.setMaximumWidth(700)
+        tabs.setMinimumWidth(650)
+        fit_settings_form.setMaximumWidth(400)
 
         # Set up fit settings form
-        self.fit_settings_form_title = QLabel("Set fitting range")
-        self.xrange_min_line_edit = QLineEdit('180.0')
-        self.xrange_max_line_edit = QLineEdit('200.0')
-        self.fit_button = QPushButton('Fit Currently loaded Spectra')
+        fit_settings_form_title = QLabel("Set fitting range")
+        xrange_min_line_edit = QLineEdit('180.0')
+        xrange_max_line_edit = QLineEdit('200.0')
+        fit_button = QPushButton('Fit Currently loaded Spectra')
 
-        self.fit_button.clicked.connect(lambda: self.fit_spectra_lmfit())
+        fit_button.clicked.connect(lambda: self.fit_spectra_lmfit())
 
         # add all form components to form layout
-        self.fit_settings_form.setLayout(self.fit_settings_form_layout)
-        self.fit_settings_form_layout.addWidget(self.fit_settings_form_title)
-        self.fit_settings_form_layout.addRow(QLabel("Start"), self.xrange_min_line_edit)
-        self.fit_settings_form_layout.addRow(QLabel("Stop"), self.xrange_max_line_edit)
-        self.fit_settings_form_layout.addWidget(self.fit_button)
+        fit_settings_form.setLayout(fit_settings_form_layout)
+        fit_settings_form_layout.addWidget(fit_settings_form_title)
+        fit_settings_form_layout.addRow(QLabel("Start"), xrange_min_line_edit)
+        fit_settings_form_layout.addRow(QLabel("Stop"), xrange_max_line_edit)
+        fit_settings_form_layout.addWidget(fit_button)
 
         # Set up tab view
-        self.tabs.addTab(self.tab1, "Individual Peak Fit")
+        tabs.addTab(tab1, "Individual Peak Fit")
         #self.tabs.addTab(self.tab2, "Element Search")
 
-        self.tab1.label_Element1 = QLabel("Peaks:")
+        tab1.label_Element1 = QLabel("Peaks:")
 
-        self.tab1.table_clickpeaks = QTableWidget(self.tab1)
-        self.tab1.table_clickpeaks.setShowGrid(True)
-        self.tab1.table_clickpeaks.setColumnCount(6)
-        self.tab1.table_clickpeaks.setRowCount(100)
+        tab1.table_clickpeaks = QTableWidget(tab1)
+        tab1.table_clickpeaks.setShowGrid(True)
+        tab1.table_clickpeaks.setColumnCount(6)
+        tab1.table_clickpeaks.setRowCount(100)
 
-        self.tab1.table_clickpeaks.verticalScrollBar()
-        self.tab1.table_clickpeaks.setHorizontalHeaderLabels(
+        tab1.table_clickpeaks.verticalScrollBar()
+        tab1.table_clickpeaks.setHorizontalHeaderLabels(
             ['Position (keV)','Error', 'Area','Error', 'Width', 'Error'])
 
-        self.tab1.table_clickpeaks.cellClicked.connect(self.settinggaussian)
+        tab1.table_clickpeaks.cellClicked.connect(self.settinggaussian)
 
 
-        self.tab1.label_Element2 = QLabel("Polynomial Background:")
+        tab1.label_Element2 = QLabel("Polynomial Background:")
 
         # table for background polynomial
 
-        self.tab1.table_poly = QTableWidget(self.tab1)
-        self.tab1.table_poly.setShowGrid(True)
-        self.tab1.table_poly.setColumnCount(6)
-        self.tab1.table_poly.setRowCount(1)
-        self.tab1.table_poly.verticalScrollBar()
+        tab1.table_poly = QTableWidget(tab1)
+        tab1.table_poly.setShowGrid(True)
+        tab1.table_poly.setColumnCount(6)
+        tab1.table_poly.setRowCount(1)
+        tab1.table_poly.verticalScrollBar()
 
-        self.tab1.table_poly.setHorizontalHeaderLabels(
+        tab1.table_poly.setHorizontalHeaderLabels(
             ['Const','Error','1st','Error', '2nd','Error'])
 
-        self.tab1.table_poly.setItem(0,0, QTableWidgetItem(str(25)))
-        self.tab1.table_poly.setItem(0, 2, QTableWidgetItem(str(0.001)))
-        self.tab1.table_poly.setItem(0, 4, QTableWidgetItem(str(0.0)))
-        self.tab1.table_poly.cellClicked.connect(self.settingploy)
+        tab1.table_poly.setItem(0,0, QTableWidgetItem(str(25)))
+        tab1.table_poly.setItem(0, 2, QTableWidgetItem(str(0.001)))
+        tab1.table_poly.setItem(0, 4, QTableWidgetItem(str(0.0)))
+        tab1.table_poly.cellClicked.connect(self.settingploy)
 
 
-        self.tab1.savebut = QPushButton('Save As')
-        self.tab1.savebut.clicked.connect(lambda: self.savefunction())
+        tab1.savebut = QPushButton('Save As')
+        tab1.savebut.clicked.connect(lambda: self.savefunction())
 
-        self.tab1.loadbut = QPushButton('Load')
-        self.tab1.loadbut.clicked.connect(lambda: self.loadfunction())
+        tab1.loadbut = QPushButton('Load')
+        tab1.loadbut.clicked.connect(lambda: self.loadfunction())
 
         # restrict size of load and save buttons
         #self.tab1.loadbut.setMaximumWidth(200)
         #self.tab1.savebut.setMaximumWidth(200)
 
         # add all tab1 components to tab1 layout
-        self.tab1.setLayout(self.tab1_layout)
-        self.tab1_layout.addWidget(self.tab1.label_Element1)
-        self.tab1_layout.addWidget(self.tab1.table_clickpeaks)
-        self.tab1_layout.addWidget(self.tab1.label_Element2)
-        self.tab1_layout.addWidget(self.tab1.table_poly)
-        self.tab1_layout.addWidget(self.tab1.savebut)
-        self.tab1_layout.addWidget(self.tab1.loadbut)
-
-
+        tab1.setLayout(tab1_layout)
+        tab1_layout.addWidget(tab1.label_Element1)
+        tab1_layout.addWidget(tab1.table_clickpeaks)
+        tab1_layout.addWidget(tab1.label_Element2)
+        tab1_layout.addWidget(tab1.table_poly)
+        tab1_layout.addWidget(tab1.savebut)
+        tab1_layout.addWidget(tab1.loadbut)
 
         # add peak fit form and tables to left panel widget
-        self.fitting_panel.setLayout(self.fitting_panel_layout)
-        self.fitting_panel_layout.addWidget(self.fit_settings_form)
-        self.fitting_panel_layout.addWidget(self.tabs)
+        fitting_panel.setLayout(fitting_panel_layout)
+        fitting_panel_layout.addWidget(fit_settings_form)
+        fitting_panel_layout.addWidget(tabs)
 
-        # set up plot widget
-        self.title_lab = "Analysis of RunNum: " + str(globals.RunNum) + "Det: " + globals.whichdet
 
-        print("In init")
-        self.plot = self.PlotAnalysisSpectra(self.title_lab)
-        plt.connect('button_press_event', self.on_click)
+        # Plot and embed figure as plot widget
+        fig, ax = plotting.plot_run(app.loaded_run, show_detectors=[self.detector],
+                                    colour=app.config["plot"]["fill_colour"], title=self.title_lab)
+
+        plot = plot_widget.PlotWidget(fig, ax)
+        plt.connect('button_press_event', self.on_click) # connects plot click events to on_click
 
         # add all components to main layout
-        self.layout.addWidget(self.plot, 0, 1)
-        self.layout.addWidget(self.fitting_panel, 0, 0)
+        layout.addWidget(plot, 0, 1)
+        layout.addWidget(fitting_panel, 0, 0)
 
-    def loadfunction(self):
-        print('in load')
-        name = QFileDialog.getOpenFileName(self, 'Open a file', globals.workingdirectory, 'All Files (*.*)')
-
-        print('here')
-        if name != ('', ''):
-            print("File path :", name[0])
-            file = open(name[0], 'r')
-            temp = file.readline()
-            print(temp)
-            EMin, EMax = file.readline().split(' ')
-            self.xrange_max_line_edit.setText(EMin)
-            self.xrange_max_line_edit.setText(EMax)
-            print(EMin,EMax)
-            temp = file.readline()
-            print(temp)
-            noguass = file.readline()
-            print(noguass)
-            temp = file.readline()
-            print(temp)
-            for i in range(int(noguass)):
-                pp, pp_status, ph, ph_status, pw, pw_status = file.readline().split(' ')
-                self.tab1.table_clickpeaks.setItem(i, 0, QTableWidgetItem(pp))
-
-                if pp_status == 'vary':
-                    self.tab1.table_clickpeaks.setItem(i, 1, QTableWidgetItem('1.0'))
-                else:
-                    self.tab1.table_clickpeaks.setItem(i, 1, QTableWidgetItem(pp_status))
-
-                self.tab1.table_clickpeaks.setItem(i, 2, QTableWidgetItem(ph))
-
-                if ph_status == 'vary':
-                    self.tab1.table_clickpeaks.setItem(i, 3, QTableWidgetItem('1.0'))
-                else:
-                    self.tab1.table_clickpeaks.setItem(i, 3, QTableWidgetItem(ph_status))
-
-                self.tab1.table_clickpeaks.setItem(i, 4, QTableWidgetItem(pw))
-
-                if pw_status == 'vary':
-                    self.tab1.table_clickpeaks.setItem(i, 5, QTableWidgetItem('1.0'))
-                else:
-                    self.tab1.table_clickpeaks.setItem(i, 5, QTableWidgetItem(pw_status))
-
-            temp = file.readline()
-            print(temp)
-            for i in range(3):
-                back, backstatus = file.readline().split()
-                print(back, backstatus)
-                self.tab1.table_poly.setItem(0, 2*i, QTableWidgetItem(back))
-                if backstatus == 'vary':
-                    self.tab1.table_poly.setItem(0, 2 * i+1, QTableWidgetItem('1.0'))
-                else:
-                    self.tab1.table_poly.setItem(0, 2 * i + 1, QTableWidgetItem('fixed'))
-
-            file.close()
-
+    def on_fitbutton_click(self):
+        self.s_fitbutton_clicked.emit()
 
 
 
@@ -454,64 +352,6 @@ class PeakFit(QWidget):
 
         return
 
-    def PlotAnalysisSpectra(self, title_lab):
-
-        print('globals.whichdet', globals.whichdet)
-
-        #gets current status of global plots
-
-        memoryGE1 = globals.plot_GE1
-        memoryGE2 = globals.plot_GE2
-        memoryGE3 = globals.plot_GE3
-        memoryGE4 = globals.plot_GE4
-
-        if (globals.whichdet == 'GE1'):
-            globals.plot_GE1 = True
-            globals.plot_GE2 = False
-            globals.plot_GE3 = False
-            globals.plot_GE4 = False
-        if (globals.whichdet == 'GE2'):
-            globals.plot_GE1 = False
-            globals.plot_GE2 = True
-            globals.plot_GE3 = False
-            globals.plot_GE4 = False
-        if (globals.whichdet == 'GE3'):
-            globals.plot_GE1 = False
-            globals.plot_GE2 = False
-            globals.plot_GE3 = True
-            globals.plot_GE4 = False
-        if (globals.whichdet == 'GE4'):
-            globals.plot_GE1 = False
-            globals.plot_GE2 = False
-            globals.plot_GE3 = False
-            globals.plot_GE4 = True
-
-        #print(self.data_x_GE1, self.data_y_GE1)
-
-
-        self.fig_ana, self.axs_ana = Plot_Spectra.Plot_Spectra3(self.data_x_GE1, self.data_y_GE1,
-                                                                self.data_x_GE2, self.data_y_GE2,
-                                                                self.data_x_GE3, self.data_y_GE3,
-                                                                self.data_x_GE4, self.data_y_GE4, title_lab)
-
-        #plt.show()
-
-        # changes the xlimits of each subplot
-
-        i = 0
-        for i in range(len(self.axs_ana)):
-            self.axs_ana[i].set_xlim([float(self.xrange_min_line_edit.text())-5.0, float(self.xrange_max_line_edit.text())+5.0])
-            i += 1
-
-        #plt.show()
-
-        # returns settings
-        globals.plot_GE1 = memoryGE1
-        globals.plot_GE2 = memoryGE2
-        globals.plot_GE3 = memoryGE3
-        globals.plot_GE4 = memoryGE4
-
-        return plot_widget.PlotWidget(self.fig_ana, self.axs_ana)
 
     def on_click(self, event):
         print("clicked!")
