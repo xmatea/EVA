@@ -1,7 +1,7 @@
 import pytest
 from pytestqt.plugin import qapp
-from EVA.windows.backends import getmatch
-from EVA.classes.app import get_app
+from EVA.core.data_searching import getmatch
+from EVA.core.app import get_app
 
 # TODO: add more test parameters
 # MUON DATABASE TEST PARAMETERS ###################################

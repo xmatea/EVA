@@ -1,6 +1,6 @@
 import unittest
-from EVA.settings import srim_settings
-from EVA.windows import trim_window
+from EVA.core.settings import srim_settings
+from EVA.widgets.srim import trim_window
 from srim import Ion, Layer
 
 class MyTestCase(unittest.TestCase):

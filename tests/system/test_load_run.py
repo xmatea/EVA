@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from EVA.classes.app import get_app
+from EVA.core.app import get_app
 from pytestqt.plugin import qapp
 
 testdir = "test_data/"

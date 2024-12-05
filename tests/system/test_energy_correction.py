@@ -1,5 +1,5 @@
 import numpy as np
-from EVA.classes.app import get_app
+from EVA.core.app import get_app
 import pytest
 from pytestqt.plugin import qapp
 

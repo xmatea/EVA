@@ -1,5 +1,5 @@
 import unittest
-from EVA.classes.loaders import loadcomment
+from EVA.core.data_loading import loadcomment
 
 
 class LoadComment(unittest.TestCase):
