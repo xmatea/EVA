@@ -1,6 +1,6 @@
 import sys
 import pytest
-from EVA.classes.app import App
+from EVA.core.app import App
 
 this = sys.modules[__name__]
 this.qapplication = None
@@ -15,7 +15,6 @@ def qapp():
     if (this.qapplication is None):
         this.qapplication = App(sys.argv) # instantiate custom App instead of QApplication
     yield this.qapplication
-
 
 @pytest.fixture(scope="session")
 def qapp_cls():

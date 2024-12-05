@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QApplication
 
-from EVA.classes import config
-from EVA.classes.loaders import LoadDatabaseFile, loadgamma, loaddata
+from EVA.core.settings.config import Config
+from EVA.core.data_loading import LoadDatabaseFile, loadgamma, loaddata
 
 
 def get_app():
@@ -22,7 +22,7 @@ class App(QApplication):
         super().__init__(*args, **kwargs)
 
         # store config in app
-        self.config = config.Config()
+        self.config = Config()
         self.config.load()
 
         # store the loaded run in the app
