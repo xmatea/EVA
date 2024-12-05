@@ -18,9 +18,9 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QFormLayout
 )
-from EVA.classes import plot_widget
-from EVA.settings import srim_settings
-from EVA.classes.app import get_config, get_app
+from EVA.widgets.plot.plot_widget import PlotWidget
+from EVA.core.settings import srim_settings
+from EVA.core.app import get_config, get_app
 
 
 
@@ -106,7 +106,7 @@ class RunSimTRIMSRIM(QWidget):
         self.trim_settings_container.setFixedWidth(600)
 
         # set up plot window
-        self.plot = plot_widget.PlotWidget()
+        self.plot = PlotWidget()
 
         # set up trim settings panel
         self.trim_settings_layout.addRow(QLabel('Sample Name'), SampleName)

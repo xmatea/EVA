@@ -1,3 +1,4 @@
+import time
 from matplotlib import pyplot as plt
 from matplotlib.backend_bases import MouseButton
 
@@ -17,11 +18,12 @@ from PyQt6.QtWidgets import (
     QComboBox
 )
 
-from EVA.windows.backends import FindPeaks, getmatch, Plot_Spectra, SortMatch
-from EVA.classes.app import get_app, get_config
-import time
+from EVA.core.data_searching import SortMatch, getmatch
+from EVA.core.peak_finding import FindPeaks
+from EVA.core.app import get_app, get_config
+from EVA.core.plot.plotting import plot_run
 
-from EVA.classes.plot_widget import PlotWidget
+from EVA.widgets.plot.plot_widget import PlotWidget
 
 class PlotWindow(QWidget):
     """
@@ -661,8 +663,16 @@ class PlotWindow(QWidget):
 
 
     def plot_spectra(self):
-        run = get_app().loaded_run
-        fig, axs = Plot_Spectra.plot_run(run)
+        app = get_app()
+        run = app.loaded_run
+
+        # check config to see which detectors should be loaded
+        all_dets = app.config["general"]["all_detectors"].split(" ")
+        show_dets = [det for det in all_dets if app.config[det]["show_plot"] == "yes"]
+
+        colour = app.config["plot"]["fill_colour"]
+
+        fig, axs = plot_run(run, show_detectors=show_dets, colour=colour)
         return PlotWidget(fig, axs)
 
 

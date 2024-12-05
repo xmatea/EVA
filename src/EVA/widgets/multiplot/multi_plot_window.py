@@ -11,8 +11,8 @@ from PyQt6.QtWidgets import (
     QErrorMessage
 )
 
-from EVA.windows.backends import GenReadList, ReadMultiRun, MultiPlot
-from EVA.classes import plot_widget
+from EVA.widgets.multiplot import ReadMultiRun, GenReadList, MultiPlot
+from EVA.widgets.plot.plot_widget import PlotWidget
 
 
 class MultiPlotWindow(QWidget):
@@ -43,7 +43,7 @@ class MultiPlotWindow(QWidget):
         self.side_panel.setMaximumWidth(400)
 
         # create empty plot widget as placeholder
-        self.plot = plot_widget.PlotWidget()
+        self.plot = PlotWidget()
 
         # sets up button
         self.plot_multi = QPushButton('Load and Plot Multi Spectra')

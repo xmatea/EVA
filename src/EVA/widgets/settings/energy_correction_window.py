@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import (
     QGridLayout, QMessageBox,
 )
 
-from EVA.classes.app import get_app, get_config
+from EVA.core.app import get_app, get_config
 
 class Correction_E(QWidget):
     """

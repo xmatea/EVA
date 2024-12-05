@@ -14,18 +14,14 @@ from PyQt6.QtWidgets import (
 
 from PyQt6.QtGui import QPalette, QColor
 
-from EVA.windows.backends import RunTrimExample, PeakFit
+from EVA.widgets.srim import trim_window, RunTrimExample
+from EVA.widgets.plot_analysis import plot_window
+from EVA.widgets.multiplot import multi_plot_window
+from EVA.widgets.settings import energy_correction_window, efficiency_correction_window
+from EVA.widgets.manual import manual_window
+from EVA.widgets.peakfit import peakfit_widget
 
-from EVA.windows import (
-    manual_window,
-    plot_window,
-    efficiency_correction_window,
-    energy_correction_window,
-    multi_plot_window,
-    trim_window
-)
-
-from EVA.classes.app import get_app, get_config
+from EVA.core.app import get_app, get_config
 
 class Color(QWidget):
 
@@ -119,16 +115,16 @@ class MainWindow(QMainWindow):
         self.PeakFit_menu.setDisabled(True)
 
         self.Ana_GE1 = self.PeakFit_menu.addAction('GE1')
-        self.Ana_GE1.triggered.connect(lambda: self.PeakFit_GE1())
+        self.Ana_GE1.triggered.connect(lambda: self.PeakFit("GE1"))
 
         self.Ana_GE2 = self.PeakFit_menu.addAction('GE2')
-        self.Ana_GE2.triggered.connect(lambda: self.PeakFit_GE2())
+        self.Ana_GE2.triggered.connect(lambda: self.PeakFit("GE2"))
 
         self.Ana_GE3 = self.PeakFit_menu.addAction('GE3')
-        self.Ana_GE3.triggered.connect(lambda: self.PeakFit_GE3())
+        self.Ana_GE3.triggered.connect(lambda: self.PeakFit("GE3"))
 
         self.Ana_GE4 = self.PeakFit_menu.addAction('GE4')
-        self.Ana_GE4.triggered.connect(lambda: self.PeakFit_GE4())
+        self.Ana_GE4.triggered.connect(lambda: self.PeakFit("GE4"))
 
         TRIM = bar.addMenu('SRIM/TRIM')
         Trim_sim = TRIM.addAction('SRIM/TRIM Simulation')
@@ -255,26 +251,10 @@ class MainWindow(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
-    def PeakFit(self):
-        PeakFit.PeakFit()
-
-    def PeakFit_GE1(self):
-
-        self.PeakFit_window = PeakFit.PeakFit()
-        self.PeakFit_window.showMaximized()
-
-    def PeakFit_GE2(self):
-        self.PeakFit_window = PeakFit.PeakFit()
-        self.PeakFit_window.showMaximized()
-
-    def PeakFit_GE3(self):
-
-        self.PeakFit_window = PeakFit.PeakFit()
-        self.PeakFit_window.showMaximized()
-
-    def PeakFit_GE4(self):
-        self.PeakFit_window = PeakFit.PeakFit(self)
-        self.PeakFit_window.showMaximized()
+    def PeakFit(self, detector):
+        app = get_app()
+        app.peak_fit_window = peakfit_widget.PeakFitWidget(detector)
+        app.peak_fit_window.showMaximized()
 
     def multiplot(self):
         self.multiplot_window = multi_plot_window.MultiPlotWindow()
