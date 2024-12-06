@@ -9,7 +9,7 @@ def loadgamma():
 
 
 def loadgammascan(minA,maxA):
-    str1 = './src/EVA/Databases/gammas/levels/z'
+    str1 = './src/EVA/databases/gammas/levels/z'
 
     for i in range(minA,maxA):
         A = i+1

@@ -31,7 +31,8 @@ from EVA import (
     loadgamma as lg,
     RunTrimExample,
     TRIM_Window,
-    manual_window
+    manual_window,
+    model_spectra_window
 )
 
 class Color(QWidget):
@@ -158,11 +159,14 @@ class MainWindow(QMainWindow):
         self.Ana_GE4 = self.PeakFit_menu.addAction('GE4')
         self.Ana_GE4.triggered.connect(lambda: self.PeakFit_GE4())
 
-        TRIM = bar.addMenu('SRIM/TRIM')
-        Trim_sim = TRIM.addAction('SRIM/TRIM Simulation')
+        simulation = bar.addMenu('Simulation')
+        Trim_sim = simulation.addAction('SRIM/TRIM Simulation')
         Trim_sim.triggered.connect(lambda: self.RunTrim())
-        Trim_sim_test = TRIM.addAction('SRIM/TRIM Simulation test')
+        Trim_sim_test = simulation.addAction('SRIM/TRIM Simulation test')
         Trim_sim_test.triggered.connect(lambda: self.RunTrimExample())
+
+        model_spectra = simulation.addAction("Model muonic x-ray spectra")
+        model_spectra.triggered.connect(self.show_model_spectra_window)
 
         # Manual tab
         help = bar.addMenu('Help')
@@ -438,6 +442,10 @@ class MainWindow(QMainWindow):
 
         globals.wManual.show()
 
+    def show_model_spectra_window(self):
+        # TODO: Add the window instance to the app class when app refactor is implemented
+        self.model_window = model_spectra_window.ModelSpectraWindow()
+        self.model_window.showMaximized()
 
     def N_do_not(self,checked,Norm_Counts,Norm_Spills,Normalise_do_not):
         print(checked)

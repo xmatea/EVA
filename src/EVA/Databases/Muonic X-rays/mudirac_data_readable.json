@@ -10340,7 +10340,7 @@
  },
  "In": {
   "Capture_Prob": "2.9 +- 0.5",
-  "Default": "",
+  "Default": "115In",
   "Info": "Z = 49 Indium (In) \nAtomic weight of nat-In (https://wwwndc.jaea.go.jp/NuC/index.html): 114.818(3)\nIsotopic abundance: 115In(95.71(5)%), and 113In(4.29(5)%) \nAverage exp. capture probability relative to oxygen (T. von Egidy et al, Phys. Rev. A, 26, 2355-2360 (1982)): 2.9 +- 0.5 \n",
   "Isotopes": {
    "113In": {
@@ -10563,7 +10563,7 @@
  "Ir": {
   "Capture_Prob": "N/A",
   "Default": "193Ir",
-  "Info": "Z = 77 Irridium (Ir) \nAtomic weight of nat-Ir (https://wwwndc.jaea.go.jp/NuC/index.html): 192.217(3)\nIsotopic abundance: 193Ir(62.7(2)%), and 191Ir(37.3(2)%) \nAverage exp. capture probability relative to oxygen (T. von Egidy et al, Phys. Rev. A, 26, 2355-2360 (1982)): na\n",
+  "Info": "Z = 77 Iridium (Ir) \nAtomic weight of nat-Ir (https://wwwndc.jaea.go.jp/NuC/index.html): 192.217(3)\nIsotopic abundance: 193Ir(62.7(2)%), and 191Ir(37.3(2)%) \nAverage exp. capture probability relative to oxygen (T. von Egidy et al, Phys. Rev. A, 26, 2355-2360 (1982)): na\n",
   "Isotopes": {
    "191Ir": {
     "Abundancy": "(37.3 +- 0.2)%",

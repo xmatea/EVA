@@ -5,7 +5,7 @@ from EVA import globals
 
 def loadDatabaseFile():
     if globals.muon_database == "legacy":
-        with open('./src/EVA/Databases/Muonic X-rays/peak_data.json', 'r') as read_file:
+        with open('./src/EVA/databases/Muonic X-rays/peak_data.json', 'r') as read_file:
             print('decoding file')
             globals.peakdata = json.load(read_file)
             primary_energies = {}
@@ -29,7 +29,7 @@ def loadDatabaseFile():
         return
 
     elif globals.muon_database == "mudirac":
-        with open('./src/EVA/Databases/Muonic X-rays/mudirac_data.json', 'r') as read_file:
+        with open('./src/EVA/databases/Muonic X-rays/mudirac_data.json', 'r') as read_file:
             print('decoding file')
             peakdata = json.load(read_file)
             primary_energies = {}
