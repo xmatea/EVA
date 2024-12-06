@@ -443,7 +443,6 @@ class MainWindow(QMainWindow):
         globals.wManual.show()
 
     def show_model_spectra_window(self):
-        # TODO: Add the window instance to the app class when app refactor is implemented
         self.model_window = model_spectra_window.ModelSpectraWindow()
         self.model_window.showMaximized()
 
