@@ -9,6 +9,8 @@ from EVA.core.app import get_app
 
 import tests.gui.test_util_gui as util
 
+muon_plot_lines_tests = [[551.8, 48], [189.9, 30], [44.4, 22]]
+gamma_plot_lines_tests = [[189.9, 124], [551.8, 626], [44.4, 198]]
 
 class TestPlotWindow:
     # will be executed once before tests are run
@@ -17,7 +19,7 @@ class TestPlotWindow:
         # loading database and sample data
         app = get_app()
         app.set_loaded_run(2630)
-        app.use_legacy_muon_db()
+        app.use_mudirac_muon_db()
 
     # test if the expected data is displayed in gamma table when clicking a specific peak in the figure
     def test_clickpeaks_gammas(self, qtbot):
@@ -48,7 +50,7 @@ class TestPlotWindow:
         widget.showMaximized()
         qtbot.wait(500)
 
-        tests = [("Cs", 193.4), ("Ho", 911.7)]
+        tests = [("Cl", 193.4), ("Ti", 932.0)]
         for test in tests:
             # simulate click event
             event = util.trigger_figure_click_event(window.plot.canvas, xdata=test[1], ydata=0,
@@ -62,7 +64,8 @@ class TestPlotWindow:
             assert table_res == test[0], \
                 "data displayed at position 0,0 in muon table on figure click did not match the expected value"
 
-    def test_plot_and_remove_lines_gammas(self, qtbot):
+    @pytest.mark.parametrize("tests", gamma_plot_lines_tests)
+    def test_plot_and_remove_lines_gammas(self, qtbot, tests):
         widget = QWidget()
         window = PlotWindow(widget)
         qtbot.addWidget(window)
@@ -71,39 +74,38 @@ class TestPlotWindow:
 
         # first element in tuple is which energy to search, second element in tuple is how many lines will be plotted
         # when clicking the first element in the table after searching that energy.
-        tests = [(189.9, 124), (551.8, 626), (44.4, 198)]
 
-        for test in tests:
-            # simulate click event
-            event = util.trigger_figure_click_event(window.plot.canvas, xdata=test[0], ydata=0,
-                                                    ax=window.plot.canvas.axs[1], button=MouseButton.RIGHT)
+        # simulate click event
+        event = util.trigger_figure_click_event(window.plot.canvas, xdata=tests[0], ydata=0,
+                                                ax=window.plot.canvas.axs[1], button=MouseButton.RIGHT)
 
-            PlotWindow.on_click(window, event)
-            qtbot.wait(250)
+        PlotWindow.on_click(window, event)
+        qtbot.wait(250)
 
-            # Click on source in gamma table to plot vertical lines on figure
-            gamma_table_item = window.clickpeaks.table_gamma.item(0, 0)
-            gamma_table_rect = window.clickpeaks.table_gamma.visualItemRect(gamma_table_item)
+        # Click on source in gamma table to plot vertical lines on figure
+        gamma_table_item = window.clickpeaks.table_gamma.item(0, 0)
+        gamma_table_rect = window.clickpeaks.table_gamma.visualItemRect(gamma_table_item)
 
-            qtbot.mouseClick(window.clickpeaks.table_gamma.viewport(), Qt.MouseButton.LeftButton,
-                         pos=gamma_table_rect.center())
-            qtbot.wait(250)
+        qtbot.mouseClick(window.clickpeaks.table_gamma.viewport(), Qt.MouseButton.LeftButton,
+                     pos=gamma_table_rect.center())
+        qtbot.wait(250)
 
-            # check that lines were plotted
-            assert len(list(window.plot.canvas.axs[1].lines)) > 1, "no lines were plotted"
-            assert len(list(window.plot.canvas.axs[1].lines)) == test[1], "not all lines were plotted"
+        # check that lines were plotted
+        assert len(list(window.plot.canvas.axs[1].lines)) > 1, "no lines were plotted"
+        assert len(list(window.plot.canvas.axs[1].lines)) == tests[1], "not all lines were plotted"
 
-            # Click on source in remove plot lines table to remove vertical line
-            remove_table_item = window.clickpeaks.table_plotted_lines.item(0, 1)
-            remove_table_rect = window.clickpeaks.table_plotted_lines.visualItemRect(remove_table_item)
+        # Click on source in remove plot lines table to remove vertical line
+        remove_table_item = window.clickpeaks.table_plotted_lines.item(0, 1)
+        remove_table_rect = window.clickpeaks.table_plotted_lines.visualItemRect(remove_table_item)
 
-            qtbot.mouseClick(window.clickpeaks.table_plotted_lines.viewport(), Qt.MouseButton.LeftButton,
-                         pos=remove_table_rect.center())
-            qtbot.wait(500)
+        qtbot.mouseClick(window.clickpeaks.table_plotted_lines.viewport(), Qt.MouseButton.LeftButton,
+                     pos=remove_table_rect.center())
+        qtbot.wait(500)
 
         assert len(list(window.plot.canvas.axs[1].lines)) == 1, "Failed to remove all plot lines"
 
-    def test_plot_and_remove_lines_muonic_xrays(self, qtbot):
+    @pytest.mark.parametrize("tests", muon_plot_lines_tests)
+    def test_plot_and_remove_lines_muonic_xrays(self, qtbot, tests):
         widget = QWidget()
         window = PlotWindow(widget)
         qtbot.addWidget(window)
@@ -112,43 +114,42 @@ class TestPlotWindow:
 
         # first element in tuple is which energy to search, second element in tuple is how many lines will be plotted
         # when clicking the first element in the table after searching that energy.
-        tests = [(189.9, 60), (551.8, 41), (44.4, 29)]
         table = window.clickpeaks.table_muon
 
-        for test in tests:
-            # simulate left click on figure
-            event = util.trigger_figure_click_event(window.plot.canvas, xdata=test[0], ydata=0,
-                                                    ax=window.plot.canvas.axs[1], button=MouseButton.LEFT)
+        # simulate left click on figure
+        event = util.trigger_figure_click_event(window.plot.canvas, xdata=tests[0], ydata=0,
+                                                ax=window.plot.canvas.axs[1], button=MouseButton.LEFT)
 
-            PlotWindow.on_click(window, event)
-            qtbot.wait(250)
+        PlotWindow.on_click(window, event)
+        qtbot.wait(250)
+        # Click on source in table to plot vertical lines on figure
+        table_item = table.item(0, 0)
+        table_rect = table.visualItemRect(table_item)
+        qtbot.mouseClick(table.viewport(), Qt.MouseButton.LeftButton,
+                         pos=table_rect.center())
+        qtbot.wait(250)
 
-            # Click on source in table to plot vertical lines on figure
-            table_item = table.item(0, 0)
-            table_rect = table.visualItemRect(table_item)
-            qtbot.mouseClick(table.viewport(), Qt.MouseButton.LeftButton,
-                             pos=table_rect.center())
-            qtbot.wait(250)
+        # check that lines were plotted
+        print(f"number of lines plotted for energy {tests[0]} - {len(list(window.plot.canvas.axs[1].lines))}")
+        assert len(list(window.plot.canvas.axs[1].lines)) > 1, "no lines were plotted"
+        assert len(list(window.plot.canvas.axs[1].lines)) == tests[1], "not all lines were plotted"
 
-            # check that lines were plotted
-            assert len(list(window.plot.canvas.axs[1].lines)) > 1, "no lines were plotted"
-            assert len(list(window.plot.canvas.axs[1].lines)) == test[1], "not all lines were plotted"
+        # Click on source in remove plot lines table to remove vertical line
+        remove_table_item = window.clickpeaks.table_plotted_lines.item(0, 0)
+        remove_table_rect = window.clickpeaks.table_plotted_lines.visualItemRect(remove_table_item)
 
-            # Click on source in remove plot lines table to remove vertical line
-            remove_table_item = window.clickpeaks.table_plotted_lines.item(0, 0)
-            remove_table_rect = window.clickpeaks.table_plotted_lines.visualItemRect(remove_table_item)
-
-            qtbot.mouseClick(window.clickpeaks.table_plotted_lines.viewport(), Qt.MouseButton.LeftButton,
-                             pos=remove_table_rect.center())
-            qtbot.wait(250)
+        qtbot.mouseClick(window.clickpeaks.table_plotted_lines.viewport(), Qt.MouseButton.LeftButton,
+                         pos=remove_table_rect.center())
+        qtbot.wait(250)
 
         assert len(list(window.plot.canvas.axs[1].lines)) == 1, "Failed to remove all plot lines"
 
     # TODO: Make this work properly
-    """
+
     def test_find_peaks_plotting_on_button_click(self, qtbot):
         config = get_config()
         app = get_app()
+        app.use_legacy_muon_db()
 
         config["GE1"]["show_plot"] = "yes"
         config["GE2"]["show_plot"] = "no"
@@ -195,13 +196,12 @@ class TestPlotWindow:
 
         print(data_ax0)
 
-
         # check if the expected points were scattered on the figure
+        assert len(peaks_ax0) == len(data_ax0)
+        assert len(peaks_ax1) == len(data_ax1)
         assert all([elem[0] == peaks_ax0[i][0] for i, elem in enumerate(data_ax0)]), \
             "Marker positions on figure after peakfit did not match expected results"
         assert all([elem[0] == peaks_ax1[i][0] for i, elem in enumerate(data_ax1)]), \
             "Marker positions on figure after peakfit did not match expected results"
 
         assert 0
-    
-        """

@@ -536,6 +536,7 @@ class PlotWindow(QWidget):
         app = get_app()
         data = app.loaded_run.data
         config = app.config
+        start_time = time.time_ns()
 
         if self.findpeaks.useDef_checkbox.isChecked():
             h=10
@@ -661,6 +662,9 @@ class PlotWindow(QWidget):
             self.plot.canvas.draw()
         """
 
+        end_time = time.time_ns()
+        print(f"Found all peaks and plotted results in {(end_time - start_time) / 1e9} s.")
+
 
     def plot_spectra(self):
         app = get_app()
@@ -741,16 +745,10 @@ class PlotWindow(QWidget):
                                            + str(default_sigma[0]))
                 input_data = list(zip(default_peaks, default_sigma))
                 res, res_PM, res_SM = getmatch.get_matches(input_data)
-                """
-                print('res',res)
-                print('res_PM',res_PM)
-                print('res_SM',res_SM)
-                """
 
-                temp = res[0]
                 i = 0
-                self.clickpeaks.table_muon.setRowCount(len(res[0]))
-                for match in temp:
+                self.clickpeaks.table_muon.setRowCount(len(res))
+                for match in res:
 
                     row = [match['peak_centre'], match['energy'], match['element'],
                            match['transition'], match['error'], match['diff']]
