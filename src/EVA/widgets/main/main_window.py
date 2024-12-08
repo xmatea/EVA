@@ -14,6 +14,7 @@ from PyQt6.QtWidgets import (
 
 from PyQt6.QtGui import QPalette, QColor
 
+from EVA.widgets.muonic_xray_simulation.model_spectra_widget import ModelSpectraWidget
 from EVA.widgets.srim import trim_window, RunTrimExample
 from EVA.widgets.plot_analysis import plot_window
 from EVA.widgets.multiplot import multi_plot_window
@@ -126,11 +127,14 @@ class MainWindow(QMainWindow):
         self.Ana_GE4 = self.PeakFit_menu.addAction('GE4')
         self.Ana_GE4.triggered.connect(lambda: self.PeakFit("GE4"))
 
-        TRIM = bar.addMenu('SRIM/TRIM')
-        Trim_sim = TRIM.addAction('SRIM/TRIM Simulation')
+        simulation = bar.addMenu('Simulation')
+        Trim_sim = simulation.addAction('SRIM/TRIM Simulation')
         Trim_sim.triggered.connect(lambda: self.RunTrim())
-        Trim_sim_test = TRIM.addAction('SRIM/TRIM Simulation test')
+        Trim_sim_test = simulation.addAction('SRIM/TRIM Simulation test')
         Trim_sim_test.triggered.connect(lambda: self.RunTrimExample())
+
+        model_muon_spectrum = simulation.addAction("Simulate Muonic X-ray Spectra")
+        model_muon_spectrum.triggered.connect(self.model_muon_spectrum)
 
         # Manual tab
         help = bar.addMenu('Help')
@@ -250,6 +254,10 @@ class MainWindow(QMainWindow):
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
+
+    def model_muon_spectrum(self):
+        self.muon_spectrum_window = ModelSpectraWidget()
+        self.muon_spectrum_window.showMaximized()
 
     def PeakFit(self, detector):
         app = get_app()
