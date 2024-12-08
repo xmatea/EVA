@@ -1,21 +1,26 @@
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtWidgets import (
     QGridLayout,
-    QTextEdit,
     QPushButton,
     QVBoxLayout,
     QWidget,
     QLabel,
-    QFormLayout, QComboBox, QLineEdit, QHBoxLayout, QSpacerItem, QSizePolicy, QMessageBox, QCheckBox,
-    QCompleter
+    QFormLayout, QComboBox, QLineEdit, QHBoxLayout, QCheckBox,
+    QCompleter, QMessageBox
 )
 
-from EVA.plot_widget import PlotWidget
-from EVA import model_spectra
+from EVA.widgets.plot.plot_widget import PlotWidget
 
-class ModelSpectraWindow(QWidget):
+class ModelSpectraView(QWidget):
+    on_simulation_start_s = pyqtSignal()
+    on_gui_initialised_s = pyqtSignal()
+
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setWindowTitle("Model Muonic X-ray Spectra")
+        self.init_gui()
+
+    def init_gui(self):
         self.layout = QHBoxLayout()
         self.setLayout(self.layout)
 
@@ -23,8 +28,8 @@ class ModelSpectraWindow(QWidget):
         self.settings_layout = QVBoxLayout()
         self.settings.setLayout(self.settings_layout)
 
-        self.element_list = model_spectra.get_element_names()
-        print(self.element_list)
+        self.element_list = []
+
 
         # Energy range form
         self.e_range_form_layout = QFormLayout()
@@ -54,10 +59,9 @@ class ModelSpectraWindow(QWidget):
         self.proportion_label = QLabel("Ratio")
         self.element_select_form_layout.addWidget(self.element_label, 0, 0)
         self.element_select_form_layout.addWidget(self.proportion_label, 0, 1)
-        self.element_select_form_layout.setContentsMargins(0,0,0,0)
+        self.element_select_form_layout.setContentsMargins(0, 0, 0, 0)
 
         self.element_count = 0
-        self.add_element_select_box()
 
         self.add_element_button = QPushButton("Add element")
         self.add_element_button.clicked.connect(self.add_element_select_box)
@@ -72,7 +76,7 @@ class ModelSpectraWindow(QWidget):
         self.plot_settings_layout = QGridLayout()
         self.plot_settings = QWidget()
         self.plot_settings.setLayout(self.plot_settings_layout)
-        self.plot_settings_layout.setContentsMargins(0,0,0,0)
+        self.plot_settings_layout.setContentsMargins(0, 0, 0, 0)
 
         self.show_components_box = QCheckBox("Show components")
         self.show_components_box.clicked.connect(self.on_show_components)
@@ -113,15 +117,16 @@ class ModelSpectraWindow(QWidget):
         self.settings_layout.addWidget(QLabel("Plot settings"))
         self.settings_layout.addWidget(self.plot_settings)
 
-
         self.plot = PlotWidget()
         self.settings.setMaximumWidth(300)
-
 
         self.layout.addWidget(self.settings)
         self.layout.addWidget(self.plot)
 
-        print(len(self.element_list))
+    def populate_gui(self, element_list):
+        # TODO move more of the gui data into here
+        self.element_list = element_list
+        self.add_element_select_box()
 
     def on_auto_e_range_click(self):
         check = self.e_range_auto.isChecked()
@@ -132,7 +137,7 @@ class ModelSpectraWindow(QWidget):
         check = self.show_components_box.isChecked()
         self.select_notation.setVisible(check)
 
-    def get_element_select_box(self):
+    def create_element_select_box(self):
         box = QComboBox()
         for element in self.element_list:
             box.addItem(element)
@@ -145,11 +150,11 @@ class ModelSpectraWindow(QWidget):
         return box
 
     def add_element_select_box(self):
-        if self.element_count >= 6:
+        if self.element_count >= 20:
             #QMessageBox.critical("no")
             return
 
-        new_box = self.get_element_select_box()
+        new_box = self.create_element_select_box()
         ratio_line_edit = QLineEdit("1")
         ratio_line_edit.setMaximumWidth(50)
 
@@ -172,29 +177,9 @@ class ModelSpectraWindow(QWidget):
             self.element_count = self.element_count - 1
 
     def simulate(self):
-        elements = [element.currentText() for element in self.element_selects]
-        proportions = [float(proportion.text()) for proportion in self.proportion_selects]
-        show_components = self.show_components_box.isChecked()
-        show_detectors = [button.isChecked() for button in self.detectors]
-        detectors = ["GE1", "GE2", "GE3", "GE4"]
+        if not self.show_primary.isChecked() and not self.show_secondary.isChecked():
+            _ = QMessageBox.critical(self, "Error", "No transitions selected. Please select at least one transition type "
+                                                    "to simulate.")
+            return
 
-        if show_components:
-            selected_notation_index =  self.select_notation.currentIndex()
-            notations = ["spectroscopic", "iupac", "siegbahn"]
-            notation = notations[selected_notation_index]
-        else:
-            notation = "iupac"
-
-        detectors = [detector for i, detector in enumerate(detectors) if show_detectors[i]]
-
-        if self.e_range_auto.isChecked():
-            e_range = None
-        else:
-            e_range = [float(self.e_min.text()), float(self.e_max.text())]
-
-        fig, ax = model_spectra.get_model(elements, proportions, detectors, e_range, notation=notation, dx=0.1,
-                                          show_components=show_components , e_res_model="linear",
-                                          show_primary=self.show_primary.isChecked(),
-                                          show_secondary=self.show_secondary.isChecked())
-
-        self.plot.update_plot(fig, ax)
+        self.on_simulation_start_s.emit()
