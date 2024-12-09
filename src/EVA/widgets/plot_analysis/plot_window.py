@@ -63,7 +63,7 @@ class PlotWindow(QWidget):
 
         # set up plot window and navigator
         self.plot = self.plot_spectra()
-        plt.connect('button_press_event', self.on_click)
+        self.plot.canvas.mpl_connect('button_press_event', self.on_click)
 
         # Add everything to main window layout (gridlayout)
         self.layout.addWidget(self.tabs, 0, 0, 0, 1, alignment=Qt.AlignmentFlag.AlignLeft)
