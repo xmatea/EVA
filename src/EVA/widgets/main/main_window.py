@@ -284,6 +284,8 @@ class MainWindow(QMainWindow):
         if app.efficiency_correction_window is None:
             app.efficiency_correction_window = efficiency_correction_window.Correction_Eff()
             app.efficiency_correction_window.show()
+        else:
+            app.efficiency_correction_window.show()
 
     def Corr_Energy(self):
         app = get_app()
@@ -291,12 +293,16 @@ class MainWindow(QMainWindow):
         if app.energy_correction_window is None:
             app.energy_correction_window = energy_correction_window.Correction_E()
             app.energy_correction_window.show()
+        else:
+            app.energy_correction_window.show()
 
     def show_manual(self):
         """ Display Manual page"""
         app = get_app()
         if app.manual_window is None:
             app.manual_window = manual_window.ManualWindow()
+            app.manual_window.show()
+        else:
             app.manual_window.show()
 
     def update_normalisation_menu(self):
