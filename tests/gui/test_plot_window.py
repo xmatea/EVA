@@ -5,7 +5,7 @@ from pytestqt.plugin import qtbot
 from matplotlib.backend_bases import MouseButton
 
 from EVA.widgets.plot_analysis.plot_window import PlotWindow
-from EVA.core.app import get_app
+from EVA.core.app import get_app, get_config
 
 import tests.gui.test_util_gui as util
 
@@ -203,5 +203,3 @@ class TestPlotWindow:
             "Marker positions on figure after peakfit did not match expected results"
         assert all([elem[0] == peaks_ax1[i][0] for i, elem in enumerate(data_ax1)]), \
             "Marker positions on figure after peakfit did not match expected results"
-
-        assert 0
