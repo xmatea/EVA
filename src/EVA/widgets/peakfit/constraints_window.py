@@ -165,9 +165,13 @@ class ConstraintsWindow(QDialog):
             # load bounds data
             if obj.get("min", None) is not None:
                 self.bounds_menu.table.setItem(i, 0, QTableWidgetItem(f"{obj["min"]:.2f}"))
+            else:
+                self.bounds_menu.table.setItem(i, 0, QTableWidgetItem())
 
             if obj.get("max", None) is not None:
                 self.bounds_menu.table.setItem(i, 1, QTableWidgetItem(f"{obj["max"]:.2f}"))
+            else:
+                self.bounds_menu.table.setItem(i, 0, QTableWidgetItem())
 
             # load fixed parameters
             if not obj.get("vary", None):
@@ -178,10 +182,23 @@ class ConstraintsWindow(QDialog):
             # load constraints
             if obj.get("expr", None) is not None:
                 self.constraints_menu.parameter_constraint_line_edits[i].setText(obj["expr"])
+            else:
+                self.constraints_menu.parameter_constraint_line_edits[i].setText("")
+
+    # loads only constraints
+    def load_current_constraints(self):
+        for i, param in enumerate(self.parameter_names):
+            peak_name, var_name = param.split("_")
+            obj = self.params[peak_name][var_name]
+
+            # load constraints
+            if obj.get("expr", None) is not None:
+                self.constraints_menu.parameter_constraint_line_edits[i].setText(obj["expr"])
+            else:
+                self.constraints_menu.parameter_constraint_line_edits[i].setText("")
 
 
     def save_current_settings(self):
-
         for i, param in enumerate(self.parameter_names):
             peak_name, var_name = param.split("_")
             obj = self.params[peak_name][var_name]
@@ -218,13 +235,12 @@ class ConstraintsWindow(QDialog):
     def share_peak_param_between_all(self, param_name):
         # NOTE: WILL BREAK IF ID SYSTEM IS CHANGED
         constraint = f"p0_{param_name}"
-        for name, param in self.params.items():
-            # Apply constraint to all peaks other than p0 and ignore background
-            if name != "background" and name != "p0":
-                self.params[name][param_name]["expr"] = constraint
-                print(self.params)
+        for i, name in enumerate(self.constraints_menu.parameter_name_labels):
+            prefix, text = name.text().split("_") # get text from label and get prefix
+            var = text.split(" = ")[0] # get parameter name
 
-        self.load_current_settings()
+            if prefix != "background" and prefix != "p0" and var == param_name:
+                self.constraints_menu.parameter_constraint_line_edits[i].setText(constraint)
 
     def on_apply(self):
         # save settings

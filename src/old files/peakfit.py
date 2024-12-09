@@ -149,7 +149,7 @@ class PeakFit(QWidget):
                                     colour=app.config["plot"]["fill_colour"], title=self.title_lab)
 
         plot = plot_widget.PlotWidget(fig, ax)
-        plt.connect('button_press_event', self.on_click) # connects plot click events to on_click
+        plot.canvas.mpl_connect('button_press_event', self.on_click) # connects plot click events to on_click
 
         # add all components to main layout
         layout.addWidget(plot, 0, 1)

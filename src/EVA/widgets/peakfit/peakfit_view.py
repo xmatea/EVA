@@ -226,16 +226,13 @@ class PeakFitView(QWidget):
 
     def update_table_cell(self, table, row, col, var):
         # Determines the format to display values with
-        """ DISPLAY NO ERROR WHEN ERROR NOT AVAILABLE
         if var.get("stderr", None) is not None:
             item = QTableWidgetItem(f"{var["value"]:.3f} +/- {var["stderr"]:.3f}")
         else:
             item = QTableWidgetItem(f"{var["value"]:.3f}")
-        """
 
-        # display error as 0.00 when not available
-        item = QTableWidgetItem(f"{var["value"]:.3f} +/- {var.get("stderr", 0):.3f}")
         table.setItem(row, col, item)
+
 
     def show_constraints_dialog(self):
         self.constraints_button_clicked_s.emit()

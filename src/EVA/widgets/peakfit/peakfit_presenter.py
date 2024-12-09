@@ -41,7 +41,7 @@ class PeakFitPresenter(object):
         # Retrieves background parameters and updates the table in view
         bckg_params = params["background"]
         self.view.update_table_row(self.view.background_function_table, row=0, vars=bckg_params,
-                                   order=("a", "b", "b"))
+                                   order=("a", "b", "c"))
 
     def modify_background_parameter(self, ix):
         # Updates the current initial background parameters in background table when table is updated
