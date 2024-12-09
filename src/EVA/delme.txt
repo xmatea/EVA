@@ -1,1 +1,0 @@
-Sample NameCuSimTypeMonoMomentum27.0Momentum Spread4.0Scan MomentumNoMin Momentum21.0Max Momentum30.0Momentum Step1.0SRIM.exe dirc:/SRIM2013Output dirc:/SRIM2013/SRIM OutputsStats100SampleBeamline Window,0.05, ,  ,  , Air (compressed),0.067, ,  ,  , Al,0.05,2.7, ,  , Cu,0.5,6.7, ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  , 

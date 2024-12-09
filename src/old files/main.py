@@ -10,7 +10,9 @@ import sys
 #import WelcomeScreen as WS
 
 
-from EVA import globals, MainWindow as MW, loadgamma as lg, loadsettings as ls, LoadDatabaseFile as ldf
+from EVA import globals
+from EVA.classes.loaders import LoadDatabaseFile as ldf, loadgamma as lg
+from EVA.windows import main_window as MW
 
 
 def print_hi(name):

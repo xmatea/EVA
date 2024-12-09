@@ -1,0 +1,5 @@
+TRIMRes_x = []
+TRIMRes_y = []
+TRIMRes_e = []
+sample_layers = []
+sample_name = []
