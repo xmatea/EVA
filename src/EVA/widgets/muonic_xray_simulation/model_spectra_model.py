@@ -11,7 +11,7 @@ class ModelSpectraModel(object):
         self.presenter = presenter
 
     def get_element_names(self):
-        path = "src/EVA/databases/Muonic X-rays/mudirac_data_default_isotopes_readable.json"
+        path = "src/EVA/databases/muonic_xrays/mudirac_data_default_isotopes_readable.json"
         with open(path) as file:
             data = json.load(file)
             file.close()
@@ -46,11 +46,11 @@ class ModelSpectraModel(object):
             raise ValueError("Invalid energy resolution model")
 
         # TODO: Make this the default database to use for mudirac
-        with open("./src/EVA/databases/Muonic X-rays/mudirac_data_default_isotopes_readable.json") as file:
+        with open("./src/EVA/databases/muonic_xrays/mudirac_data_default_isotopes_readable.json") as file:
             all_energies = json.load(file)
 
         mu_capture_z, mu_capture_ratios = np.loadtxt(
-            "./src/EVA/databases/Muonic X-rays/capture_probabilites_interpolated.txt", delimiter=",", unpack=True)
+            "./src/EVA/databases/muonic_xrays/capture_probabilites_interpolated.txt", delimiter=",", unpack=True)
 
         fig, axs = plt.subplots(len(detectors))
         fig.supxlabel("Energy / keV")

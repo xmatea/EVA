@@ -2,7 +2,7 @@ from collections import namedtuple
 
 def load_gamma_data():
     minA, maxA = 0, 117
-    str1 = './src/EVA/Databases/gammas/levels/z'
+    str1 = './src/EVA/databases/gammas/levels/z'
     gamma_data = []
 
     i = 0
