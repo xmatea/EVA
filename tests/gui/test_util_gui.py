@@ -10,3 +10,4 @@ def trigger_figure_click_event(canvas, xdata, ydata, button, ax):
     event.inaxes = ax
 
     return event
+

@@ -1,8 +1,8 @@
 import pytest
 from pytestqt.plugin import qapp
-from EVA.core.data_searching import getmatch, load_mudirac_data
+from EVA.core.data_searching import getmatch
 from EVA.core.app import get_app
-from Tests.test_util import load_mudirac_test_db, load_gamma_test_db, load_legacy_test_db
+from tests.system.test_util import load_mudirac_test_db, load_gamma_test_db, load_legacy_test_db
 
 # TODO: add more test parameters
 # MUON DATABASE TEST PARAMETERS ###################################

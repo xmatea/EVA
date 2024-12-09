@@ -21,7 +21,7 @@ from PyQt6.QtWidgets import (
 from EVA.core.data_searching import SortMatch, getmatch
 from EVA.core.peak_finding import FindPeaks
 from EVA.core.app import get_app, get_config
-from EVA.core.plot.plotting import plot_run
+from EVA.core.plot.plotting import plot_run, Plot_Peak_Location
 
 from EVA.widgets.plot.plot_widget import PlotWidget
 
@@ -561,7 +561,7 @@ class PlotWindow(QWidget):
                     input_data = list(zip(default_peaks, default_sigma))
                     match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
 
-                    Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks, dataset.x, i)
+                    Plot_Peak_Location(self.plot.canvas.axs, peaks, dataset.x, i)
                     out = SortMatch.SortMatch(match_GE1)
                     self.findpeaks.table_peaks.setItem(i, 0, QTableWidgetItem(dataset.detector))
                     self.findpeaks.table_peaks.setItem(i, 1, QTableWidgetItem(str(dict(list(out.items())))))
@@ -599,7 +599,7 @@ class PlotWindow(QWidget):
                     input_data = list(zip(default_peaks, default_sigma))
                     match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
 
-                    Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks, dataset.x, i)
+                    Plot_Peak_Location(self.plot.canvas.axs, peaks, dataset.x, i)
                     # Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, globals.x_GE1,i)
                     # Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, peak_pos_GE1, i)
 
