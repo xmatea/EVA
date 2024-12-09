@@ -69,7 +69,6 @@ class PeakFitPresenter(object):
 
 
     def modify_peak_parameter(self, ix):
-        print("peak modified")
         # Updates the current initial peak parameters in background table when table is updated
         row, col = ix
         headers = ["id", "center", "sigma", "amplitude"]

@@ -36,7 +36,6 @@ class ModelSpectraPresenter(object):
         self.view.plot.update_plot(fig, ax)
 
     def populate_gui(self):
-        print("populating...")
         element_list = self.model.get_element_names()
         self.view.populate_gui(element_list)
 
