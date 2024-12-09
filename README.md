@@ -15,5 +15,5 @@ pip install -e .
 ```
 The above command will install a build of EVA which will update automatically as changes are made. EVA will not run unless there is a build present.
 
-Once this is done you can start EVA by running `MainWindow.py` in src/EVA.
+Once this is done you can start EVA by running `main.py` in src/EVA.
 
