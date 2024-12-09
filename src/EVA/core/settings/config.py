@@ -11,6 +11,7 @@ class Config:
     """
     def __init__(self):
         self.parser = ConfigParser()
+        self.default_parser = ConfigParser()
 
     # This magic function allows the parser to be accessed when indexing directly into a config object:
     # Ex: it makes 'Config()["plot"]["fill_colour"]' equivalent to 'Config().parser["plot"]["fill_colour"]'
@@ -18,7 +19,16 @@ class Config:
         return self.parser[field]
 
     def load(self):
-        self.parser.read("./src/EVA/core/settings/config.ini")
+        self.default_parser = ConfigParser()
+        self.default_parser.read("./src/EVA/core/settings/defaults.ini")
+
+        # Try to load saved settings, if not found, create new config file and load default settings
+        try:
+            self.parser.read("./src/EVA/core/settings/config.ini")
+        except FileNotFoundError:
+            with open("./src/EVA/core/settings/config.ini", "w") as file:
+                self.default_parser.write(file)
+                file.close()
 
     def save_config(self):
         with open("./src/EVA/core/settings/config.ini", "w") as config_file:
@@ -26,10 +36,8 @@ class Config:
             config_file.close()
 
     def restore_defaults(self):
-        default_parser = ConfigParser()
-        default_parser.read("./src/EVA/core/settings/defaults.ini")
-        for section in default_parser:
-            self.parser[section] = default_parser[section]
+        for section in self.default_parser:
+            self.parser[section] = self.default_parser[section]
 
     # checks if config loaded in memory is different to config in file
     def is_changed(self):
