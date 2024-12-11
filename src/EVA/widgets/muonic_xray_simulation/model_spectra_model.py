@@ -143,7 +143,7 @@ class ModelSpectraModel(object):
 
     def add_components(self, ax, xdata, all_trans, total, notation="siegbahn"):
         # load notation dict
-        with open("src/EVA/databases/names/transition_notations.json") as file:
+        with open("src/EVA/databases/names/transition_notations2.json", encoding="utf-8") as file:
             notations = json.load(file)
 
         for i, trans in enumerate(all_trans):
@@ -167,10 +167,10 @@ class ModelSpectraModel(object):
                     siegbahn_name = notations[spec_name][1]
                     if siegbahn_name:
                         # Raise the text label for every odd peak (to improve plot readability)
-                        font["size"] = 8
+                        font["size"] = 9
                         max_height = np.max(total)
                         y_offset = (peak_height * 0.03) if i % 2 else (peak_height * 0.2)
-                        ax.text(x=trans["E"], y=peak_height + y_offset, s=rf"{element} ${siegbahn_name}$",
+                        ax.text(x=trans["E"], y=peak_height + y_offset, s=f"{element} {siegbahn_name}",
                                 fontdict=font, horizontalalignment="center")
 
                 elif notation == "spectroscopic":
