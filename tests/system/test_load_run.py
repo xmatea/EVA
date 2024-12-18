@@ -28,13 +28,14 @@ class TestLoadRun:
     def test_load_run(self, qapp, run_num, filenames):
         app = get_app()
         app.set_loaded_run(run_num)
+        run = app.loaded_run
+        app.reset()
 
         # Check that app.loaded_run is None if no detector data was loaded (invalid run number)
         if all([filename == "" for filename in filenames]):
-            assert app.loaded_run is None, "Invalid run was specified but run is not None"
+            assert run is None, "Invalid run was specified but run is not None"
         else:
-            for i, dataset in enumerate(app.loaded_run.raw):
+            for i, dataset in enumerate(run.raw):
                 xdata, ydata = self.manual_load(filenames[i])
-                print(dataset.x)
-                print(dataset.y)
+
                 assert np.array_equal(dataset.x, xdata) and np.array_equal(dataset.y, ydata)

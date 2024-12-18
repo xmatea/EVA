@@ -18,25 +18,21 @@ test_detectors = [["GE1"],
                         ["GE2", "GE4"]]
 
 class TestEnergyCorrection:
-    @pytest.fixture(autouse=True)
-    def setup(self, qapp):
-        # loading database and sample data
+    @pytest.mark.parametrize("e_corr_which", test_detectors)
+    def test_energy_correction(self, qapp, e_corr_which):
         app = get_app()
         app.set_loaded_run(2630)
-
-    @pytest.mark.parametrize("e_corr_which", test_detectors)
-    def test_energy_correction(self, e_corr_which):
         run = get_app().loaded_run
+        app.reset()
 
         # energy correction done by EVA
         run.set_energy_correction(params, e_corr_which)
 
-        # Manual energy correction
         for i, dataset in enumerate(run.raw):
             if dataset.detector in e_corr_which:
-                correction = run.raw[i].x * params[i][0] + params[i][1]
+                corrected = run.raw[i].x * params[i][0] + params[i][1]
             else:
-                correction = dataset.x
+                corrected = run.raw[i].x
 
-            assert np.array_equal(correction, run.data[i].x), (f"energy correction failed when correcting "
+            assert np.array_equal(corrected, run.data[i].x), (f"energy correction failed when correcting "
                                                                    f"{" and ".join(e_corr_which)}")

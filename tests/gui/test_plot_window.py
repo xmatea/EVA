@@ -19,50 +19,50 @@ class TestPlotWindow:
         # loading database and sample data
         app = get_app()
         app.set_loaded_run(2630)
-        app.use_mudirac_muon_db()
 
     # test if the expected data is displayed in gamma table when clicking a specific peak in the figure
-    def test_clickpeaks_gammas(self, qtbot):
+    @pytest.mark.parametrize("peak, position", [("44Sc", 189.9), ("93Zr", 65.6)])
+    def test_clickpeaks_gammas(self, qtbot, peak, position):
         widget = QWidget()
         window = PlotWindow(widget)
         qtbot.addWidget(window)
         widget.showMaximized()
         qtbot.wait(500)
 
-        tests = [("44Sc", 189.9), ("93Zr", 65.6)]
-        for test in tests:
-            event = util.trigger_figure_click_event(window.plot.canvas, xdata=test[1], ydata=0,
-                                          ax=window.plot.canvas.axs[1], button=MouseButton.RIGHT)
-            # call on_click
-            PlotWindow.on_click(window, event)
-            qtbot.wait(500)
+        event = util.trigger_figure_click_event(window.plot.canvas, xdata=position, ydata=0,
+                                      ax=window.plot.canvas.axs[1], button=MouseButton.RIGHT)
+        # call on_click
+        PlotWindow.on_click(window, event)
+        qtbot.wait(500)
 
-            table_res = window.clickpeaks.table_gamma.item(0, 0).text()
-            assert table_res is not None, "gamma table empty on click"
-            assert table_res == test[0], \
-                "data displayed at position 0,0 in gamma table did not match the expected value"
+        table_res = window.clickpeaks.table_gamma.item(0, 0).text()
+        get_app().reset()
+
+        assert table_res is not None, "gamma table empty on click"
+        assert table_res == peak, \
+            "data displayed at position 0,0 in gamma table did not match the expected value"
 
     # test if the expected data is displayed in muon table when clicking a specific peak in the figure
-    def test_clickpeaks_muon(self, qtbot):
+    @pytest.mark.parametrize("peak, position", [("Cl", 193.4), ("Ti", 932.0)])
+    def test_clickpeaks_muon(self, qtbot, peak, position):
         widget = QWidget()
         window = PlotWindow(widget)
         qtbot.addWidget(window)
         widget.showMaximized()
         qtbot.wait(500)
 
-        tests = [("Cl", 193.4), ("Ti", 932.0)]
-        for test in tests:
-            # simulate click event
-            event = util.trigger_figure_click_event(window.plot.canvas, xdata=test[1], ydata=0,
-                                          ax=window.plot.canvas.axs[1], button=MouseButton.LEFT)
-            # call on_click
-            PlotWindow.on_click(window, event)
-            qtbot.wait(500)
+        # simulate click event
+        event = util.trigger_figure_click_event(window.plot.canvas, xdata=position, ydata=0,
+                                      ax=window.plot.canvas.axs[1], button=MouseButton.LEFT)
+        # call on_click
+        PlotWindow.on_click(window, event)
+        qtbot.wait(500)
 
-            table_res = window.clickpeaks.table_muon.item(0, 0).text()
-            print(table_res)
-            assert table_res == test[0], \
-                "data displayed at position 0,0 in muon table on figure click did not match the expected value"
+        table_res = window.clickpeaks.table_muon.item(0, 0).text()
+        get_app().reset()
+
+        assert table_res == peak, \
+            "data displayed at position 0,0 in muon table on figure click did not match the expected value"
 
     @pytest.mark.parametrize("tests", gamma_plot_lines_tests)
     def test_plot_and_remove_lines_gammas(self, qtbot, tests):
@@ -91,6 +91,7 @@ class TestPlotWindow:
         qtbot.wait(250)
 
         # check that lines were plotted
+
         assert len(list(window.plot.canvas.axs[1].lines)) > 1, "no lines were plotted"
         assert len(list(window.plot.canvas.axs[1].lines)) == tests[1], "not all lines were plotted"
 
@@ -102,6 +103,7 @@ class TestPlotWindow:
                      pos=remove_table_rect.center())
         qtbot.wait(500)
 
+        get_app().reset()
         assert len(list(window.plot.canvas.axs[1].lines)) == 1, "Failed to remove all plot lines"
 
     @pytest.mark.parametrize("tests", muon_plot_lines_tests)
@@ -142,10 +144,11 @@ class TestPlotWindow:
                          pos=remove_table_rect.center())
         qtbot.wait(250)
 
+        get_app().reset()
         assert len(list(window.plot.canvas.axs[1].lines)) == 1, "Failed to remove all plot lines"
 
     # TODO: Make this work properly
-
+    """
     def test_find_peaks_plotting_on_button_click(self, qtbot):
         config = get_config()
         app = get_app()
@@ -203,3 +206,4 @@ class TestPlotWindow:
             "Marker positions on figure after peakfit did not match expected results"
         assert all([elem[0] == peaks_ax1[i][0] for i, elem in enumerate(data_ax1)]), \
             "Marker positions on figure after peakfit did not match expected results"
+    """

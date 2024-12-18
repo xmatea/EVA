@@ -6,7 +6,7 @@ from pytestqt.plugin import qtbot
 
 
 from EVA.widgets.multiplot.multi_plot_window import MultiPlotWindow
-from EVA.core.app import get_config
+from EVA.core.app import get_config, get_app
 
 channels = {
     "GE1": "2099",
@@ -63,12 +63,12 @@ class TestMultiPlotWindow:
         run_list = ["3063"]
         target_data = self.get_data(run_list, ["GE1", "GE3"])
 
+        get_app().reset()
         for i in range(len(run_list)):
             assert all(window.plot.canvas.axs[0].lines[i].get_ydata() == target_data[i][0][:, 1]), \
                 "incorrect data was loaded"
             assert all(window.plot.canvas.axs[1].lines[i].get_ydata() == target_data[i][1][:, 1]), \
                 "incorrect data was loaded"
-
 
     def test_multiplot_multiple_runs(self, qtbot):
         widget = QWidget()
@@ -92,11 +92,14 @@ class TestMultiPlotWindow:
         run_list = ["3063", "3050"]
 
         target_data = self.get_data(run_list, ["GE1", "GE3"])
+
+        get_app().reset()
         for i in range(len(run_list)):
             assert all(window.plot.canvas.axs[0].lines[i].get_ydata() == target_data[i][0][:, 1]), \
                 "incorrect data was loaded"
             assert all(window.plot.canvas.axs[1].lines[i].get_ydata() == target_data[i][1][:, 1]), \
                 "incorrect data was loaded"
+
 
     def test_multiplot_with_simple_step(self, qtbot):
         widget = QWidget()
@@ -117,8 +120,9 @@ class TestMultiPlotWindow:
         # click button to load multi run
         qtbot.mouseClick(window.plot_multi, Qt.MouseButton.LeftButton)
         qtbot.wait(int(TIME_DELAY*1.5))
-        print(window.plot.canvas.axs[0].lines)
-        print(window.plot.canvas.axs[1].lines)
+
+        ax0_lines = window.plot.canvas.axs[0].lines
+        ax1_lines = window.plot.canvas.axs[1].lines
 
         # check that both subplots contain 11 lines: 3063-3074 excluding 3069 because it is missing from testdata
         assert len(window.plot.canvas.axs[0].lines) == 11, \
@@ -131,12 +135,13 @@ class TestMultiPlotWindow:
 
         target_data = self.get_data(run_list, ["GE1", "GE3"])
 
-
+        get_app().reset()
         for i in range(len(run_list)):
-            assert all(window.plot.canvas.axs[0].lines[i].get_ydata() == target_data[i][0][:, 1]), \
+            assert all(ax0_lines[i].get_ydata() == target_data[i][0][:, 1]), \
                 "incorrect data was loaded"
-            assert all(window.plot.canvas.axs[1].lines[i].get_ydata() == target_data[i][1][:, 1]), \
+            assert all(ax1_lines[i].get_ydata() == target_data[i][1][:, 1]), \
                 "incorrect data was loaded"
+
 
     def test_multiplot_with_step_overflow(self, qtbot):
         widget = QWidget()
@@ -164,6 +169,8 @@ class TestMultiPlotWindow:
         run_list = ["3063", "3065", "3067"]
 
         target_data = self.get_data(run_list, ["GE1", "GE3"])
+
+        get_app().reset()
         for i in range(len(run_list)):
             assert all(window.plot.canvas.axs[0].lines[i].get_ydata() == target_data[i][0][:, 1]), \
                 "incorrect data was loaded"
@@ -181,6 +188,7 @@ class TestMultiPlotWindow:
         qtbot.mouseClick(window.plot_multi, Qt.MouseButton.LeftButton)
         qtbot.wait(int(TIME_DELAY*1.5))
 
+        get_app().reset()
         assert window.plot.canvas.axs is None, "incorrect number of runs were loaded"
 
     def test_multiplot_invalid_run_entered(self, qtbot):
@@ -196,4 +204,5 @@ class TestMultiPlotWindow:
         qtbot.mouseClick(window.plot_multi, Qt.MouseButton.LeftButton)
         qtbot.wait(int(TIME_DELAY*1.5))
 
+        get_app().reset()
         assert window.plot.canvas.axs is None, "incorrect number of runs were loaded"

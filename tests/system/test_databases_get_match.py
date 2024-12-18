@@ -62,14 +62,14 @@ class TestDatabasesGetMatch:
         res, res1, res2 = getmatch.get_matches(input_data)
         matches = {}
 
+
         for match in res:
             if match["element"] not in matches.keys():
                 matches[match["element"]] = [match["energy"]]
             else:
                 matches[match["element"]].append(match["energy"])
 
-        print(matches)
-        print(target_result)
+        app.reset()
         assert matches.keys() == target_result.keys(), 'Data in legacy muon database did not match expected'
         assert all([[energy in target_result[elem] for energy in matches[elem]] for elem in matches]), \
             'Data in legacy muon database did not match expected'
@@ -95,9 +95,7 @@ class TestDatabasesGetMatch:
             else:
                 matches[match["element"]].append(match["energy"])
 
-        print(matches)
-        print(target_result)
-
+        app.reset()
         assert matches.keys() == target_result.keys(), 'Data in mudirac muon database did not match expected'
         assert all([[energy in target_result[elem] for energy in matches[elem]] for elem in matches]), \
             'Data in mudirac muon database did not match expected'
