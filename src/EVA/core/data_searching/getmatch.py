@@ -62,18 +62,17 @@ def getmatchesgammas_clicked(Ele):
 
 def get_matches_Trans(input_element, input_trans):
     app = get_app()
-    raw_data = app.muon_database
 
     matches = []
     raw_data = app.muon_database["All energies"]
 
     for element in raw_data:
         if element == input_element:
-            for transition, energy in raw_data[element].items():
+            for transition, transition_data in raw_data[element].items():
                 if transition == input_trans:
                     data = {
                         "element": element,
-                        "energy": energy,
+                        "energy": transition_data["E"],
                         "transition": transition
                     }
                     matches.append(data)
@@ -87,10 +86,10 @@ def get_matches_Element(input_element):
     raw_data = app.muon_database["All energies"]
     for element in raw_data:
         if element == input_element:
-            for transition, energy in raw_data[element].items():
+            for transition, transition_data in raw_data[element].items():
                 data = {
                     "element": element,
-                    "energy": energy,
+                    "energy": transition_data["E"],
                     "transition": transition
                 }
                 matches.append(data)
@@ -111,7 +110,9 @@ def get_matches(input_peaks):
     raw_data = peak_data["All energies"]
     for peak, sigma in input_peaks:
         for element in raw_data:
-            for transition, energy in raw_data[element].items():
+            for transition, transition_data in raw_data[element].items():
+                print("transition: ", transition)
+                energy = transition_data["E"]
                 diff = abs(peak - energy)
 
                 if diff <= 3*sigma:
