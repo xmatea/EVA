@@ -1,56 +1,67 @@
 import json
+import time
+
 import numpy as np
 from matplotlib import pyplot as plt
 
 from EVA.core.data_structures.detector import DetectorIndices
+from EVA.core.app import get_app
+from EVA.core.data_structures.spectrum import Spectrum
 
+
+def gaussian(x, mean, sigma, A):
+    return (A / (sigma * np.sqrt(2 * np.pi))) * np.exp(-0.5 * ((x - mean) / sigma)**2)
+
+def line(x, x0, x1):
+    return x0 + x1 * x
+
+def quadratic(x, x0, x1, x2):
+    return x0 + x1 * x + x2 * x * x
 
 class ModelSpectraModel(object):
-    def __init__(self, presenter):
+    def __init__(self):
         super().__init__()
-        self.presenter = presenter
+        app = get_app()
 
-    def get_element_names(self):
-        path = "src/EVA/databases/muonic_xrays/mudirac_data_default_isotopes_readable.json"
-        with open(path) as file:
-            data = json.load(file)
+        self.element_names = app.mudirac_muon_database["Atomic numbers"].keys()
+        self.mu_capture_ratios = app.mudirac_muon_database["Capture ratios"]
+        self.energies = app.mudirac_muon_database
+
+        self.all_spectra = []
+        self.all_transitions = []
+
+        with open("src/EVA/databases/names/transition_notations.json", encoding="utf-8") as file:
+            self.notations = json.load(file)
             file.close()
-        return data.keys()
 
-    def gaussian(self, x, mean, sigma):
-        return (1 / (sigma * np.sqrt(2 * np.pi))) * np.exp(-0.5 * (x - mean) ** 2 / sigma ** 2)
+        self.linear_e_res = np.loadtxt("./src/EVA/databases/detectors/energy_resolution_linear.txt",
+                                    delimiter=",", skiprows=1)
+        self.quadratic_e_res = np.loadtxt("./src/EVA/databases/detectors/energy_resolution_quadratic.txt",
+                                    delimiter=",", skiprows=1)
 
-    def line(self, x, x0, x1):
-        return x0 + x1 * x
 
-    def quadratic(self, x, x0, x1, x2):
-        return x0 + x1 * x + x2 * x ** 2
-
-    def get_closest_x(self, x, y, target_x):
-        diff = abs(x - target_x)
-        index = diff.argmin()
-        return y[index]
-
-    def get_model(self, elements, proportions, detectors, e_range=None,
-                  notation="spectroscopic", dx=0.1, show_components=False, e_res_model="linear",
-                  show_primary=True, show_secondary=False):
-
-        # Load energy vs FWHM curves for the detectors
+    def calculate_sigma(self, e_res_model, mean, detector_name):
+        # Calculate FWHM from energy resolution curves and convert to standard deviations
         if e_res_model == "linear":
-            energy_res = np.loadtxt("./src/EVA/databases/detectors/energy_resolution_linear.txt",
-                                    delimiter=",", skiprows=1)
+            detector_energy_res = self.linear_e_res[DetectorIndices[detector_name].value]
+            sigma = line(mean, detector_energy_res[1], detector_energy_res[2]) / (
+                    2 * np.sqrt(2 * np.log(2)))
+
         elif e_res_model == "quadratic":
-            energy_res = np.loadtxt("./src/EVA/databases/detectors/energy_resolution_qudratic.txt",
-                                    delimiter=",", skiprows=1)
+            detector_energy_res = self.quadratic_e_res[DetectorIndices[detector_name].value]
+            sigma = quadratic(mean, detector_energy_res[1], detector_energy_res[2],
+                              detector_energy_res[3]) / (2 * np.sqrt(2 * np.log(2)))
         else:
             raise ValueError("Invalid energy resolution model")
 
-        # TODO: Make this the default database to use for mudirac
-        with open("./src/EVA/databases/muonic_xrays/mudirac_data_default_isotopes_readable.json") as file:
-            all_energies = json.load(file)
+        return sigma
 
-        mu_capture_z, mu_capture_ratios = np.loadtxt(
-            "./src/EVA/databases/muonic_xrays/capture_probabilites_interpolated.txt", delimiter=",", unpack=True)
+
+    def model_spectrum(self, elements, proportions, detectors, e_range=None, dx=0.1, e_res_model="linear",
+                 notation=0, show_components=False, show_primary=True, show_secondary=False):
+
+        self.all_spectra = []
+        self.all_transitions = []
 
         fig, axs = plt.subplots(len(detectors))
         fig.supxlabel("Energy / keV")
@@ -59,100 +70,98 @@ class ModelSpectraModel(object):
         for j, det in enumerate(detectors):
             ax = axs[j] if len(detectors) != 1 else axs
 
-            all_transitions = []
-            for i, element in enumerate(elements):
+            # select energy resolution model for current detector
+            if e_res_model == "linear":
+                sigma_params = self.linear_e_res[DetectorIndices[det].value][1:]
+                sigma_model = line
+            else:
+                sigma_params = self.quadratic_e_res[DetectorIndices[det].value][1:]
+                sigma_model = quadratic
 
-                element_data = all_energies[element]
-                prim_trans = element_data["Primary"]
-                sec_trans = element_data["Secondary"]
-                Z = element_data["Z"]
+            # Get transition energies for each element
+            transitions = []
+            for i, element in enumerate(elements):
+                prim_trans = self.energies["Primary energies"][element]
+                sec_trans = self.energies["Secondary energies"][element]
 
                 proportion = proportions[i]
-                muonic_capture_ratio = mu_capture_ratios[mu_capture_z == Z]
+                muonic_capture_ratio = self.mu_capture_ratios[element]["Value"]
                 weights = proportion * muonic_capture_ratio
-
-                detector_energy_res = energy_res[DetectorIndices[det].value]
-
-                """
-                print(
-                    f"Detector: {detector_energy_res[0]} \nc = {detector_energy_res[1]} \nm = {detector_energy_res[2]}")
-                """
-
-                # Calculate Gaussians for each transition and add both secondary and primary transitions all_trans
 
                 if show_primary:
                     for trans in prim_trans:
                         mean = np.array(prim_trans[trans]["E"])
+                        intensity = np.array(prim_trans[trans]["I"])
 
-                        # Calculate FWHM from energy resolution curves and convert to standard deviations
-                        if e_res_model == "linear":
-                            sigma = self.line(mean, detector_energy_res[1], detector_energy_res[2]) / (
-                                        2 * np.sqrt(2 * np.log(2)))
-                        elif e_res_model == "quadratic":
-                            sigma = self.quadratic(mean, detector_energy_res[1], detector_energy_res[2],
-                                              detector_energy_res[3]) / (2 * np.sqrt(2 * np.log(2)))
-                        else:
-                            raise ValueError("Invalid energy resolution model")
+                        sigma = sigma_model(mean, *sigma_params)
 
-                        all_transitions.append(
+                        # Store all transition info in dictionary
+                        transitions.append(
                             {"name": trans, "E": mean, "sigma": sigma, "weights": weights, "type": "primary",
-                             "element": element})
+                             "element": element, "intensity": intensity})
 
                 if show_secondary:
                     for trans in sec_trans:
                         mean = np.array(sec_trans[trans]["E"])
+                        intensity = np.array(sec_trans[trans]["I"])
 
-                        # Calculate FWHM from energy resolution curves and convert to standard deviations
-                        if e_res_model == "linear":
-                            sigma = self.line(mean, detector_energy_res[1], detector_energy_res[2]) / (
-                                        2 * np.sqrt(2 * np.log(2)))
-                        elif e_res_model == "quadratic":
-                            sigma = self.quadratic(mean, detector_energy_res[1], detector_energy_res[2],
-                                              detector_energy_res[3]) / (2 * np.sqrt(2 * np.log(2)))
-                        else:
-                            raise ValueError("Invalid energy resolution model")
+                        sigma = sigma_model(mean, *sigma_params)
 
-                        all_transitions.append(
+                        transitions.append(
                             {"name": trans, "E": mean, "sigma": sigma, "weights": weights, "type": "secondary",
-                             "element": element})
+                             "element": element, "intensity": intensity})
 
             # sort list of all transitions by ascending energy
-            all_transitions = sorted(all_transitions, key=lambda d: d["E"])
+            transitions = sorted(transitions, key=lambda d: d["E"])
 
+            # calculate energy range
             if e_range is not None:
                 xdata = np.arange(e_range[0], e_range[1], dx)
             else:
-                max_e = np.max([trans["E"] for trans in all_transitions]) * 1.1
+                max_e = np.max([trans["E"] for trans in transitions]) * 1.1
                 xdata = np.arange(0, max_e, dx)
 
             total = np.zeros_like(xdata)
 
-            for trans in all_transitions:
-                trans["curve"] = self.gaussian(xdata, mean=trans["E"], sigma=trans["sigma"]) * trans["weights"]
+            # calculate gaussian for each curve and sum all curves to obtain total curve
+            g_time_start = time.time_ns()
+            for trans in transitions:
+
+                trans["curve"] = (gaussian(xdata, mean=trans["E"], sigma=trans["sigma"], A=trans["intensity"])
+                                  * trans["weights"])
                 total += trans["curve"]
 
-            ax.plot(xdata, total, label="Total spectrum")
-            ax.set_title(det)
-            ax.set_ylim((0, np.max(total) * 1.1))
+            g_time_end = time.time_ns()
+
+            # store x and y data as Spectrum object
+            spectrum = Spectrum(x=xdata, y=total, detector=det, run_number="")
+
+            self.all_transitions.append(transitions)
+            self.all_spectra.append(spectrum)
+
+            # Plot results to axis
+            ax.plot(spectrum.x, spectrum.y, label="Total spectrum")
+            ax.set_title(spectrum.detector)
+            ax.set_ylim((0, np.max(spectrum.y) * 1.25))
 
             if show_components:
-                ax = self.add_components(ax, xdata, all_transitions, total, notation)
+                self.plot_components(ax, spectrum=spectrum, transitions=transitions, notation_index=notation)
 
-        plt.subplots_adjust(top=0.9, bottom=0.1, left=0.1, right=0.9, hspace=0.45, wspace=0.23)
+            plt.subplots_adjust(top=0.9, bottom=0.1, left=0.1, right=0.9, hspace=0.45, wspace=0.23)
+
+            print(f"Time taken to calculate all Gaussians: {(g_time_end-g_time_start)/1e9} s")
+
         return fig, axs
 
-    def add_components(self, ax, xdata, all_trans, total, notation="siegbahn"):
-        # load notation dict
-        with open("src/EVA/databases/names/transition_notations2.json", encoding="utf-8") as file:
-            notations = json.load(file)
-
-        for i, trans in enumerate(all_trans):
+    def plot_components(self, ax, spectrum, transitions, notation_index=0):
+        for i, trans in enumerate(transitions):
             if np.sum(trans["curve"]) > 0.1:  # Check if the peak is within the viewing range of the plot
                 color = ax._get_lines.get_next_color()
 
-                ax.plot(xdata, trans["curve"], label=trans["name"], color=color)
+                ax.plot(spectrum.x, trans["curve"], label=trans["name"], color=color)
 
-                peak_height = trans["weights"] / (trans["sigma"] * np.sqrt(2 * np.pi))
+                # Calculate peak height
+                peak_height = (trans["intensity"] * trans["weights"]) / (trans["sigma"] * np.sqrt(2 * np.pi))
 
                 spec_name = trans["name"]
                 element = trans["element"]
@@ -163,29 +172,26 @@ class ModelSpectraModel(object):
                     "color": color
                 }
 
-                if notation == "siegbahn":
-                    siegbahn_name = notations[spec_name][1]
-                    if siegbahn_name:
-                        # Raise the text label for every odd peak (to improve plot readability)
-                        font["size"] = 9
-                        max_height = np.max(total)
-                        y_offset = (peak_height * 0.03) if i % 2 else (peak_height * 0.2)
-                        ax.text(x=trans["E"], y=peak_height + y_offset, s=f"{element} {siegbahn_name}",
-                                fontdict=font, horizontalalignment="center")
+                if notation_index == 0: # siegbahn notation
+                    name = self.notations[spec_name][1]
+                    if not name:
+                        continue # skip if peak does not have siegbahn name
 
-                elif notation == "spectroscopic":
-                    # Raise the text label for every odd peak (to improve plot readability)
-                    max_height = np.max(total)
-                    y_offset = (peak_height * 0.03) if i % 2 else (peak_height * 0.2)
+                    font["size"] = 9
 
-                    ax.text(x=trans["E"], y=peak_height + y_offset, s=f"{element} {spec_name}", fontdict=font,
-                            horizontalalignment="center")
+                elif notation_index == 1: # spectroscopic notation
+                    name = spec_name
 
-                elif notation == "iupac":
-                    # Raise the text label for every odd peak (to improve plot readability)
-                    max_height = np.max(total)
-                    y_offset = peak_height * 0.03 if i % 2 else peak_height * 0.2
-                    iupac_name = notations[spec_name][0]
-                    ax.text(x=trans["E"], y=peak_height + y_offset, s=f"{element} {iupac_name}", fontdict=font,
-                            horizontalalignment="center")
-        return ax
+                elif notation_index == 2: # iupac notation
+                    name = self.notations[spec_name][0]
+                else:
+                    raise ValueError("Invalid notation index!")
+
+                y_offset = (peak_height * 0.03) if i % 2 else (peak_height * 0.2)
+                ax.text(x=trans["E"], y=peak_height + y_offset, s=f"{element} {name}",
+                        fontdict=font, horizontalalignment="center")
+
+
+    def reset(self):
+        self.all_spectra = []
+        self.all_transitions = []
