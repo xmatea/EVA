@@ -67,8 +67,11 @@ class ModelSpectraView(QWidget):
         self.show_primary.setChecked(True)
         self.show_secondary.setChecked(True)
 
+        self.select_notation_label = QLabel("Select notation")
         self.select_notation = QComboBox()
         self.select_notation.addItems(["Siegbahn (only major lines)", "Spectroscopic", "IUPAC"])
+
+        self.select_notation_label.hide()
         self.select_notation.hide()
 
         self.plot_settings_layout.addWidget(self.step_label, 0, 0, 1, 1)
@@ -76,15 +79,16 @@ class ModelSpectraView(QWidget):
         self.plot_settings_layout.addWidget(self.show_components_box, 1, 0, 1, -1)
         self.plot_settings_layout.addWidget(self.show_primary, 2, 0, 1, -1)
         self.plot_settings_layout.addWidget(self.show_secondary, 3, 0, 1, -1)
+        self.plot_settings_layout.addWidget(self.select_notation_label, 4, 0, 1, -1)
 
-        self.plot_settings_layout.addWidget(self.select_notation, 4, 0, 1, -1)
+        self.plot_settings_layout.addWidget(self.select_notation, 5, 0, 1, -1)
         self.detectors = [QCheckBox("GE1"), QCheckBox("GE2"), QCheckBox("GE3"), QCheckBox("GE4")]
         self.detector_names = ["GE1", "GE2", "GE3", "GE4"]
-        self.plot_settings_layout.addWidget(QLabel("Select detectors"), 5, 0, 1, -1)
+        self.plot_settings_layout.addWidget(QLabel("Select detectors"), 6, 0, 1, -1)
         self.detectors[0].setChecked(True)
 
         for i, detector in enumerate(self.detectors):
-            self.plot_settings_layout.addWidget(detector, 6, i)
+            self.plot_settings_layout.addWidget(detector, 7, i)
 
         # start button
         self.start_button = QPushButton("Simulate Spectrum")
@@ -94,13 +98,13 @@ class ModelSpectraView(QWidget):
         # add everything to side panel
         self.side_panel_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        self.side_panel_layout.addWidget(QLabel("Select elements"))
-        self.side_panel_layout.addWidget(self.element_selector)
-        self.side_panel_layout.addSpacing(50)
-
         self.side_panel_layout.addWidget(QLabel("Select energy range"))
         self.side_panel_layout.addWidget(self.e_range_form)
-        self.side_panel_layout.addSpacing(50)
+        self.side_panel_layout.addSpacing(25)
+
+        self.side_panel_layout.addWidget(QLabel("Select elements"))
+        self.side_panel_layout.addWidget(self.element_selector)
+        self.side_panel_layout.addSpacing(25)
 
         self.side_panel_layout.addWidget(QLabel("Plot settings"))
         self.side_panel_layout.addWidget(self.plot_settings)
@@ -128,6 +132,7 @@ class ModelSpectraView(QWidget):
     def on_show_components(self):
         check = self.show_components_box.isChecked()
         self.select_notation.setVisible(check)
+        self.select_notation_label.setVisible(check)
 
     def get_form_data(self):
         try:
@@ -148,6 +153,12 @@ class ModelSpectraView(QWidget):
                 _ = QMessageBox.critical(self, "Error",
                                          "No transitions selected. Please select at least one transition type "
                                          "to simulate.")
+                return
+
+            if len(data["elements"]) == 0:
+                _ = QMessageBox.critical(self, "Error",
+                                         "No elements added. Please add at least one element "
+                                         "to simulate for.")
                 return
 
             if self.show_components_box.isChecked():
@@ -171,8 +182,7 @@ class ModelSpectraView(QWidget):
 
         except ValueError:
             _ = QMessageBox.critical(self, "Error",
-                                     "No transitions selected. Please select at least one transition type "
-                                     "to simulate.")
+                                     "Invalid form data.")
 
     def set_form_data(self, data):
         # Add all elements and ratios
