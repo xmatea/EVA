@@ -1,3 +1,4 @@
+import matplotlib
 from PyQt6.QtWidgets import QApplication
 
 from EVA.core.settings.config import Config
@@ -71,4 +72,28 @@ class App(QApplication):
             self.config["general"]["run_num"] = str(run_num)
 
         return flags
+
+    def reset(self):
+        self.config.restore_defaults()
+        self.loaded_run = None
+
+        # Check config and set default "muon database" accordingly
+        if self.config["database"]["mu_xray_db"] == "legacy":
+            self.muon_database = self.legacy_muon_database
+        elif self.config["database"]["mu_xray_db"] == "mudirac":
+            self.muon_database = self.mudirac_muon_database
+        else:
+            raise KeyError # Invalid muon database in config
+
+        # Clear all windows
+        self.main_window = None
+        self.plot_window = None
+        self.multiplot_window = None
+        self.peakfit_window = None
+        self.trim_window = None
+        self.efficiency_correction_window = None
+        self.energy_correction_window = None
+        self.manual_window = None
+
+        matplotlib.pyplot.close()
 
