@@ -1,3 +1,4 @@
+import logging
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtWidgets import (
     QGridLayout,
@@ -11,6 +12,7 @@ from PyQt6.QtWidgets import (
 
 from EVA.widgets.muonic_xray_simulation.element_selector_widget import ElementSelectorWidget, ElementSelectorItem
 from EVA.widgets.plot.plot_widget import PlotWidget
+logger = logging.getLogger(__name__)
 
 
 class ModelSpectraView(QWidget):
@@ -153,12 +155,21 @@ class ModelSpectraView(QWidget):
                 _ = QMessageBox.critical(self, "Error",
                                          "No transitions selected. Please select at least one transition type "
                                          "to simulate.")
+                logger.error("No transitions selected - simulation aborted.")
                 return
 
             if len(data["elements"]) == 0:
                 _ = QMessageBox.critical(self, "Error",
                                          "No elements added. Please add at least one element "
                                          "to simulate for.")
+                logger.error("No elements selected - simulation aborted.")
+                return
+
+            if len(data["detectors"]) == 0:
+                _ = QMessageBox.critical(self, "Error",
+                                         "No detectors selected. Please select at least one detector "
+                                         "to simulate for.")
+                logger.error("No detectors selected - simulation aborted.")
                 return
 
             if self.show_components_box.isChecked():
@@ -171,18 +182,21 @@ class ModelSpectraView(QWidget):
                 if data["e_range"][1] * data["dx"] - data["e_range"][0] * data["dx"] > 1e6:
                     _ = QMessageBox.critical(self, "Error",
                                              "Please select a larger step size or a narrower energy range.")
+                    logger.error("No transitions selected - simulation aborted.")
                     return
             else:
                 # Don't allow auto range with step size of less than 0.01
                 if data["dx"] < 0.01:
                     _ = QMessageBox.critical(self, "Error",
                                              "Please select a larger step size or a narrower energy range.")
+                    logger.error("Step size to small for auto range - simulation aborted.")
                     return
             return data
 
         except ValueError:
             _ = QMessageBox.critical(self, "Error",
                                      "Invalid form data.")
+            logger.error("Invalid for data - simulation aborted.")
 
     def set_form_data(self, data):
         # Add all elements and ratios

@@ -1,5 +1,6 @@
 import json
 import time
+import logging
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -8,6 +9,7 @@ from EVA.core.data_structures.detector import DetectorIndices
 from EVA.core.app import get_app
 from EVA.core.data_structures.spectrum import Spectrum
 
+logger = logging.getLogger(__name__)
 
 def gaussian(x, mean, sigma, A):
     return (A / (sigma * np.sqrt(2 * np.pi))) * np.exp(-0.5 * ((x - mean) / sigma)**2)
@@ -59,6 +61,13 @@ class ModelSpectraModel(object):
 
     def model_spectrum(self, elements, proportions, detectors, e_range=None, dx=0.1, e_res_model="linear",
                  notation=0, show_components=False, show_primary=True, show_secondary=False):
+        logger.info("Modelling spectrum for %s.", elements)
+        logger.debug("Settings: elements = %s, proportions = %s, dx = %s, show_primary = %s, "
+                     "show_secondary = %s, show_components = %s, detectors = %s, "
+                     "energy_resolution_model = %s, notation = %s.", elements, proportions, dx, show_primary,
+                     show_secondary, show_components, detectors, e_res_model, notation)
+
+        t0 = time.time_ns()
 
         self.all_spectra = []
         self.all_transitions = []
@@ -149,8 +158,8 @@ class ModelSpectraModel(object):
 
             plt.subplots_adjust(top=0.9, bottom=0.1, left=0.1, right=0.9, hspace=0.45, wspace=0.23)
 
-            print(f"Time taken to calculate all Gaussians: {(g_time_end-g_time_start)/1e9} s")
-
+        t1 = time.time_ns()
+        logger.info("Spectrum modelled in %ss.", round((t1-t0)/1e9, 4))
         return fig, axs
 
     def plot_components(self, ax, spectrum, transitions, notation_index=0):
@@ -190,7 +199,6 @@ class ModelSpectraModel(object):
                 y_offset = (peak_height * 0.03) if i % 2 else (peak_height * 0.2)
                 ax.text(x=trans["E"], y=peak_height + y_offset, s=f"{element} {name}",
                         fontdict=font, horizontalalignment="center")
-
 
     def reset(self):
         self.all_spectra = []
