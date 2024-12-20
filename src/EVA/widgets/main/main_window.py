@@ -1,3 +1,5 @@
+import logging
+
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtWidgets import (
     QApplication,
@@ -13,6 +15,7 @@ from PyQt6.QtWidgets import (
 )
 
 from PyQt6.QtGui import QPalette, QColor
+from pyparsing import conditionAsParseAction
 
 from EVA.widgets.muonic_xray_simulation.model_spectra_widget import ModelSpectraWidget
 from EVA.widgets.srim import trim_window, RunTrimExample
@@ -23,6 +26,7 @@ from EVA.widgets.manual import manual_window
 from EVA.widgets.peakfit import peakfit_widget
 
 from EVA.core.app import get_app, get_config
+logger = logging.getLogger(__name__)
 
 class Color(QWidget):
 
@@ -256,15 +260,18 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(widget)
 
     def model_muon_spectrum(self):
+        logger.info("Launching muonic x-ray modelling window.")
         self.muon_spectrum_window = ModelSpectraWidget()
         self.muon_spectrum_window.showMaximized()
 
     def PeakFit(self, detector):
         app = get_app()
+        logger.info("Launching peak fitting window for %s.", detector)
         app.peak_fit_window = peakfit_widget.PeakFitWidget(detector)
         app.peak_fit_window.showMaximized()
 
     def multiplot(self):
+        logger.info("Launching multiplot window.")
         self.multiplot_window = multi_plot_window.MultiPlotWindow()
         self.multiplot_window.showMaximized()
 
@@ -274,13 +281,14 @@ class MainWindow(QMainWindow):
     def RunTrim(self):
         ''' Launch TRIM Window'''
         app = get_app()
+        logger.info("Launching TRIM window.")
         app.TRIM_window = trim_window.RunSimTRIMSRIM()
         app.TRIM_window.showMaximized()
 
     def Corr_Eff(self):
         app = get_app()
+        logger.info("Launching efficiency correction window.")
 
-        #self.show(Correction_Energy())
         if app.efficiency_correction_window is None:
             app.efficiency_correction_window = efficiency_correction_window.Correction_Eff()
             app.efficiency_correction_window.show()
@@ -288,8 +296,8 @@ class MainWindow(QMainWindow):
             app.efficiency_correction_window.show()
 
     def Corr_Energy(self):
+        logger.info("Launching energy correction window.")
         app = get_app()
-
         if app.energy_correction_window is None:
             app.energy_correction_window = energy_correction_window.Correction_E()
             app.energy_correction_window.show()
@@ -297,7 +305,7 @@ class MainWindow(QMainWindow):
             app.energy_correction_window.show()
 
     def show_manual(self):
-        """ Display Manual page"""
+        logger.info("Launching manual window.")
         app = get_app()
         if app.manual_window is None:
             app.manual_window = manual_window.ManualWindow()
@@ -314,13 +322,13 @@ class MainWindow(QMainWindow):
 
     def N_do_not(self,checked):
         app = get_app()
-
         if checked:
             # Apply new normalisation to data (if data is already loaded)
             if app.loaded_run is not None:
                 app.loaded_run.set_normalisation("none")
 
             app.config["general"]["normalisation"] = "none"
+            logger.info("Normalisation type set to 'none'")
 
         self.update_normalisation_menu()
 
@@ -333,6 +341,7 @@ class MainWindow(QMainWindow):
                 app.loaded_run.set_normalisation("counts")
 
             app.config["general"]["normalisation"] = "counts"
+            logger.info("Normalisation type set to 'counts'")
 
         # update buttons
         self.update_normalisation_menu()
@@ -345,14 +354,15 @@ class MainWindow(QMainWindow):
             if app.loaded_run is None:
                 # if data is not loaded, only update normalisation in config
                 app.config["general"]["normalisation"] = "events"
+                logger.info("Normalisation type set to 'events'")
 
             else:
                 flag = app.loaded_run.set_normalisation("events")
                 if flag: # Normalisation failed - set normalisation to none instead
-                    self.N_do_not(True)
-
                     # display error message to let user know what happened
                     err_str = "Cannot use normalisation by spills when comment file has not been loaded."
+                    logger.error(err_str)
+                    self.N_do_not(True)
 
                     # this will block the program until user presses "ok"
                     _ = QMessageBox.critical(self, "Normalisation error", err_str,
@@ -361,6 +371,7 @@ class MainWindow(QMainWindow):
 
                 else:
                     app.config["general"]["normalisation"] = "events" # update config if all is ok
+                    logger.info("Normalisation type set to 'events'")
 
         # update gui elements
         self.update_normalisation_menu()
@@ -416,8 +427,11 @@ class MainWindow(QMainWindow):
         config = app.config
 
         flags = app.set_loaded_run(RunNum)
+        all_detectors = config["general"]["all_detectors"].split(" ")
 
         if flags["no_files_found"]: #  no data was loaded - return now
+            logging.error("No files were found in %s for run %s", config["general"]["working_directory"],
+                             RunNum)
             # Update GUI
             self.label_RN.setText("Run Number:   File load failed")
             self.label_Com.setText("Comment:      Comment file not found")
@@ -427,18 +441,25 @@ class MainWindow(QMainWindow):
             return
 
         else: # update run number field in gui and in config
+            logging.info("Found spectra for run number %s.", RunNum)
+            missing_detectors = [det for det in all_detectors if det not in app.loaded_run.loaded_detectors]
+            if missing_detectors:
+                logging.warning("No files were found for detectors %s.", ", ".join(missing_detectors))
+
             self.label_RN.setText("Run Number:   " + str(RunNum))
 
             # Update run number in config
             config["general"]["run_num"] = RunNum
 
         if flags["comment_not_found"]: # Comment file was not found
+            logging.error("No comment file found for run %s", RunNum)
             self.label_Com.setText("Comment:      Comment file not found")
             self.label_Start.setText("Start Time:    ")
             self.label_End.setText("End Time:       ")
             self.label_Events.setText("Events:")
 
         else: # write comment info to GUI
+            logging.info("Found metadata from comment file for run %s", RunNum)
             mapping = dict.fromkeys(range(32))
 
             pr_str = app.loaded_run.start_time.translate(mapping)
@@ -454,6 +475,7 @@ class MainWindow(QMainWindow):
             self.label_Com.setText("Comment:      " + pr_str[10:])
 
         if flags["norm_by_spills_error"]:  # normalisation by spills failed
+            logging.error("Failed to apply normalisation by spills due to missing comment file. Normalisation set to None.")
             # set normalisation to none instead
             self.N_do_not(True)
 
@@ -472,6 +494,8 @@ class MainWindow(QMainWindow):
     def show_plot_window(self):
         app = get_app()
         config = app.config
+
+        logger.info("Launching plot window.")
 
         if app.plot_window is None:
             app.plot_window = plot_window.PlotWindow()
@@ -493,4 +517,6 @@ class MainWindow(QMainWindow):
     def Browse_dir(self):
         config = get_config()
         dir_path = QFileDialog.getExistingDirectory(self, "Choose Directory", "C:\\")
-        config["general"]["working_directory"] = dir_path
+        if dir_path:
+            config["general"]["working_directory"] = dir_path
+            logger.info("Working directory set to %s.", dir_path)

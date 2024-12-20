@@ -1,5 +1,6 @@
 from configparser import ConfigParser
-
+import logging
+logger = logging.getLogger(__name__)
 
 class Config:
     """
@@ -25,8 +26,10 @@ class Config:
         # Try to load saved settings, if not found, create new config file and load default settings
         try:
             self.parser.read("./src/EVA/core/settings/config.ini")
+            logger.debug("Loading configuration from config.ini")
         except FileNotFoundError:
             with open("./src/EVA/core/settings/config.ini", "w") as file:
+                logger.debug("Creating new configuration file from defaults.")
                 self.default_parser.write(file)
                 file.close()
 
@@ -35,9 +38,13 @@ class Config:
             self.parser.write(config_file)
             config_file.close()
 
+        logger.info("Current configuration has been saved to file.")
+
     def restore_defaults(self):
         for section in self.default_parser:
             self.parser[section] = self.default_parser[section]
+
+        logger.info("Configuration has been reset to defaults.")
 
     # checks if config loaded in memory is different to config in file
     def is_changed(self):

@@ -1,3 +1,6 @@
+import logging
+import time
+
 import numpy as np
 
 from srim import TRIM, Ion, Layer, Target
@@ -18,15 +21,15 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QFormLayout
 )
+
 from EVA.widgets.plot.plot_widget import PlotWidget
 from EVA.core.settings import srim_settings
 from EVA.core.app import get_config, get_app
 
-
+logger = logging.getLogger(__name__)
 
 class RunSimTRIMSRIM(QWidget):
     def __init__(self, parent = None):
-        #print('here')
         super(RunSimTRIMSRIM, self).__init__(parent)
 
         self.setWindowTitle("TRIM Simulations")
@@ -205,10 +208,12 @@ class RunSimTRIMSRIM(QWidget):
         app = get_app()
         app.trim_window = None
         event.accept()
+        logger.info("Closing TRIM window.")
 
     def RunTrimSim(self, SampleName, SimType, Momentum, MomentumSpread, ScanType, MinMomentum, MaxMomentum,
                    StepMomentum, SRIMdir, TRIMOutDir, Stats):
 
+        t0 = time.time_ns()
         #Get Sim Info
         Noofmuons = int(Stats.text())
         SRIMexedir = SRIMdir.text()
@@ -300,8 +305,8 @@ class RunSimTRIMSRIM(QWidget):
             else:
                 print('Error in Scan')
 
-
-        return
+        t1 = time.time_ns()
+        logger.info("TRIM simulation finished in %ss.", round((t1-t0)/1e9, 4))
 
     def my_range(start, end, step):
         # sets a reange of momenta
@@ -438,12 +443,10 @@ class RunSimTRIMSRIM(QWidget):
         :return:
         writes the results of SRIM TRIM calcs
         '''
-        print('In WriteSim')
-        print(get_config()["general"]["working_directory"])
-        print('')
-        print('')
+        #print('In WriteSim')
+        #print(get_config()["general"]["working_directory"])
         save_file = get_config()["general"]["working_directory"] + '/SRIM_' + self.tab2.table_PlotRes.item(x, 0).text() + '_MeVc.dat'
-        print('Sve_file',save_file)
+        #print('Sve_file',save_file)
         file2 = open(save_file, "w")
 
         sumdis = 0.0
@@ -491,7 +494,7 @@ class RunSimTRIMSRIM(QWidget):
         '''file2.writelines(str(srim_settings.TRIMRes_x[x]) + ',' + str(srim_settings.TRIMRes_y[x]))
         '''
         file2.close()
-        print('save_file_fin')
+        logger.info("Saved TRIM simulation to %s", save_file)
 
     def PlotSim(self, x, y, ):
         ''' Plots the results of the srim but depends on whihc button is pressed'''
@@ -688,7 +691,7 @@ class RunSimTRIMSRIM(QWidget):
 
             file2.writelines(line+'\n')
 
-
+        logger.info("Saved TRIM settings to %s", file2.name)
         file2.close()
 
     def file_load(self,SampleName, SimType, Momentum, MomentumSpread, ScanType, MinMomentum, MaxMomentum,
@@ -727,13 +730,15 @@ class RunSimTRIMSRIM(QWidget):
 
         for j in range(10):
             line = file2.readline().split(',')
-            print(line)
+            #print(line)
             for i in range(5):
-                print(j,i)
+                #print(j,i)
                 try:
                     self.tab1.table_TRIMsetup.setItem(j, i, QTableWidgetItem(line[i]))
                 except:
-                    print('load finished')
+                    pass
+
+        logger.info("Loaded TRIM settings from %s", file2.name)
 
         file2.close()
 
