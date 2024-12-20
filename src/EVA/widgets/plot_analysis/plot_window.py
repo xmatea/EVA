@@ -1,5 +1,5 @@
 import time
-from matplotlib import pyplot as plt
+import logging
 from matplotlib.backend_bases import MouseButton
 
 from PyQt6.QtCore import Qt
@@ -24,6 +24,8 @@ from EVA.core.app import get_app, get_config
 from EVA.core.plot.plotting import plot_run, Plot_Peak_Location
 
 from EVA.widgets.plot.plot_widget import PlotWidget
+
+logger = logging.getLogger(__name__)
 
 class PlotWindow(QWidget):
     """
@@ -548,9 +550,11 @@ class PlotWindow(QWidget):
             d = float(self.findpeaks.lineedit_FindPeak_Dist.text())
             #print(h,t,d)
 
-        print(self.findpeaks.peakfindroutine.currentText())
+        logger.debug("Running peak finding method %s with height = %s, threshold = %s, distance = %s.",
+                     self.findpeaks.peakfindroutine.currentText(), h, t, d)
         i = 0
 
+        t0 = time.time_ns()
         if self.findpeaks.peakfindroutine.currentText() == "find peaks (dev)":
             for dataset in data:
                 if config.parser.getboolean(dataset.detector, "show_plot"):
@@ -567,7 +571,8 @@ class PlotWindow(QWidget):
                     self.findpeaks.table_peaks.setItem(i, 1, QTableWidgetItem(str(dict(list(out.items())))))
                     # print('after table_peaks')
                     i += 1
-                    self.plot.canvas.draw()
+
+            self.plot.canvas.draw()
 
             """              
             if globals.plot_GE1:
@@ -609,6 +614,9 @@ class PlotWindow(QWidget):
                     # print('after table_peaks')
                     i += 1
             self.plot.canvas.draw()
+
+        t1 = time.time_ns()
+        logger.debug("Peak finding finished in %ss.", (t1 - t0) / 1e9)
 
         """
         if self.findpeaks.peakfindroutine.currentText() == "scipy.Find_Peak_Cwt":
@@ -685,15 +693,8 @@ class PlotWindow(QWidget):
         if event.button is MouseButton.RIGHT:
             #Find possible gamma peaks
             x, y = event.xdata, event.ydata
+            logger.debug("Figure clicked at (%s, %s).", round(x, 2), round(y, 2))
             if event.inaxes:
-                ax = event.inaxes  # the axes instance
-                default_peaks = [event.xdata]
-                print('disconnecting callback')
-                #plt.disconnect(binding_id)
-                print('start peak find', time.time())
-
-
-                #default_peaks = [20.500]
                 default_peaks = [event.xdata]
 
                 # default_peaks = peaks_GE1
@@ -704,9 +705,11 @@ class PlotWindow(QWidget):
                                                 + str(default_sigma[0]))
 
                 input_data = list(zip(default_peaks, default_sigma))
-
+                t0 = time.time_ns()
                 res = getmatch.getmatchesgammas(input_data)
-                print('end peak find', time.time())
+                t1 = time.time_ns()
+                logger.debug("Found %s gamma transitions in %ss", len(res), round((t1-t0)/1e9, 4))
+
                 if res == []:
                     self.clickpeaks.table_gamma.setItem(0, 0, QTableWidgetItem('No match'))
                 else:
@@ -731,10 +734,11 @@ class PlotWindow(QWidget):
 
                     self.clickpeaks.table_gamma.setRowCount(i)
 
-
         if event.button is MouseButton.LEFT:
             #find possible muonic X-ray peaks
             x, y = event.xdata, event.ydata
+            logger.debug("Figure clicked at (%s, %s).", round(x, 2), round(y, 2))
+
             if event.inaxes:
                 ax = event.inaxes  # the axes instance
                 default_peaks=[event.xdata]
@@ -744,7 +748,11 @@ class PlotWindow(QWidget):
                                            + "{:.1f}".format(default_peaks[0]) +' +/- '
                                            + str(default_sigma[0]))
                 input_data = list(zip(default_peaks, default_sigma))
+
+                t0 = time.time_ns()
                 res, res_PM, res_SM = getmatch.get_matches(input_data)
+                t1 = time.time_ns()
+                logger.debug("Found %s muonic xray transitions in %ss", len(res), round((t1-t0)/1e9, 4))
 
                 i = 0
                 self.clickpeaks.table_muon.setRowCount(len(res))

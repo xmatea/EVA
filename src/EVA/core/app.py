@@ -1,9 +1,11 @@
 import matplotlib
+import logging
 from PyQt6.QtWidgets import QApplication
 
 from EVA.core.settings.config import Config
 from EVA.core.data_loading import LoadDatabaseFile, loadgamma, loaddata
 
+logger = logging.getLogger(__name__)
 
 def get_app():
     return QApplication.instance()
@@ -37,7 +39,9 @@ class App(QApplication):
         # Check config and set default "muon database" accordingly
         if self.config["database"]["mu_xray_db"] == "legacy":
             self.muon_database = self.legacy_muon_database
+            logger.info("Using legacy muon database.")
         elif self.config["database"]["mu_xray_db"] == "mudirac":
+            logger.info("Using mudirac muon database.")
             self.muon_database = self.mudirac_muon_database
         else:
             raise KeyError # Invalid muon database in config
@@ -56,10 +60,12 @@ class App(QApplication):
     def use_mudirac_muon_db(self):
         self.muon_database = self.mudirac_muon_database
         self.config["database"]["mu_xray_db"] = "mudirac"
+        logger.info("Muon database has been set to mudirac.")
 
     def use_legacy_muon_db(self):
         self.muon_database = self.legacy_muon_database
         self.config["database"]["mu_xray_db"] = "legacy"
+        logger.info("Muon database has been set to legacy.")
 
     # Load run and update config
     def set_loaded_run(self, run_num):

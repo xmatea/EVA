@@ -1,3 +1,4 @@
+import logging
 from PyQt6.QtWidgets import (
     QCheckBox,
     QLabel,
@@ -6,6 +7,8 @@ from PyQt6.QtWidgets import (
     QLineEdit,
     QGridLayout, QMessageBox,
 )
+
+logger = logging.getLogger(__name__)
 
 from EVA.core.app import get_app, get_config
 
@@ -74,6 +77,7 @@ class Correction_E(QWidget):
         if not self.validate_form():
             error = "Invalid form input."
             msg = QMessageBox.critical(self, "Input error", error)
+            logger.error("Invalid energy correction form data.")
             return
 
         for i, detector in enumerate(self.detector_list):
@@ -89,6 +93,8 @@ class Correction_E(QWidget):
                 config[detector]["use_e_corr"] = "yes"
             else:
                 config[detector]["use_e_corr"] = "no"
+
+        logger.info("Saved current energy corrections.")
 
 
     def on_checkbox_click(self):
@@ -113,3 +119,4 @@ class Correction_E(QWidget):
         app = get_app()
         app.energy_correction_window = None
         event.accept()
+        logger.info("Closing energy correction window.")

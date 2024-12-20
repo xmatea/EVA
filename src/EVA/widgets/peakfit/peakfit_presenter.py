@@ -1,6 +1,7 @@
+import logging
 from EVA.widgets.peakfit.peakfit_model import PeakFitModel
 from EVA.widgets.peakfit.constraints_window import ConstraintsWindow
-
+logger = logging.getLogger(__name__)
 
 class PeakFitPresenter(object):
     def __init__(self, view):
@@ -22,6 +23,7 @@ class PeakFitPresenter(object):
         # Launches dialog to select constraints and bounds
         constraints_dialog = ConstraintsWindow(self.view, self.model.initial_params)
         constraints_dialog.param_settings_saved_s.connect(self.get_constraint_settings)
+        logger.info("Launching constraints window.")
         constraints_dialog.show()
 
     def get_constraint_settings(self, params):
@@ -109,6 +111,7 @@ class PeakFitPresenter(object):
 
         if len(self.model.initial_params) <= 1:
             self.view.show_error_dialogue("Please add at least one peak to fit.")
+            logger.error("No peaks selected - aborting peakfit.")
             return
 
         if self.view.e_range_auto_check.isChecked():
@@ -119,6 +122,7 @@ class PeakFitPresenter(object):
                 self.model.x_range = self.get_e_range()
             except ValueError:
                 self.view.show_error_dialogue("Please specify a valid energy range.")
+                logger.error("Invalid energy range - aborting peakfit.")
                 return
         try:
             self.model.fit_peaks()
@@ -129,6 +133,7 @@ class PeakFitPresenter(object):
                 self.view.show_error_dialogue("Selected fitting range too narrow to fit curve. (Not enough data points in range.)\n"
                                               "Either specify a wider energy range or increase initial peak width of peaks.")
                 #raise e
+                logger.error("Not enough points to fit - aborting peakfit. \nError message: %s", e.args[0])
                 return
             else:
                 self.view.show_error_dialogue(
@@ -136,17 +141,19 @@ class PeakFitPresenter(object):
                     f" that any constraints / bounds are valid, if specified.\n"
                     f"Error message from lmfit: {e.args[0]}")
                 #raise e
+                logger.error("Unexpected error - aborting peakfit. \nError message from lmfit: %s", e.args[0])
                 return
 
         except ValueError as e:
             self.view.show_error_dialogue(f"An unexpected error occurred. Please ensure your initial parameters "
                                           f"are good enough.\nError message from lmfit: {e.args[0]}")
+            logger.error("Unexpected error - aborting peakfit. \nError message from lmfit: %s", e.args[0])
             return
-            #raise e
 
         except RecursionError:
             self.view.show_error_dialogue("A recursion error occurred. If parameter constraints have been set, "
                                           "ensure they are not recursive.")
+            logger.error("Recusion error, likely due to recursive constraints applied - aborting peakfit.")
             return
 
         # Display fit report in text window
@@ -166,6 +173,7 @@ class PeakFitPresenter(object):
         if not self.model.fit_result.errorbars:
             self.view.show_error_dialogue("Could not estimate fit errors. Please adjust your initial parameters "
                                          "and constraints / bounds if specified.")
+            logger.warning("Failed to estimate fit errors.")
 
     def remove_peak(self):
         params = self.model.initial_params
@@ -177,6 +185,7 @@ class PeakFitPresenter(object):
         peak_id = list(peak_params)[-1]
 
         self.model.initial_params.pop(peak_id)
+        logger.debug("Removed peak %s from fitting parameters.", peak_id)
 
     def add_peak_selection(self, params):
         x = params["x"]
@@ -192,6 +201,7 @@ class PeakFitPresenter(object):
         # Add the new peak to the table
         self.update_peaks_table(self.model.initial_params)
         self.view.quit_add_peak_mode(peak_added=True)
+
 
     def on_save_params(self, path):
         self.model.save_params(path)

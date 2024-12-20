@@ -1,3 +1,4 @@
+import logging
 from PyQt6.QtWidgets import (
     QLabel,
     QPushButton,
@@ -11,8 +12,10 @@ from PyQt6.QtWidgets import (
     QErrorMessage
 )
 
+from EVA.core.physics.normalisation import normalise_counts
 from EVA.widgets.multiplot import ReadMultiRun, GenReadList, MultiPlot
 from EVA.widgets.plot.plot_widget import PlotWidget
+logger = logging.getLogger(__name__)
 
 
 class MultiPlotWindow(QWidget):
@@ -109,6 +112,7 @@ class MultiPlotWindow(QWidget):
         RunList = GenReadList.GenReadList(line)
 
         if not RunList:
+            logger.error("No runs specified for multiplot.")
             error_message = QErrorMessage(self)
             error_message.setWindowTitle("Multi-run plot error")
             error_message.showMessage("Error: You must specify at least one run number in the table.")
@@ -126,7 +130,17 @@ class MultiPlotWindow(QWidget):
         # error handling
         err_msg = ""
 
-        if len(empty_runs) != 0:
+        if len(norm_error_runs) != 0:
+            run_numbers_str = ", ".join([run.run_num for run in norm_error_runs])
+
+            error_message = QErrorMessage(self)
+            error_message.setWindowTitle("Multi-run plot error")
+            error_message.showMessage(f"Error: Failed to apply normalisation. Cannot use normalisation by spills "
+                                      f"if no data is found in comment.dat for specified run(s).")
+            logger.error("Failed to use normalisation by spills for runs %s.", run_numbers_str)
+            return
+
+        elif len(empty_runs) != 0:
             run_numbers_str = ", ".join([run.run_num for run in empty_runs])
 
             error_message = QErrorMessage(self)
@@ -134,16 +148,10 @@ class MultiPlotWindow(QWidget):
             error_message.showMessage(f"Error: No files found for following run(s): {run_numbers_str}")
 
             if len(runs) == 0:
-                return # Quit now if all runs failed to load
-
-        if len(norm_error_runs) != 0:
-            run_numbers_str = ", ".join([run.run_num for run in norm_error_runs])
-
-            error_message = QErrorMessage(self)
-            error_message.setWindowTitle("Multi-run plot error")
-            error_message.showMessage(f"Error: Could not normalise the following run(s): "
-                                      f"{run_numbers_str}.\nCannot use normalisation by spills if no data is found in "
-                                      f"comment.dat for specified run(s).")
+                logger.error("No files found for runs %s.", run_numbers_str)
+                return  # Quit now if all runs failed to load
+            else:
+                logger.warning("No files found for runs %s.", run_numbers_str)
 
         # plots multiple runs from the runlist and with a y offset
         fig, ax = MultiPlot.multi_plot(runs, offset)

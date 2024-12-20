@@ -1,3 +1,4 @@
+import logging
 from PyQt6.QtWidgets import (
     QCheckBox,
     QLabel,
@@ -7,6 +8,8 @@ from PyQt6.QtWidgets import (
     QGridLayout,
     QMessageBox
 )
+
+logger = logging.getLogger(__name__)
 
 from EVA.core.app import get_app, get_config
 
@@ -67,7 +70,9 @@ class Correction_Eff(QWidget):
         if not self.validate_form():
             error = "Invalid form input."
             _ = QMessageBox.critical(self, "Input error", error)
+            logger.error("Invalid efficiency correction form data.")
             return
+
         config = get_config()
         for i, detector in enumerate(self.detector_list):
             params = []
@@ -83,13 +88,14 @@ class Correction_Eff(QWidget):
             else:
                 config[detector]["use_eff_corr"] = "no"
 
-
+        logger.info("Saved current efficiency corrections.")
 
     def closeEvent(self, event):
         app = get_app()
         app.efficiency_correction_window = None
 
         event.accept()
+        logger.info("Closed efficiency corrections window.")
 
     def validate_form(self):
         for i, _ in enumerate(self.detector_list):

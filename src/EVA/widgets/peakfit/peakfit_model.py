@@ -1,15 +1,15 @@
 import json
 import time
+import logging
 import numpy as np
-import uncertainties as uc
-from PyQt6.QtCore import pyqtSignal, QObject
+from PyQt6.QtCore import QObject
 from EVA.core.fitting import FitData
 from EVA.util.Trimdata import Trimdata
 
-from EVA.core.app import get_app, get_config
-from EVA.core.plot import plotting
+from EVA.core.app import get_app
 
 from EVA.core.data_structures.detector import DetectorIndices
+logger = logging.getLogger(__name__)
 
 class PeakFitModel(QObject):
     def __init__(self, presenter, detector):
@@ -47,9 +47,14 @@ class PeakFitModel(QObject):
 
     def fit_peaks(self):
         self.fitted_params = {} # clear fit parameters in between fits
+        logger.debug("Fitting range E = (%s, %s).", round(self.x_range[0], 2), round(self.x_range[1], 2))
+        logger.debug("Initial peak parameters %s", self.initial_params)
         x_data, y_data = Trimdata(self.spectrum.x, self.spectrum.y, self.x_range[0], self.x_range[1])
 
+        t0 = time.time_ns()
         self.fit_result = FitData.fit_gaussian_lmfit(x_data, y_data, self.initial_params)
+        t1 = time.time_ns()
+        logger.info("Peak fitting finished in %ss.", round((t1-t0)/1e9, 3))
 
         # store new fit parameters in model
         for param_name, param in self.fit_result.params.items():
@@ -90,6 +95,7 @@ class PeakFitModel(QObject):
 
             if expr is not None:
                 self.fitted_params[prefix][var_name]["expr"] = expr
+        logger.debug("Fitted parameters: %s", self.fitted_params)
 
         return x_data
 
@@ -119,6 +125,8 @@ class PeakFitModel(QObject):
                 "min": 0
             }
         }
+
+        logger.debug("Adding new peak %s: %s.", name, self.initial_params[name])
 
     def calculate_x_range(self):
         # extract peak centres and sigmas from all loaded parameters
@@ -150,18 +158,21 @@ class PeakFitModel(QObject):
     def save_params(self, path):
         with open(path, "w") as file:
             json.dump(self.fitted_params, file, indent=4)
+            logger.debug("Saved fitted parameters to %s", path)
 
         file.close()
 
     def load_params(self, path):
         with open(path, "r") as file:
             self.initial_params = json.load(file)
+            logger.debug("Loaded initial parameters from %s", path)
 
         file.close()
 
     def save_fit_report(self, path):
         with open(path, "w") as file:
             file.write(self.fit_result.fit_report())
+            logger.debug("Saved fitted report to %s", path)
 
         file.close()
 
