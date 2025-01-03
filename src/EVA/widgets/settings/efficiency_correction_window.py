@@ -1,4 +1,7 @@
 import logging
+
+from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import (
     QCheckBox,
     QLabel,
@@ -11,12 +14,12 @@ from PyQt6.QtWidgets import (
 
 logger = logging.getLogger(__name__)
 
-from EVA.core.app import get_app, get_config
+from EVA.core.app import get_config
 
 class Correction_Eff(QWidget):
-
+    effcorr_window_closed_s = pyqtSignal(QCloseEvent)
     def __init__(self, parent = None):
-        super(Correction_Eff,self).__init__(parent)
+        super().__init__(parent)
 
         self.setMaximumSize(1200, 500)
         self.setWindowTitle("Efficiency Correction ")
@@ -31,6 +34,8 @@ class Correction_Eff(QWidget):
         self.param_names = ["P0", "P1", "P2", "P3", "P4"]
         self.param_line_edits = []
         self.checkboxes = []
+
+        self.effcorr_window_closed_s.connect(self.test)
 
         for i, param in enumerate(self.param_names):
             self.layout.addWidget(QLabel(param), 0, i + 1)
@@ -65,6 +70,10 @@ class Correction_Eff(QWidget):
 
         self.setLayout(self.layout)
         self.show()
+        logger.debug("Efficiency window initialised.")
+
+    def test(self):
+        logger.info("works!")
 
     def save_settings(self):
         if not self.validate_form():
@@ -91,11 +100,8 @@ class Correction_Eff(QWidget):
         logger.info("Saved current efficiency corrections.")
 
     def closeEvent(self, event):
-        app = get_app()
-        app.efficiency_correction_window = None
+        self.effcorr_window_closed_s.emit(event) # emit signal to notify mainwindow
 
-        event.accept()
-        logger.info("Closed efficiency corrections window.")
 
     def validate_form(self):
         for i, _ in enumerate(self.detector_list):

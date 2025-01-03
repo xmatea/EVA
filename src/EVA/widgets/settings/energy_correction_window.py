@@ -1,4 +1,7 @@
 import logging
+
+from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import (
     QCheckBox,
     QLabel,
@@ -13,10 +16,7 @@ logger = logging.getLogger(__name__)
 from EVA.core.app import get_app, get_config
 
 class Correction_E(QWidget):
-    """
-        This "window" is a QWidget. If it has no parent, it
-        will appear as a free-floating window as we want.
-        """
+    energycorr_window_closed_s = pyqtSignal(QCloseEvent)
 
     def __init__(self, parent = None):
         super(Correction_E,self).__init__(parent)
@@ -116,7 +116,4 @@ class Correction_E(QWidget):
         return True
 
     def closeEvent(self, event):
-        app = get_app()
-        app.energy_correction_window = None
-        event.accept()
-        logger.info("Closing energy correction window.")
+        self.energycorr_window_closed_s.emit(event) # emit signal to notify mainwindow
