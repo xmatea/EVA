@@ -1,7 +1,6 @@
 from enum import Enum
 
-from EVA.core.data_structures.spectrum import Spectrum
-
+# Just a simple enum to map detector names to list indices
 class DetectorIndices(Enum):
     GE1 = 0
     GE2 = 1

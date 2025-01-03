@@ -21,7 +21,8 @@ if __name__ == "__main__":
     app.setStyleSheet("QLabel{font-size: 8pt;}"
                       "QLineEdit{font-size: 8pt;}"
                       "QPushButton{font-size: 8pt;}")
-    
+
+    logger.debug("Initialising main window.")
     app.main_window = MainWindow()
     logger.info("Launching main window.")
     app.main_window.show()
