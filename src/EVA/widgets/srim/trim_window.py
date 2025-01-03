@@ -2,6 +2,7 @@ import logging
 import time
 
 import numpy as np
+from PyQt6.QtCore import pyqtSignal
 
 from srim import TRIM, Ion, Layer, Target
 import matplotlib.pyplot as plt
@@ -204,11 +205,9 @@ class RunSimTRIMSRIM(QWidget):
         self.main_layout.addWidget(self.content_container)
 
     def closeEvent(self, event):
-        # close window cleanly
-        app = get_app()
-        app.trim_window = None
         event.accept()
         logger.info("Closing TRIM window.")
+
 
     def RunTrimSim(self, SampleName, SimType, Momentum, MomentumSpread, ScanType, MinMomentum, MaxMomentum,
                    StepMomentum, SRIMdir, TRIMOutDir, Stats):
