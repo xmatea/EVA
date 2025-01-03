@@ -33,9 +33,10 @@ class PlotWindow(QWidget):
         will appear as a free-floating window as we want.
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, run, parent=None, ):
         super(PlotWindow, self).__init__(parent)
         self.scn_res = int(get_config()["display"]["screen_resolution"])
+        self.run = run
 
         # the size of this widget is currently set to maximised from MainWindow
         """
@@ -64,7 +65,7 @@ class PlotWindow(QWidget):
         self.tabs.addTab(self.findpeaks, "Element Search")
 
         # set up plot window and navigator
-        self.plot = self.plot_spectra()
+        self.plot = self.plot_spectra(self.run)
         self.plot.canvas.mpl_connect('button_press_event', self.on_click)
 
         # Add everything to main window layout (gridlayout)
@@ -535,9 +536,8 @@ class PlotWindow(QWidget):
 
 
     def find_peaks_automatically(self):
-        app = get_app()
-        data = app.loaded_run.data
-        config = app.config
+        data = self.run.data
+        config = get_config()
         start_time = time.time_ns()
 
         if self.findpeaks.useDef_checkbox.isChecked():
@@ -674,15 +674,14 @@ class PlotWindow(QWidget):
         print(f"Found all peaks and plotted results in {(end_time - start_time) / 1e9} s.")
 
 
-    def plot_spectra(self):
-        app = get_app()
-        run = app.loaded_run
+    def plot_spectra(self, run):
+        config = get_config()
 
         # check config to see which detectors should be loaded
-        all_dets = app.config["general"]["all_detectors"].split(" ")
-        show_dets = [det for det in all_dets if app.config[det]["show_plot"] == "yes"]
+        all_dets = config["general"]["all_detectors"].split(" ")
+        show_dets = [det for det in all_dets if config[det]["show_plot"] == "yes"]
 
-        colour = app.config["plot"]["fill_colour"]
+        colour = config["plot"]["fill_colour"]
 
         fig, axs = plot_run(run, show_detectors=show_dets, colour=colour)
         return PlotWidget(fig, axs)

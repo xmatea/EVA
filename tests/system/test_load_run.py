@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
-from EVA.core.app import get_app
+from EVA.core.app import get_app, get_config
+from EVA.core.data_loading import loaddata
 from pytestqt.plugin import qapp
 
 testdir = "test_data/"
@@ -26,14 +27,13 @@ class TestLoadRun:
 
     @pytest.mark.parametrize("run_num, filenames", list(zip(run_num_list, filenames_list)))
     def test_load_run(self, qapp, run_num, filenames):
-        app = get_app()
-        app.set_loaded_run(run_num)
+        run, flags = loaddata.load_run(run_num, get_config())
 
-        # Check that app.loaded_run is None if no detector data was loaded (invalid run number)
+        # Check that run is None if no detector data was loaded (invalid run number)
         if all([filename == "" for filename in filenames]):
-            assert app.loaded_run is None, "Invalid run was specified but run is not None"
+            assert run.loaded_detectors is not None, "Invalid run was specified but run is not empty"
         else:
-            for i, dataset in enumerate(app.loaded_run.raw):
+            for i, dataset in enumerate(run.raw):
                 xdata, ydata = self.manual_load(filenames[i])
                 print(dataset.x)
                 print(dataset.y)

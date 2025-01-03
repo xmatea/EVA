@@ -4,9 +4,9 @@ from EVA.widgets.peakfit.constraints_window import ConstraintsWindow
 logger = logging.getLogger(__name__)
 
 class PeakFitPresenter(object):
-    def __init__(self, view):
+    def __init__(self, view, model, parent=None):
         self.view = view
-        self.model = PeakFitModel(self, view.detector)
+        self.model = model
 
         # connect all signals from the view to slots
         self.view.fit_button_clicked_s.connect(self.start_peakfit)
@@ -18,6 +18,9 @@ class PeakFitPresenter(object):
         self.view.save_params_s.connect(self.on_save_params)
         self.view.load_params_s.connect(self.on_load_params)
         self.view.save_fit_report_s.connect(self.save_fit_report)
+
+        # generate spectrum and display it in the view
+        self.view.update_plot(*self.model.plot_spectrum())
 
     def launch_constraints_menu(self):
         # Launches dialog to select constraints and bounds

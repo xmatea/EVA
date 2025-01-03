@@ -6,19 +6,19 @@ from PyQt6.QtCore import QObject
 from EVA.core.fitting import FitData
 from EVA.util.Trimdata import Trimdata
 
-from EVA.core.app import get_app
+from EVA.core.app import get_app, get_config
 
 from EVA.core.data_structures.detector import DetectorIndices
+from EVA.core.plot import plotting
+
 logger = logging.getLogger(__name__)
 
 class PeakFitModel(QObject):
-    def __init__(self, presenter, detector):
+    def __init__(self, run, detector, parent=None):
         super().__init__()
-        self.presenter = presenter
 
         # Get loaded spectrum from app
-        app = get_app()
-        self.run = app.loaded_run
+        self.run = run
         self.spectrum = self.run.data[DetectorIndices[detector].value]
         self.detector = detector
 
@@ -44,6 +44,9 @@ class PeakFitModel(QObject):
         self.fit_result = None
         self.x_range = None
         self.y_range = None
+
+    def plot_spectrum(self):
+        return plotting.plot_spectrum(self.spectrum, get_config()["general"]["normalisation"])
 
     def fit_peaks(self):
         self.fitted_params = {} # clear fit parameters in between fits

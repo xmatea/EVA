@@ -5,6 +5,7 @@ from pytestqt.plugin import qtbot
 from matplotlib.backend_bases import MouseButton
 
 from EVA.widgets.plot_analysis.plot_window import PlotWindow
+from EVA.core.data_loading import loaddata
 from EVA.core.app import get_app, get_config
 
 import tests.gui.test_util_gui as util
@@ -15,112 +16,103 @@ gamma_plot_lines_tests = [[189.9, 124], [551.8, 626], [44.4, 198]]
 class TestPlotWindow:
     # will be executed once before tests are run
     @pytest.fixture(autouse=True)
-    def setup(self):
+    def setup(self, qtbot):
         # loading database and sample data
         app = get_app()
-        app.set_loaded_run(2630)
         app.use_mudirac_muon_db()
+
+        run, _ = loaddata.load_run(2630, get_config())
+
+        self.widget = QWidget()
+        self.window = PlotWindow(run)
+        qtbot.addWidget(self.window)
+
+        #self.widget.showMaximized()
+        qtbot.wait(100)
 
     # test if the expected data is displayed in gamma table when clicking a specific peak in the figure
     def test_clickpeaks_gammas(self, qtbot):
-        widget = QWidget()
-        window = PlotWindow(widget)
-        qtbot.addWidget(window)
-        widget.showMaximized()
-        qtbot.wait(500)
-
         tests = [("44Sc", 189.9), ("93Zr", 65.6)]
         for test in tests:
-            event = util.trigger_figure_click_event(window.plot.canvas, xdata=test[1], ydata=0,
-                                          ax=window.plot.canvas.axs[1], button=MouseButton.RIGHT)
+            event = util.trigger_figure_click_event(self.window.plot.canvas, xdata=test[1], ydata=0,
+                                          ax=self.window.plot.canvas.axs[1], button=MouseButton.RIGHT)
             # call on_click
-            PlotWindow.on_click(window, event)
+            PlotWindow.on_click(self.window, event)
             qtbot.wait(500)
 
-            table_res = window.clickpeaks.table_gamma.item(0, 0).text()
+            table_res = self.window.clickpeaks.table_gamma.item(0, 0).text()
             assert table_res is not None, "gamma table empty on click"
             assert table_res == test[0], \
                 "data displayed at position 0,0 in gamma table did not match the expected value"
 
+        #self.widget.close()
+
     # test if the expected data is displayed in muon table when clicking a specific peak in the figure
     def test_clickpeaks_muon(self, qtbot):
-        widget = QWidget()
-        window = PlotWindow(widget)
-        qtbot.addWidget(window)
-        widget.showMaximized()
-        qtbot.wait(500)
 
         tests = [("Cl", 193.4), ("Ti", 932.0)]
         for test in tests:
             # simulate click event
-            event = util.trigger_figure_click_event(window.plot.canvas, xdata=test[1], ydata=0,
-                                          ax=window.plot.canvas.axs[1], button=MouseButton.LEFT)
+            event = util.trigger_figure_click_event(self.window.plot.canvas, xdata=test[1], ydata=0,
+                                          ax=self.window.plot.canvas.axs[1], button=MouseButton.LEFT)
             # call on_click
-            PlotWindow.on_click(window, event)
+            PlotWindow.on_click(self.window, event)
             qtbot.wait(500)
 
-            table_res = window.clickpeaks.table_muon.item(0, 0).text()
+            table_res = self.window.clickpeaks.table_muon.item(0, 0).text()
             print(table_res)
             assert table_res == test[0], \
                 "data displayed at position 0,0 in muon table on figure click did not match the expected value"
 
+        #self.widget.close()
+
     @pytest.mark.parametrize("tests", gamma_plot_lines_tests)
     def test_plot_and_remove_lines_gammas(self, qtbot, tests):
-        widget = QWidget()
-        window = PlotWindow(widget)
-        qtbot.addWidget(window)
-        widget.showMaximized()
-        qtbot.wait(500)
 
         # first element in tuple is which energy to search, second element in tuple is how many lines will be plotted
         # when clicking the first element in the table after searching that energy.
 
         # simulate click event
-        event = util.trigger_figure_click_event(window.plot.canvas, xdata=tests[0], ydata=0,
-                                                ax=window.plot.canvas.axs[1], button=MouseButton.RIGHT)
+        event = util.trigger_figure_click_event(self.window.plot.canvas, xdata=tests[0], ydata=0,
+                                                ax=self.window.plot.canvas.axs[1], button=MouseButton.RIGHT)
 
-        PlotWindow.on_click(window, event)
+        PlotWindow.on_click(self.window, event)
         qtbot.wait(250)
 
         # Click on source in gamma table to plot vertical lines on figure
-        gamma_table_item = window.clickpeaks.table_gamma.item(0, 0)
-        gamma_table_rect = window.clickpeaks.table_gamma.visualItemRect(gamma_table_item)
+        gamma_table_item = self.window.clickpeaks.table_gamma.item(0, 0)
+        gamma_table_rect = self.window.clickpeaks.table_gamma.visualItemRect(gamma_table_item)
 
-        qtbot.mouseClick(window.clickpeaks.table_gamma.viewport(), Qt.MouseButton.LeftButton,
+        qtbot.mouseClick(self.window.clickpeaks.table_gamma.viewport(), Qt.MouseButton.LeftButton,
                      pos=gamma_table_rect.center())
         qtbot.wait(250)
 
         # check that lines were plotted
-        assert len(list(window.plot.canvas.axs[1].lines)) > 1, "no lines were plotted"
-        assert len(list(window.plot.canvas.axs[1].lines)) == tests[1], "not all lines were plotted"
+        assert len(list(self.window.plot.canvas.axs[1].lines)) > 1, "no lines were plotted"
+        assert len(list(self.window.plot.canvas.axs[1].lines)) == tests[1], "not all lines were plotted"
 
         # Click on source in remove plot lines table to remove vertical line
-        remove_table_item = window.clickpeaks.table_plotted_lines.item(0, 1)
-        remove_table_rect = window.clickpeaks.table_plotted_lines.visualItemRect(remove_table_item)
+        remove_table_item = self.window.clickpeaks.table_plotted_lines.item(0, 1)
+        remove_table_rect = self.window.clickpeaks.table_plotted_lines.visualItemRect(remove_table_item)
 
-        qtbot.mouseClick(window.clickpeaks.table_plotted_lines.viewport(), Qt.MouseButton.LeftButton,
+        qtbot.mouseClick(self.window.clickpeaks.table_plotted_lines.viewport(), Qt.MouseButton.LeftButton,
                      pos=remove_table_rect.center())
         qtbot.wait(500)
 
-        assert len(list(window.plot.canvas.axs[1].lines)) == 1, "Failed to remove all plot lines"
+        assert len(list(self.window.plot.canvas.axs[1].lines)) == 1, "Failed to remove all plot lines"
+        #self.widget.close()
 
     @pytest.mark.parametrize("tests", muon_plot_lines_tests)
     def test_plot_and_remove_lines_muonic_xrays(self, qtbot, tests):
-        widget = QWidget()
-        window = PlotWindow(widget)
-        qtbot.addWidget(window)
-        widget.showMaximized()
-        qtbot.wait(500)
-
         # first element in tuple is which energy to search, second element in tuple is how many lines will be plotted
         # when clicking the first element in the table after searching that energy.
-        table = window.clickpeaks.table_muon
+        table = self.window.clickpeaks.table_muon
 
         # simulate left click on figure
-        event = util.trigger_figure_click_event(window.plot.canvas, xdata=tests[0], ydata=0,
-                                                ax=window.plot.canvas.axs[1], button=MouseButton.LEFT)
+        event = util.trigger_figure_click_event(self.window.plot.canvas, xdata=tests[0], ydata=0,
+                                                ax=self.window.plot.canvas.axs[1], button=MouseButton.LEFT)
 
-        PlotWindow.on_click(window, event)
+        PlotWindow.on_click(self.window, event)
         qtbot.wait(250)
         # Click on source in table to plot vertical lines on figure
         table_item = table.item(0, 0)
@@ -130,26 +122,25 @@ class TestPlotWindow:
         qtbot.wait(250)
 
         # check that lines were plotted
-        print(f"number of lines plotted for energy {tests[0]} - {len(list(window.plot.canvas.axs[1].lines))}")
-        assert len(list(window.plot.canvas.axs[1].lines)) > 1, "no lines were plotted"
-        assert len(list(window.plot.canvas.axs[1].lines)) == tests[1], "not all lines were plotted"
+        print(f"number of lines plotted for energy {tests[0]} - {len(list(self.window.plot.canvas.axs[1].lines))}")
+        assert len(list(self.window.plot.canvas.axs[1].lines)) > 1, "no lines were plotted"
+        assert len(list(self.window.plot.canvas.axs[1].lines)) == tests[1], "not all lines were plotted"
 
         # Click on source in remove plot lines table to remove vertical line
-        remove_table_item = window.clickpeaks.table_plotted_lines.item(0, 0)
-        remove_table_rect = window.clickpeaks.table_plotted_lines.visualItemRect(remove_table_item)
+        remove_table_item = self.window.clickpeaks.table_plotted_lines.item(0, 0)
+        remove_table_rect = self.window.clickpeaks.table_plotted_lines.visualItemRect(remove_table_item)
 
-        qtbot.mouseClick(window.clickpeaks.table_plotted_lines.viewport(), Qt.MouseButton.LeftButton,
+        qtbot.mouseClick(self.window.clickpeaks.table_plotted_lines.viewport(), Qt.MouseButton.LeftButton,
                          pos=remove_table_rect.center())
         qtbot.wait(250)
 
-        assert len(list(window.plot.canvas.axs[1].lines)) == 1, "Failed to remove all plot lines"
+        assert len(list(self.window.plot.canvas.axs[1].lines)) == 1, "Failed to remove all plot lines"
+        #self.widget.close()
 
     # TODO: Make this work properly
 
     def test_find_peaks_plotting_on_button_click(self, qtbot):
         config = get_config()
-        app = get_app()
-        app.use_legacy_muon_db()
 
         config["GE1"]["show_plot"] = "yes"
         config["GE2"]["show_plot"] = "no"
@@ -184,15 +175,11 @@ class TestPlotWindow:
 
         peaks_ax1 = [(71.1875, 25), (96.6875, 83), (120.938, 97)]
 
-        widget = QWidget()
-        window = PlotWindow(widget)
-        qtbot.addWidget(window)
-
         # click on peak fitting button - ONLY TESTS SCIPY FIND PEAKS METHOD
-        qtbot.mouseClick(window.findpeaks.find_peaks_button, Qt.MouseButton.LeftButton)
+        qtbot.mouseClick(self.window.findpeaks.find_peaks_button, Qt.MouseButton.LeftButton)
 
-        data_ax0 = window.plot.canvas.axs[0].collections[1].get_offsets().data
-        data_ax1 = window.plot.canvas.axs[1].collections[1].get_offsets().data
+        data_ax0 = self.window.plot.canvas.axs[0].collections[1].get_offsets().data
+        data_ax1 = self.window.plot.canvas.axs[1].collections[1].get_offsets().data
 
         print(data_ax0)
 
@@ -203,3 +190,5 @@ class TestPlotWindow:
             "Marker positions on figure after peakfit did not match expected results"
         assert all([elem[0] == peaks_ax1[i][0] for i, elem in enumerate(data_ax1)]), \
             "Marker positions on figure after peakfit did not match expected results"
+
+        self.widget.close()

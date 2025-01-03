@@ -45,61 +45,65 @@ class Run:
         self.events_str = events_str
         self.comment = comment
 
-
+    # dispatcher method to normalise from string
     def set_normalisation(self, normalisation, normalise_which=None):
         if normalise_which is None:
             normalise_which = self.normalise_which
 
         if normalisation == "counts":
-            for i, spectrum in enumerate(self.raw):
+            self.set_normalisation_counts(normalise_which)
 
+        elif normalisation == "events":
+            self.set_normalisation_events(normalise_which)
+
+        elif normalisation == "none":
+            self.set_normalisation_none()
+
+        else:
+            raise KeyError(f"Normalisation type '{normalisation}' is not valid.")
+
+    def set_normalisation_none(self):
+        for i, spectrum in enumerate(self.raw):
+            self.data[i].y = self.raw[i].y
+
+        self.normalisation = "none"
+        self.normalise_which = self.loaded_detectors
+
+    def set_normalisation_counts(self, normalise_which):
+        for i, spectrum in enumerate(self.raw):
+            # Apply normalisation to specified spectra
+            if spectrum.detector in normalise_which:
+                self.data[i].y = normalise_counts(spectrum.y)
+            else:
+                self.data[i].y = self.raw[i].y
+
+        # Update the normalisation status
+        self.normalisation = "counts"
+        self.normalise_which = normalise_which
+
+    def set_normalisation_events(self, normalise_which):
+        try:
+            spills = int(self.events_str[19:])
+            for i, spectrum in enumerate(self.raw):
                 # Apply normalisation to specified spectra
-                if spectrum.detector in normalise_which:
-                    self.data[i].y = normalise_counts(spectrum.y)
+                if spectrum.detector in self.normalise_which:
+                    self.data[i].y = normalise_events(spectrum.y, spills)
                 else:
                     self.data[i].y = self.raw[i].y
 
             # Update the normalisation status
-            self.normalisation = normalisation
+            self.normalisation = "events"
             self.normalise_which = normalise_which
-            return 0
 
-        if normalisation == "events":
-            try:
-                spills = int(self.events_str[19:])
-                for i, spectrum in enumerate(self.raw):
-
-                    # Apply normalisation to specified spectra
-                    if spectrum.detector in normalise_which:
-                        self.data[i].y = normalise_events(spectrum.y, spills)
-                    else:
-                        self.data[i].y = self.raw[i].y
-
-                # Update the normalisation status
-                self.normalisation = normalisation
-                self.normalise_which = normalise_which
-                return 0
-
-            except ValueError:
-                # If spills data is not available, revert normalisation to none
-                for i, spectrum in enumerate(self.raw):
-                    self.data[i].y = self.raw[i].y
-
-                # set normalisation status to "none"
-                self.normalisation = "none"
-                self.normalise_which = self.loaded_detectors
-                return 1
-
-        elif normalisation == "none":
+        except ValueError:
+            # If spills data is not available, revert normalisation to none
             for i, spectrum in enumerate(self.raw):
                 self.data[i].y = self.raw[i].y
 
-            self.normalisation = normalisation
+            # set normalisation status to "none"
+            self.normalisation = "none"
             self.normalise_which = self.loaded_detectors
-            return 0
-
-        else:
-            raise KeyError # normalisation type specified in config doesn't exist
+            raise ValueError
 
     def set_energy_correction(self, e_corr_params, e_corr_which=None):
         if e_corr_which is None:

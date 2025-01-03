@@ -18,8 +18,6 @@ from PyQt6.QtWidgets import (
 
 from EVA.widgets.plot import plot_widget
 from EVA.core.app import get_app, get_config
-from EVA.core.plot import plotting
-
 
 class PeakFitView(QWidget):
     fit_button_clicked_s = pyqtSignal()
@@ -33,7 +31,7 @@ class PeakFitView(QWidget):
     load_params_s = pyqtSignal(str)
     save_fit_report_s = pyqtSignal(str)
 
-    def __init__(self, parent, detector):
+    def __init__(self, detector, parent=None):
         super().__init__(parent)
         conf = get_config()
         self.run_num = conf["general"]["run_num"]
@@ -42,7 +40,6 @@ class PeakFitView(QWidget):
         self.init_gui()
 
     def init_gui(self):
-        app = get_app()
         self.setMinimumSize(1000, 700)
         self.setWindowTitle("Peak Fitting Window: Run Number " + self.run_num + " Det: " + self.detector)
 
@@ -173,10 +170,8 @@ class PeakFitView(QWidget):
         # set up plot widget
         self.plot_title = "Analysis of RunNum: " + self.run_num + "Det: " + self.detector
 
-        fig, ax = plotting.plot_run(app.loaded_run, show_detectors=[self.detector],
-                                    colour=app.config["plot"]["fill_colour"], title=self.plot_title)
+        self.plot = plot_widget.PlotWidget()
 
-        self.plot = plot_widget.PlotWidget(fig, ax)
         self.plot.canvas.mpl_connect('button_press_event', self.on_plot_click)
 
         self.layout.addWidget(self.side_panel_w, 0, 0, 1, 3)
@@ -184,6 +179,9 @@ class PeakFitView(QWidget):
         self.layout.addWidget(self.save_fit_button, 1, 1)
         self.layout.addWidget(self.load_fit_button, 1, 2)
         self.layout.addWidget(self.plot, 0, 3, -1, 1)
+
+    def update_plot(self, fig, ax):
+        self.plot.update_plot(fig, ax)
 
     def on_peak_table_cell_changed(self, row, col):
         """
