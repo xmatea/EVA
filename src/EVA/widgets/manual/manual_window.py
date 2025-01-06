@@ -1,4 +1,4 @@
-import os
+import sys
 from PyQt6.QtWidgets import (
     QVBoxLayout,
     QTextBrowser,
@@ -24,14 +24,18 @@ class ManualWindow(QWidget):
         self.path = get_path("./src/EVA/resources/manual/manual.html")
 
         try:
-            self.htmlstr = self.load_manual(self.path)
+            self.htmlstr = self.load_manual()
             self.page.setHtml(self.htmlstr)
+
         except FileNotFoundError:
             self.page.setText("Oops! Failed to load manual!")
 
-    def load_manual(self, path):
-        with open(path, "r", encoding="utf-8") as file:
+    def load_manual(self):
+        with open(self.path, "r", encoding="utf-8") as file:
             manual = "".join(file.readlines())
 
-        file.close()
+        # check if EVA is running in executable or from source
+        if hasattr(sys, "_MEIPASS"):
+            manual = manual.replace("./", "_internal/")
+
         return manual
