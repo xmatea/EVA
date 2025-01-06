@@ -203,3 +203,10 @@ class MainView(QWidget):
         _ = QMessageBox.critical(self, title, msg,
                                  buttons=QMessageBox.StandardButton.Ok,
                                  defaultButton=QMessageBox.StandardButton.Ok)
+
+    def show_message_box(self, msg, title="Message"):
+        # this will block the program until user presses "ok"
+        _ = QMessageBox.information(self, title, msg,
+                                 buttons=QMessageBox.StandardButton.Ok,
+                                 defaultButton=QMessageBox.StandardButton.Ok)
+
