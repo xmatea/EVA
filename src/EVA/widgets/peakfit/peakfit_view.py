@@ -172,8 +172,6 @@ class PeakFitView(QWidget):
 
         self.plot = plot_widget.PlotWidget()
 
-        self.plot.canvas.mpl_connect('button_press_event', self.on_plot_click)
-
         self.layout.addWidget(self.side_panel_w, 0, 0, 1, 3)
         self.layout.addWidget(self.save_fit_report_button, 1, 0)
         self.layout.addWidget(self.save_fit_button, 1, 1)

@@ -62,15 +62,17 @@ class MainPresenter(object):
 
     def set_norm_none(self, checked):
         if checked:
-            self.model.normalise_run_none()
+            self.model.set_run_normalisation("none")
             self.view.update_normalisation_menu("none")
+            self.view.show_message_box("Normalisation mode has been set to none.", title="Normalisation")
         else:
             self.view.norm_none.setChecked(True)
 
     def set_norm_counts(self, checked):
         if checked:
-            self.model.normalise_run_counts()
+            self.model.set_run_normalisation("counts")
             self.view.update_normalisation_menu("counts")
+            self.view.show_message_box("Normalisation mode has been set to counts.", title="Normalisation")
         else:
             self.view.norm_counts.setChecked(True)
 
@@ -78,12 +80,14 @@ class MainPresenter(object):
         if not checked:
             self.view.norm_events.setChecked(True)
         try:
-            self.model.normalise_run_events()
+            self.model.set_run_normalisation("events")
             self.view.update_normalisation_menu("events")
+            self.view.show_message_box("Normalisation mode has been set to events.", title="Normalisation")
         except ValueError:
             err_str = "Cannot use normalisation by events when comment file has not been loaded."
+            self.view.update_normalisation_menu("none")
             logger.error(err_str)
-            self.view.show_error_dialogue(err_str)
+            self.view.show_error_box(err_str)
 
     def set_default_directory(self):
         new_dir = self.view.get_dir()
@@ -129,20 +133,20 @@ class MainPresenter(object):
         if flags["no_files_found"]: #  no data was loaded - return now
             # Update GUI
             self.view.set_run_num_label("File load failed")
-            self.view.set_comment_labels("Comment file not found", "", "", "")
+            self.view.set_comment_labels("Comment file not found.", "N/A", "N/A", "N/A")
             return
 
         self.view.set_run_num_label(str(run_num))
 
         if flags["comment_not_found"]: # Comment file was not found
-            self.view.set_comment_labels(comment="Comment file not found", start="", end="", events="")
+            self.view.set_comment_labels(comment="Comment file not found.", start="N/A", end="N/A", events="N/A")
 
         else: # write comment info to GUI
             comment, start, end, events = self.model.read_comment_data()
             self.view.set_comment_labels(comment, start, end, events)
 
         if flags["norm_by_spills_error"]:  # normalisation by spills failed
-            self.view.update_normalisation_menu()
+            self.view.update_normalisation_menu("none")
 
             # display error message to let user know what happened
             err_str = ("Cannot use normalisation by spills when comment file has not been loaded. Normalisation has been "
