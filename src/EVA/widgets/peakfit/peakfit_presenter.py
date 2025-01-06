@@ -21,6 +21,7 @@ class PeakFitPresenter(object):
 
         # generate spectrum and display it in the view
         self.view.update_plot(*self.model.plot_spectrum())
+        self.view.plot.canvas.mpl_connect('button_press_event', self.view.on_plot_click)
 
     def launch_constraints_menu(self):
         # Launches dialog to select constraints and bounds
