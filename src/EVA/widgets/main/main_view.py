@@ -167,7 +167,7 @@ class MainView(QWidget):
         self.efficiency_correction_window = None
         self.energy_correction_window = None
         self.manual_window = None
-        muon_spectrum_window = None
+        self.muon_spectrum_window = None
 
 
     def set_run_num_line_edit(self, num):

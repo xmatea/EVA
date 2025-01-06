@@ -87,7 +87,7 @@ class MainPresenter(object):
 
     def set_default_directory(self):
         new_dir = self.view.get_dir()
-        self.model.set_directory(new_dir)
+        self.model.set_default_directory(new_dir)
 
     def load_default_config(self):
         get_config().restore_defaults()

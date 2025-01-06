@@ -1,9 +1,23 @@
+import os
+import sys
+from pathlib import Path
 from collections import namedtuple
+import logging
+
+from EVA.util.path_handler import get_path
+
+logger = logging.getLogger(__name__)
+
+# check if running from the executable or not
+bundle_dir = getattr(sys, '_MEIPASS', "")
 
 def load_gamma_data():
     minA, maxA = 0, 117
-    str1 = './src/EVA/databases/gammas/levels/z'
+
+    gamma_levels_path = get_path('src/EVA/databases/gammas/levels/')
     gamma_data = []
+
+    logger.debug("working directory: %s", os.getcwd())
 
     i = 0
     for i in range(119):
@@ -12,11 +26,11 @@ def load_gamma_data():
     for i in range(minA, maxA):
         A = i + 1
         if len(str(A)) == 1:
-            gamma_data = (decode_gammas(str1 + '00' + str(A) + '.dat', A, gamma_data))
+            gamma_data = decode_gammas(os.path.abspath(os.path.join(gamma_levels_path, f"z00{str(A)}.dat")), A, gamma_data)
         if len(str(A)) == 2:
-            gamma_data = (decode_gammas(str1 + '0' + str(A) + '.dat', A, gamma_data))
+            gamma_data = decode_gammas(os.path.abspath(os.path.join(gamma_levels_path, f"z0{str(A)}.dat")), A, gamma_data)
         if len(str(A)) == 3:
-            gamma_data = (decode_gammas(str1 + str(A) + '.dat', A, gamma_data))
+            gamma_data = decode_gammas(os.path.abspath(os.path.join(gamma_levels_path, f"z{str(A)}.dat")), A, gamma_data)
 
     return gamma_data
 
@@ -26,11 +40,11 @@ def loadgamma():
     # check if gammas have already been loaded by checking random index
     if not globals.Full_Gammas[20]:
         loadgammascan(0,117)
-"""
+
 
 
 def loadgammascan(minA,maxA):
-    str1 = './src/EVA/databases/gammas/levels/z'
+    str1 = 'src/EVA/databases/gammas/levels/z'
 
     for i in range(minA,maxA):
         A = i+1
@@ -42,7 +56,7 @@ def loadgammascan(minA,maxA):
             decodegammas2(str1 + str(A) + '.dat',A)
 
     #print('gammas',globals.Full_Gammas)
-
+"""
 
 def decode_gammas(filename, A, Full_Gammas):
     f = open(filename, 'r')

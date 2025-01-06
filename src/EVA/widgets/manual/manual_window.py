@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import (
 )
 
 from PyQt6.QtCore import Qt
+from EVA.util.path_handler import get_path
 
 class ManualWindow(QWidget):
     def __init__(self, parent=None):
@@ -20,7 +21,7 @@ class ManualWindow(QWidget):
         self.layout = QVBoxLayout(self)
         self.layout.addWidget(self.page)
 
-        self.path = "./src/EVA/resources/manual/manual.html"
+        self.path = get_path("./src/EVA/resources/manual/manual.html")
 
         try:
             self.htmlstr = self.load_manual(self.path)

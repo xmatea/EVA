@@ -3,6 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from EVA.core.data_structures.detector import DetectorIndices
+from EVA.util.path_handler import get_path
 
 
 class ModelSpectraModel(object):
@@ -11,7 +12,7 @@ class ModelSpectraModel(object):
         self.presenter = presenter
 
     def get_element_names(self):
-        path = "src/EVA/databases/muonic_xrays/mudirac_data_default_isotopes_readable.json"
+        path = get_path("src/EVA/databases/muonic_xrays/mudirac_data_default_isotopes_readable.json")
         with open(path) as file:
             data = json.load(file)
             file.close()
@@ -37,20 +38,20 @@ class ModelSpectraModel(object):
 
         # Load energy vs FWHM curves for the detectors
         if e_res_model == "linear":
-            energy_res = np.loadtxt("./src/EVA/databases/detectors/energy_resolution_linear.txt",
+            energy_res = np.loadtxt(get_path("./src/EVA/databases/detectors/energy_resolution_linear.txt"),
                                     delimiter=",", skiprows=1)
         elif e_res_model == "quadratic":
-            energy_res = np.loadtxt("./src/EVA/databases/detectors/energy_resolution_qudratic.txt",
+            energy_res = np.loadtxt(get_path("./src/EVA/databases/detectors/energy_resolution_qudratic.txt"),
                                     delimiter=",", skiprows=1)
         else:
             raise ValueError("Invalid energy resolution model")
 
         # TODO: Make this the default database to use for mudirac
-        with open("./src/EVA/databases/muonic_xrays/mudirac_data_default_isotopes_readable.json") as file:
+        with open(get_path("./src/EVA/databases/muonic_xrays/mudirac_data_default_isotopes_readable.json")) as file:
             all_energies = json.load(file)
 
         mu_capture_z, mu_capture_ratios = np.loadtxt(
-            "./src/EVA/databases/muonic_xrays/capture_probabilites_interpolated.txt", delimiter=",", unpack=True)
+            get_path("./src/EVA/databases/muonic_xrays/capture_probabilites_interpolated.txt"), delimiter=",", unpack=True)
 
         fig, axs = plt.subplots(len(detectors))
         fig.supxlabel("Energy / keV")
@@ -143,7 +144,7 @@ class ModelSpectraModel(object):
 
     def add_components(self, ax, xdata, all_trans, total, notation="siegbahn"):
         # load notation dict
-        with open("src/EVA/databases/names/transition_notations.json") as file:
+        with open(get_path("src/EVA/databases/names/transition_notations.json")) as file:
             notations = json.load(file)
 
         for i, trans in enumerate(all_trans):
