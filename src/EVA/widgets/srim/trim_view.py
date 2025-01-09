@@ -20,7 +20,7 @@ from PyQt6.QtWidgets import (
     QFormLayout, QMessageBox
 )
 from EVA.widgets.plot.plot_widget import PlotWidget
-from EVA.core.settings import srim_settings
+from EVA.widgets.srim.CopyableQTableWidget import CopyableQTableWidget
 from EVA.core.app import get_config, get_app
 
 
@@ -117,11 +117,11 @@ class TrimView(QWidget):
         self.tabs.addTab(self.tab1, "Layers")
         self.tabs.addTab(self.tab2, "Results")
 
-        self.tab1.table_TRIMsetup = QTableWidget(self.tab1)
+        self.tab1.table_TRIMsetup = CopyableQTableWidget(self.tab1)
 
         self.tab1.table_TRIMsetup.setShowGrid(True)
         self.tab1.table_TRIMsetup.setColumnCount(3)
-        self.tab1.table_TRIMsetup.setRowCount(4)
+        self.tab1.table_TRIMsetup.setRowCount(5)
 
         self.tab1.table_TRIMsetup.setHorizontalHeaderLabels(['Sample', 'Thickness (mm)', 'Density'])
         self.tab1.table_TRIMsetup.setItem(0, 0, QTableWidgetItem('Beamline Window'))
@@ -139,7 +139,7 @@ class TrimView(QWidget):
         self.tab1_layout.addWidget(self.tab1.table_TRIMsetup)
         self.tab1.setLayout(self.tab1_layout)
 
-        self.tab2.table_PlotRes = QTableWidget(self.tab2)
+        self.tab2.table_PlotRes = CopyableQTableWidget(self.tab2)
 
         self.tab2.table_PlotRes.setShowGrid(True)
         self.tab2.table_PlotRes.setColumnCount(5)
@@ -171,21 +171,41 @@ class TrimView(QWidget):
         self.main_layout.addWidget(self.content_container)
 
     def get_table_data(self):
+        table = self.tab1.table_TRIMsetup
         layers = []
-        n_rows = self.tab1.table_TRIMsetup.rowCount()
+        n_rows = table.rowCount()
         for i in range(n_rows):
 
-            sample_name = self.tab1.table_TRIMsetup.item(i, 0).text()
-            thickness = float(self.tab1.table_TRIMsetup.item(i, 1).text())
+            # skip current iteration if line empty
+            if table.item(i, 0) is None or table.item(i, 0).text().strip() == "":
+                continue
 
+            sample_name = table.item(i, 0).text().strip()
+            thickness = float(table.item(i, 1).text().strip())
             layer = {"name": sample_name, "thickness": thickness}
 
-            if self.tab1.table_TRIMsetup.item(i, 2) is not None:
-                layer["density"] = float(self.tab1.table_TRIMsetup.item(i, 2).text())
+            if table.item(i, 2) is not None:
+                layer["density"] = float(table.item(i, 2).text().strip())
 
             layers.append(layer)
 
         return layers
+
+    def add_trimsetup_row(self):
+        table = self.tab1.table_TRIMsetup
+        current_count = table.rowCount()
+        table.setRowCount(current_count+1)
+
+    def set_table_data(self, table_data):
+        table = self.tab1.table_TRIMsetup
+        table.setRowCount(len(table_data)+1)
+        for row, layer in enumerate(table_data):
+            table.setItem(row, 0, QTableWidgetItem(layer["name"]))
+            table.setItem(row, 1, QTableWidgetItem(str(layer["thickness"])))
+
+            density = layer.get("density", None)
+            if density is not None:
+                table.setItem(row, 2, QTableWidgetItem(str(density)))
 
     # display results to table and set up connections
     def setup_results_table(self, momenta, components):
@@ -226,7 +246,7 @@ class TrimView(QWidget):
     def get_form_data(self):
         form_data = {
             "sample_name": self.SampleName.text(),
-            "stats": int(self.Stats.text()),
+            "stats": float(self.Stats.text()),
             "srim_dir": self.SRIMdir.text(),
             "output_dir": self.TRIMOutDir.text(),
             "momentum": float(self.Momentum.text()),
@@ -240,6 +260,18 @@ class TrimView(QWidget):
 
         return form_data
 
+    def set_form_data(self, form_data):
+        self.SampleName.setText(form_data["sample_name"]),
+        self.Stats.setText(str(form_data["stats"])),
+        self.SRIMdir.setText(form_data["srim_dir"]),
+        self.TRIMOutDir.setText(form_data["output_dir"]),
+        self.Momentum.setText(str(form_data["momentum"])),
+        self.SimType.setCurrentText(form_data["sim_type"]),
+        self.MomentumSpread.setText(str(form_data["momentum_spread"])),
+        self.MinMomentum.setText(str(form_data["min_momentum"])),
+        self.MaxMomentum.setText(str(form_data["max_momentum"])),
+        self.StepMomentum.setText(str(form_data["step_momentum"])),
+        self.ScanType.setCurrentText(form_data["scan_type"])
 
     def closeEvent(self, event):
         # close window cleanly
@@ -251,68 +283,11 @@ class TrimView(QWidget):
         _ = QMessageBox.critical(self, title, text, QMessageBox.StandardButton.Ok)
 
 
-    def WriteSim(self, x, y, ):
-        '''
-        :param x: button layer
-        :param y: button column
-        :return:
-        writes the results of SRIM TRIM calcs
-        '''
-        print('In WriteSim')
-        print(get_config()["general"]["working_directory"])
-        print('')
-        print('')
-        save_file = get_config()["general"]["working_directory"] + '/SRIM_' + self.tab2.table_PlotRes.item(x, 0).text() + '_MeVc.dat'
-        print('Sve_file',save_file)
-        file2 = open(save_file, "w")
+    def request_save_file(self):
+        return QFileDialog.getSaveFileName(self, caption="Save TRIM/SRIM Settings")[0]
 
-        sumdis = 0.0
-        xposlist = RunSimTRIMSRIM.getxpos(self)
-
-        for i in range(len(srim_settings.sample_layers)):
-            sumdis += xposlist[i + 1]
-            print(srim_settings.sample_name[i] + ' = ' + str(sumdis) + '\n')
-            file2.writelines(srim_settings.sample_name[i] + ' = ' + str(sumdis) + '\n')
-
-
-
-
-        for i in range(len(srim_settings.TRIMRes_x[x])):
-            file2.writelines(str(srim_settings.TRIMRes_x[x][i]) + ',' + str(srim_settings.TRIMRes_y[x][i]) + '\n')
-        '''file2.writelines(str(srim_settings.TRIMRes_x[x]) + ',' + str(srim_settings.TRIMRes_y[x]))
-        '''
-        file2.close()
-        print('save_file_fin')
-
-        print('In WriteSim')
-        print(get_config()["general"]["working_directory"])
-        print('')
-        print('')
-        comp = RunSimTRIMSRIM.getcomp(self, xposlist, x)
-
-        # plot layers
-        for i in range(len(srim_settings.sample_layers)):
-
-            save_file = (get_config()["general"]["working_directory"] + '/SRIM_'
-                         + self.tab2.table_PlotRes.item(x, 0).text() + '_MeVc_' + str(i) + '.dat')
-            print('Sve_file', save_file)
-            file2 = open(save_file, "w")
-
-            sumdis = 0.0
-            xposlist = RunSimTRIMSRIM.getxpos(self)
-
-            for k in range(len(srim_settings.sample_layers)):
-                sumdis += xposlist[k + 1]
-                print(srim_settings.sample_name[k] + ' = ' + str(sumdis) + '\n')
-                file2.writelines(srim_settings.sample_name[k] + ' = ' + str(sumdis) + '\n')
-
-            for j in range(len(srim_settings.TRIMRes_x[x])):
-                file2.writelines(str(srim_settings.TRIMRes_x[x][j]) + ',' + str(comp[i][j]) + '\n')
-        '''file2.writelines(str(srim_settings.TRIMRes_x[x]) + ',' + str(srim_settings.TRIMRes_y[x]))
-        '''
-        file2.close()
-        print('save_file_fin')
-
+    def request_load_file(self):
+        return QFileDialog.getOpenFileName(self, caption = "Load TRIM/SRIM Settings")[0]
 
     def file_save(self,SampleName, SimType, Momentum, MomentumSpread, ScanType, MinMomentum, MaxMomentum,
                    StepMomentum, SRIMdir, TRIMOutDir, Stats):

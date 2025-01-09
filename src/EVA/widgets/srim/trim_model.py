@@ -1,3 +1,4 @@
+import os
 from random import sample
 
 import numpy as np
@@ -73,9 +74,6 @@ class TrimModel(QObject):
                 outstr += '[' + str(index + 1) + '] ' + str(round(perlayer[index], 3)) + ' '
 
             self.components.append(outstr)
-
-        print(len(self.components))
-        print(len(self.momentum))
 
     def my_range(self, start, end, step):
         # sets a reange of momenta
@@ -390,3 +388,113 @@ class TrimModel(QObject):
         '''
         file2.close()
         print('save_file_fin')
+
+    def save_settings(self, sample_name, stats, srim_dir, output_dir, momentum, momentum_spread, sim_type,
+                        min_momentum, max_momentum, step_momentum, scan_type, layers, target_dir):
+        print('in save file')
+
+        file2 = open(target_dir, "w")
+        file2.writelines('Sample Name\n')
+        out = sample_name+'\n'
+        file2.writelines(out)
+        file2.writelines('SimType\n')
+        out = sim_type+'\n'
+        file2.writelines(out)
+        file2.writelines('Momentum\n')
+        out = str(momentum)+'\n'
+        file2.writelines(out)
+        file2.writelines('Momentum Spread\n')
+        out = str(momentum_spread)+'\n'
+        file2.writelines(out)
+        file2.writelines('Scan Momentum\n')
+        out = scan_type+'\n'
+        file2.writelines(out)
+        file2.writelines('Min Momentum\n')
+        out = str(min_momentum)+'\n'
+        file2.writelines(out)
+        file2.writelines('Max Momentum\n')
+        out = str(max_momentum)+'\n'
+        file2.writelines(out)
+        file2.writelines('Momentum Step\n')
+        out = str(step_momentum)+'\n'
+        file2.writelines(out)
+        file2.writelines('SRIM.exe dir\n')
+        out = srim_dir+'\n'
+        file2.writelines(out)
+        file2.writelines('Output dir\n')
+        out = output_dir+'\n'
+        file2.writelines(out)
+        file2.writelines('Stats\n')
+        out = str(stats)+'\n'
+        file2.writelines(out)
+        file2.writelines('Sample\n')
+
+        for layer in layers:
+            file2.writelines(layer["name"] + "," + str(layer["thickness"]) + "," + str(layer.get("density", "")) + "\n")
+        file2.close()
+
+    def load_settings(self, target_dir):
+        file2 = open(target_dir, "r")
+        ignore = file2.readline()
+        print(ignore)
+        sample_name = file2.readline().strip()
+        print(sample_name)
+        ignore = file2.readline()
+        sim_type = file2.readline().strip()
+        ignore = file2.readline()
+        momentum = file2.readline().strip()
+        ignore = file2.readline()
+        momentum_spread = file2.readline().strip()
+        ignore = file2.readline()
+        scan_type = file2.readline().strip()
+        ignore = file2.readline()
+        min_momentum = file2.readline().strip()
+        ignore = file2.readline()
+        max_momentum = file2.readline().strip()
+        ignore = file2.readline()
+        step_momentum = file2.readline().strip()
+        ignore = file2.readline()
+        srim_dir = file2.readline().strip()
+        ignore = file2.readline()
+        output_dir = file2.readline().strip()
+        ignore = file2.readline()
+        stats = file2.readline().strip()
+        ignore = file2.readline()
+
+        form_data = {
+            "sample_name": sample_name,
+            "stats": float(stats),
+            "srim_dir": srim_dir,
+            "output_dir": output_dir,
+            "momentum": float(momentum),
+            "sim_type": sim_type,
+            "momentum_spread": float(momentum_spread),
+            "min_momentum": float(min_momentum),
+            "max_momentum": float(max_momentum),
+            "step_momentum": float(step_momentum),
+            "scan_type": scan_type
+        }
+
+        layers = []
+        while True:
+            line = file2.readline().strip().split(',')
+            print(line)
+
+            if line == [""]:
+                break
+
+            name, thickness, density = line
+
+            if density != "":
+                layer = {"name": name, "thickness": thickness, "density": density}
+            else:
+                layer = {"name": name, "thickness": thickness}
+
+            layers.append(layer)
+        file2.close()
+
+        return form_data, layers
+
+    @staticmethod
+    def is_valid_path(path):
+        return os.path.exists(path)
