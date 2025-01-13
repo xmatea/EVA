@@ -25,7 +25,7 @@ class MainView(QWidget):
         self.file_menu = self.bar.addMenu('File')
         self.file_load_default = self.file_menu.addAction('Load Default Setting')
         self.file_browse_dir = self.file_menu.addAction('Browse to Data Directory')
-        self.file_exit = self.file_menu.addAction('Exit')
+        self.file_save = self.file_menu.addAction("Save all settings")
 
         self.plot_menu = self.bar.addMenu('Plot')
         self.plot_settings = self.plot_menu.addAction('Plot Settings')
@@ -67,7 +67,9 @@ class MainView(QWidget):
         self.norm_events.setShortcut("Alt+S")
 
         self.corrections_menu = self.bar.addMenu('Corrections')
-        self.efficiency_corrections = self.corrections_menu.addAction('Efficiency Corrections')
+
+        # efficiency corrections currently not implemented
+        #self.efficiency_corrections = self.corrections_menu.addAction('Efficiency Corrections')
         self.energy_corrections = self.corrections_menu.addAction('Energy Corrections')
 
         self.analysis_menu = self.bar.addMenu('Analysis')
@@ -81,7 +83,9 @@ class MainView(QWidget):
 
         self.tools_menu = self.bar.addMenu('Tools')
         self.trim_simulation = self.tools_menu.addAction('SRIM/TRIM Simulation')
-        self.trim_simulation_test = self.tools_menu.addAction('SRIM/TRIM Simulation test')
+
+        # currently not implemented
+        #self.trim_simulation_test = self.tools_menu.addAction('SRIM/TRIM Simulation test')
 
         self.model_muon_spectrum = self.tools_menu.addAction("Simulate Muonic X-ray Spectra")
 

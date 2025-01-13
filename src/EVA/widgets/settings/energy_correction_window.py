@@ -66,7 +66,7 @@ class Correction_E(QWidget):
             self.layout.addWidget(checkbox, i + 1, 3)
 
 
-        self.save_button = QPushButton("Save and close")
+        self.save_button = QPushButton("Apply and close")
         self.save_button.clicked.connect(self.save_detector_settings)
         self.layout.addWidget(self.save_button, len(self.detector_list)+2, 4, 1, -1)
 

@@ -20,7 +20,7 @@ class MainPresenter(object):
         self.model = model
 
         # Set up action bar connections
-        self.view.file_exit.triggered.connect(self.view.closeEvent)
+        self.view.file_save.triggered.connect(self.save_settings)
         self.view.file_browse_dir.triggered.connect(self.set_default_directory)
         self.view.file_load_default.triggered.connect(self.load_default_config)
 
@@ -41,7 +41,9 @@ class MainPresenter(object):
         self.view.norm_events.triggered.connect(lambda: self.set_norm_events(self.view.norm_events.isChecked()))
 
         self.view.energy_corrections.triggered.connect(self.open_energy_corrections)
-        self.view.efficiency_corrections.triggered.connect(self.open_efficiency_corrections)
+
+        # efficiency corrections currently not implemented
+        #self.view.efficiency_corrections.triggered.connect(self.open_efficiency_corrections)
 
         self.view.peakfit_GE1.triggered.connect(lambda: self.open_peakfit("GE1"))
         self.view.peakfit_GE2.triggered.connect(lambda: self.open_peakfit("GE2"))
@@ -59,6 +61,15 @@ class MainPresenter(object):
         self.view.get_prev_run_button.clicked.connect(self.decrement_run_num)
         self.view.load_prev_run_button.clicked.connect(lambda: self.decrement_run_num(load=True))
         self.view.load_button.clicked.connect(self.load_run_num)
+
+    def save_settings(self):
+        config = get_config()
+
+        if config.is_changed():
+            config.save_config()
+            self.view.show_message_box(title="Save", msg="Current session has been saved.")
+        else:
+            self.view.show_message_box(title="Save", msg="No changes have been made since last save.")
 
     def set_norm_none(self, checked):
         if checked:

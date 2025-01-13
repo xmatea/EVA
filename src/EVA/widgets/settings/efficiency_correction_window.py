@@ -63,7 +63,7 @@ class Correction_Eff(QWidget):
 
             self.param_line_edits.append(detector_param_line_edits)
 
-        self.save_button = QPushButton("Save settings")
+        self.save_button = QPushButton("Apply and close")
         self.save_button.clicked.connect(self.save_settings)
 
         self.layout.addWidget(self.save_button, len(self.detector_list)+1, 7, 1, -1)
