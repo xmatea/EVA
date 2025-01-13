@@ -59,8 +59,8 @@ def load_run(run_num, config):
     for detector in config.to_array(config["general"]["all_detectors"]):
         if config[detector]["use_e_corr"] == "yes":
             e_corr_which.append(detector)
-            gradient = config[detector]["e_corr_gradient"]
-            offset = config[detector]["e_corr_offset"]
+            gradient = float(config[detector]["e_corr_gradient"])
+            offset = float(config[detector]["e_corr_offset"])
             e_corr_params.append((gradient, offset))
 
     normalisation = config["general"]["normalisation"]

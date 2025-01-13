@@ -61,12 +61,12 @@ class Correction_E(QWidget):
             self.gradient_line_edits.append(gradient_line_edit)
 
             self.layout.addWidget(QLabel(f"Detector {detector}"), i + 1, 0)
-            self.layout.addWidget(gradient_line_edit, i + 1, 1)
-            self.layout.addWidget(offset_line_edit, i + 1, 2)
+            self.layout.addWidget(offset_line_edit, i + 1, 1)
+            self.layout.addWidget(gradient_line_edit, i + 1, 2)
             self.layout.addWidget(checkbox, i + 1, 3)
 
 
-        self.save_button = QPushButton("Save settings")
+        self.save_button = QPushButton("Save and close")
         self.save_button.clicked.connect(self.save_detector_settings)
         self.layout.addWidget(self.save_button, len(self.detector_list)+2, 4, 1, -1)
 
@@ -95,7 +95,7 @@ class Correction_E(QWidget):
                 config[detector]["use_e_corr"] = "no"
 
         logger.info("Saved current energy corrections.")
-
+        self.close()
 
     def on_checkbox_click(self):
         """

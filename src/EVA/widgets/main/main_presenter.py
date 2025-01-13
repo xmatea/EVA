@@ -95,7 +95,7 @@ class MainPresenter(object):
 
     def load_default_config(self):
         get_config().restore_defaults()
-        self.view.display_message("Configurations have been restored to defaults.")
+        self.view.show_message_box("Configurations have been restored to defaults.")
 
     def increment_run_num(self, load=False):
         try:
