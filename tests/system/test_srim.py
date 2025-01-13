@@ -1,5 +1,4 @@
 import pytest
-from EVA.core.settings import srim_settings
 from EVA.widgets.srim import trim_window
 from EVA.widgets.srim.trim_model import TrimModel
 from EVA.widgets.srim.trim_window import TrimWindow
@@ -56,7 +55,7 @@ class TestSRIM:
                                           'surface': 2.0}},
                                    density=1.4, width=LayerThickness * 1e7, phase=0)
                 sample_layers.append(beamwindow)
-                srim_settings.sample_name.append('Beamline Window')
+                sample_names.append('Beamline Window')
 
             elif sampleName == 'Air (compressed)':
 
