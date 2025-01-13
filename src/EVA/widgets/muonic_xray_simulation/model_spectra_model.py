@@ -33,13 +33,13 @@ class ModelSpectraModel(object):
         self.all_spectra = []
         self.all_transitions = []
 
-        with open("src/EVA/databases/names/transition_notations.json", encoding="utf-8") as file:
+        with open(get_path("src/EVA/databases/names/transition_notations.json"), encoding="utf-8") as file:
             self.notations = json.load(file)
             file.close()
 
-        self.linear_e_res = np.loadtxt("./src/EVA/databases/detectors/energy_resolution_linear.txt",
+        self.linear_e_res = np.loadtxt(get_path("./src/EVA/databases/detectors/energy_resolution_linear.txt"),
                                     delimiter=",", skiprows=1)
-        self.quadratic_e_res = np.loadtxt("./src/EVA/databases/detectors/energy_resolution_quadratic.txt",
+        self.quadratic_e_res = np.loadtxt(get_path("./src/EVA/databases/detectors/energy_resolution_quadratic.txt"),
                                     delimiter=",", skiprows=1)
 
 

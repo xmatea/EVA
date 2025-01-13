@@ -135,17 +135,10 @@ def fit_spectra_lmfit(self, mean, sigma, area):
     def make_model(pp_len, pp, ph, pw, num, EMin, EMax, pp_status, ph_status, pw_status):
         pref = "f{0}_".format(num)
         model = GaussianModel(prefix=pref)
-        print(ph_status)
-        print(ph_status[num])
-        print(pp_status)
-        print(pp_status[num])
-        print(pw_status)
-        print(pw_status[num])
 
         model.set_param_hint(pref+'amplitude', value=ph[num], min=0, vary=ph_status[num])
-        print('here')
         model.set_param_hint(pref+'center', value=pp[num], min = EMin, max=EMax, vary=pp_status[num])
-        print('here2')
+
         if pw_status[num] == True:
             model.set_param_hint(pref+'sigma', value=pw[num], min = 0.01, max = 3.0 ,vary=True)
         elif pw_status[num] == 'shared':
@@ -204,16 +197,6 @@ def fit_spectra_lmfit(self, mean, sigma, area):
     # fitting
 
     result = mod.fit(datay, x=datax, weights=1.0/np.sqrt(datay))
-
-    print('results',result)
-    print(result.fit_report())
-    print(result.best_values["f0_amplitude"])
-    print(result.best_values["f0_amplitude"])
-    print(result.chisqr)
-    print(result.covar)
-    print('values',result.values)
-    print('best values',result.best_values)
-    print('error',result.params)
 
     # if unable to establish covariance, display error message
     if result.covar is None:

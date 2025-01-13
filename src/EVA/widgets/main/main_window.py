@@ -28,7 +28,6 @@ class MainWindow(QMainWindow):
         super().__init__(parent)
 
         self.setWindowTitle("Elemental Analysis")
-        self.setWindowIcon(QIcon(get_path("icon.ico")))
         self.setMinimumSize(QSize(650, 300))
         self.view = MainView(self)
         self.model = MainModel()

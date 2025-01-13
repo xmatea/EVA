@@ -162,7 +162,6 @@ class PeakFit(QWidget):
 
 
     def savefunction(self):
-        print('in save function')
         name = QFileDialog.getSaveFileName(self, 'Save File', directory=globals.workingdirectory)
 
         if name != ('', ''):
@@ -177,7 +176,6 @@ class PeakFit(QWidget):
             pp_len = 0
             for i in range(int(self.tab1.table_clickpeaks.rowCount())):
                 try:
-                    print(self.tab1.table_clickpeaks.item(i, 0).text())
                     pp.append(float(self.tab1.table_clickpeaks.item(i, 0).text()))
                     try:
                         if self.tab1.table_clickpeaks.item(i,1).text() == 'fixed':
@@ -261,13 +259,6 @@ class PeakFit(QWidget):
             except:
                 cvary = 'vary'
 
-            print('got info')
-
-
-
-            print(name)
-            print(name[0])
-            print(globals.workingdirectory)
             file = open(name[0], 'w')
 
             file.write('Energy Range\n')

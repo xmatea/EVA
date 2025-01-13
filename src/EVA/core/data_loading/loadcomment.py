@@ -21,10 +21,8 @@ def loadcomment(RunNum: int, file_path: str) -> tuple[list[str], int]:
                 flag = 0
                 break
         if flag == 1:
-            print('Run Info', search_str, ' Not found')
             rtn_str = [" ", " ", " ", " "]
         else:
-            print('Run Info', search_str, 'Found in Line', index - 1)
 
             starttime_str = commenttext[index]
             endtime_str = commenttext[index + 1]

@@ -3,9 +3,11 @@ import time
 import os
 import sys
 
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication
 from EVA.core.settings.config import Config
-from EVA.core.data_loading import LoadDatabaseFile, loadgamma, loaddata
+from EVA.core.data_loading import LoadDatabaseFile, loadgamma
+from EVA.util.path_handler import get_path
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +29,7 @@ class App(QApplication):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.main_window = None
+        self.setWindowIcon(QIcon(get_path("icon.ico")))
 
         # store config in app
         self.config = Config()

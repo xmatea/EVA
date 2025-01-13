@@ -3,7 +3,6 @@ from EVA.util.path_handler import get_path
 
 def load_mudirac_data():
     with open(get_path("src/EVA/databases/muonic_xrays/mudirac_data_estimated_intensities.json"), 'r') as read_file:
-        print('Loading mudirac database...')
 
         data = json.load(read_file)
 
@@ -65,7 +64,6 @@ def load_legacy_data():
 
     legacy_db_path = get_path('src/EVA/databases/muonic_xrays/peak_data.json')
     with open(legacy_db_path, 'r') as read_file:
-        print('Loading legacy database...')
         data = json.load(read_file)
 
         all_energies = {}

@@ -58,11 +58,8 @@ from srim import TRIM, Ion, Layer, Target, Material
 
 def RunTRIM_Start():
     temp='asdg'
-    print('hello',temp)
     SimPara = TRIMInit()
-    print(SimPara)
     SettingUp_TRIM()
-    print('back')
 
 def TRIMInit():
 

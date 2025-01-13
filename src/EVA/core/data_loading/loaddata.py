@@ -62,6 +62,9 @@ def load_run(run_num, config):
             gradient = float(config[detector]["e_corr_gradient"])
             offset = float(config[detector]["e_corr_offset"])
             e_corr_params.append((gradient, offset))
+        else:
+            # default energy correction
+            e_corr_params.append((1, 0))
 
     normalisation = config["general"]["normalisation"]
     normalise_which = config["general"]["all_detectors"] # currently normalising all detectors
