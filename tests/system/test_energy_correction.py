@@ -24,6 +24,7 @@ class TestEnergyCorrection:
     @pytest.mark.parametrize("e_corr_which", test_detectors)
     def test_energy_correction(self, e_corr_which, qapp):
         run, _ = loaddata.load_run(2630, get_config())
+        get_app().reset()
 
         # energy correction done by EVA
         run.set_energy_correction(params, e_corr_which)
@@ -31,9 +32,9 @@ class TestEnergyCorrection:
         # Manual energy correction
         for i, dataset in enumerate(run.raw):
             if dataset.detector in e_corr_which:
-                correction = run.raw[i].x * params[i][0] + params[i][1]
+                corrected = run.raw[i].x * params[i][0] + params[i][1]
             else:
-                correction = dataset.x
+                corrected = run.raw[i].x
 
-            assert np.array_equal(correction, run.data[i].x), (f"energy correction failed when correcting "
+            assert np.array_equal(corrected, run.data[i].x), (f"energy correction failed when correcting "
                                                                    f"{" and ".join(e_corr_which)}")

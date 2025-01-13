@@ -35,6 +35,5 @@ class TestLoadRun:
         else:
             for i, dataset in enumerate(run.raw):
                 xdata, ydata = self.manual_load(filenames[i])
-                print(dataset.x)
-                print(dataset.y)
+
                 assert np.array_equal(dataset.x, xdata) and np.array_equal(dataset.y, ydata)
