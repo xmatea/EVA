@@ -1,3 +1,4 @@
+import logging
 from PyQt6.QtCore import pyqtSignal, Qt
 from matplotlib.backend_bases import MouseButton
 
@@ -17,7 +18,8 @@ from PyQt6.QtWidgets import (
 )
 
 from EVA.widgets.plot import plot_widget
-from EVA.core.app import get_app, get_config
+from EVA.core.app import get_config
+logger = logging.getLogger("__main__")
 
 class PeakFitView(QWidget):
     fit_button_clicked_s = pyqtSignal()
@@ -242,20 +244,20 @@ class PeakFitView(QWidget):
     def plot_fit(self, x, fit, residuals, x_range, y_range, overwrite_old=True):
         # removes previous fit from figure is prompted
         if overwrite_old:
-            for line in self.plot.canvas.axs[0].lines:
+            for line in self.plot.canvas.axs.lines:
                 if line.get_label() == "Best fit" or line.get_label() == "Residuals":
                     line.remove()
 
-        self.plot.canvas.axs[0].plot(x, fit, label="Best fit")
+        self.plot.canvas.axs.plot(x, fit, label="Best fit")
 
         # Because for some reason this is not always the case... The residuals could be calculated manually
         # to avoid this, but it seems to only happen when the fit is really bad, so ignoring for now.
         if len(x) == len(residuals):
-            self.plot.canvas.axs[0].plot(x, residuals, label="Residuals")
+            self.plot.canvas.axs.plot(x, residuals, label="Residuals")
 
-        self.plot.canvas.axs[0].set_xlim(x_range)
-        self.plot.canvas.axs[0].set_ylim(y_range)
-        self.plot.canvas.axs[0].legend()
+        self.plot.canvas.axs.set_xlim(x_range)
+        self.plot.canvas.axs.set_ylim(y_range)
+        self.plot.canvas.axs.legend()
         self.plot.canvas.draw()
 
     def load_params(self):
@@ -294,7 +296,9 @@ class PeakFitView(QWidget):
 
     def on_plot_click(self, event):
         # Ensures that plot was clicked correctly while in add peak mode
+        logger.debug("Plot clicked")
         if self.add_peak_mode and event.button is MouseButton.RIGHT and event.inaxes:
+            logger.debug("Plot clicked")
             # Release any zoom rubber band or pan if user right-clicked while using navigation tools
             self.plot.release_navigation(event)
 

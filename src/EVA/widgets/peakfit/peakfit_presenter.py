@@ -21,6 +21,7 @@ class PeakFitPresenter(object):
 
         # generate spectrum and display it in the view
         self.view.update_plot(*self.model.plot_spectrum())
+        self.view.plot.canvas.mpl_connect('button_press_event', self.view.on_plot_click)
 
         self.view.plot.canvas.mpl_connect('button_press_event', self.view.on_plot_click)
 

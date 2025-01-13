@@ -1,6 +1,12 @@
 from configparser import ConfigParser
 import logging
+
+from EVA.util.path_handler import get_path
+
 logger = logging.getLogger(__name__)
+
+default_config_path = get_path("src/EVA/core/settings/defaults.ini")
+config_path = get_path("src/EVA/core/settings/config.ini")
 
 class Config:
     """
@@ -21,20 +27,20 @@ class Config:
 
     def load(self):
         self.default_parser = ConfigParser()
-        self.default_parser.read("./src/EVA/core/settings/defaults.ini")
+        self.default_parser.read(default_config_path)
 
         # Try to load saved settings, if not found, create new config file and load default settings
         try:
-            self.parser.read("./src/EVA/core/settings/config.ini")
+            self.parser.read(config_path)
             logger.debug("Loading configuration from config.ini")
         except FileNotFoundError:
-            with open("./src/EVA/core/settings/config.ini", "w") as file:
+            with open(config_path, "w") as file:
                 logger.debug("Creating new configuration file from defaults.")
                 self.default_parser.write(file)
                 file.close()
 
     def save_config(self):
-        with open("./src/EVA/core/settings/config.ini", "w") as config_file:
+        with open(config_path, "w") as config_file:
             self.parser.write(config_file)
             config_file.close()
 
@@ -49,7 +55,7 @@ class Config:
     # checks if config loaded in memory is different to config in file
     def is_changed(self):
         temp_parser = ConfigParser()
-        temp_parser.read("./src/EVA/core/settings/config.ini")
+        temp_parser.read(config_path)
 
         for section in self.parser:
             if self.parser[section] != temp_parser[section]:

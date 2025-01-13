@@ -10,6 +10,7 @@ from EVA.widgets.plot_analysis import plot_window
 from EVA.widgets.settings import energy_correction_window, efficiency_correction_window
 from EVA.widgets.manual import manual_window
 from EVA.widgets.peakfit import peakfit_widget
+from EVA.widgets.srim.trim_window import TrimWindow
 
 logger = logging.getLogger(__name__)
 
@@ -102,7 +103,7 @@ class MainPresenter(object):
 
     def set_default_directory(self):
         new_dir = self.view.get_dir()
-        self.model.set_directory(new_dir)
+        self.model.set_default_directory(new_dir)
 
     def load_default_config(self):
         get_config().restore_defaults()
@@ -212,7 +213,7 @@ class MainPresenter(object):
 
     def open_trim(self):
         logger.info("Launching TRIM window.")
-        self.view.TRIM_window = trim_window.RunSimTRIMSRIM()
+        self.view.TRIM_window = TrimWindow()
         self.view.TRIM_window.showMaximized()
 
     def open_model_muon_spectrum(self):

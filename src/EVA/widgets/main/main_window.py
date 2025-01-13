@@ -1,13 +1,16 @@
 import logging
+import sys
+import os
 
 from PyQt6.QtWidgets import QMainWindow, QWidget, QApplication, QMessageBox
 from PyQt6.QtCore import QSize
-from PyQt6.QtGui import QPalette, QColor
+from PyQt6.QtGui import QPalette, QColor, QIcon
 
 from EVA.widgets.main.main_view import MainView
 from EVA.widgets.main.main_model import MainModel
 from EVA.widgets.main.main_presenter import MainPresenter
 from EVA.core.app import get_config
+from EVA.util.path_handler import get_path
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +28,7 @@ class MainWindow(QMainWindow):
         super().__init__(parent)
 
         self.setWindowTitle("Elemental Analysis")
+        self.setWindowIcon(QIcon(get_path("icon.ico")))
         self.setMinimumSize(QSize(650, 300))
         self.view = MainView(self)
         self.model = MainModel()

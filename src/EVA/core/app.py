@@ -1,5 +1,7 @@
 import logging
 import time
+import os
+import sys
 
 from PyQt6.QtWidgets import QApplication
 from EVA.core.settings.config import Config
