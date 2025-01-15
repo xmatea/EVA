@@ -736,6 +736,11 @@ class PlotWindow(QWidget):
         if event.button is MouseButton.LEFT:
             #find possible muonic X-ray peaks
             x, y = event.xdata, event.ydata
+
+            # if clicking somewhere invalid
+            if x is None or y is None:
+                return
+
             logger.debug("Figure clicked at (%s, %s).", round(x, 2), round(y, 2))
 
             if event.inaxes:
@@ -750,13 +755,13 @@ class PlotWindow(QWidget):
 
                 t0 = time.time_ns()
                 res, res_PM, res_SM = getmatch.get_matches(input_data)
+
                 t1 = time.time_ns()
                 logger.debug("Found %s muonic xray transitions in %ss", len(res), round((t1-t0)/1e9, 4))
 
                 i = 0
                 self.clickpeaks.table_muon.setRowCount(len(res))
                 for match in res:
-
                     row = [match['peak_centre'], match['energy'], match['element'],
                            match['transition'], match['error'], match['diff']]
 
@@ -770,7 +775,7 @@ class PlotWindow(QWidget):
 
                 temp = res_PM
                 i = 0
-                #print('res_PM',res_PM)
+
                 if len(res_PM) != 0:
                     self.clickpeaks.table_muon_prim.setRowCount(len(res_PM))
                     for match in temp:
@@ -792,8 +797,7 @@ class PlotWindow(QWidget):
 
                 temp = res_SM
                 i = 0
-                if len(res_PM) != 0:
-
+                if len(res_SM) != 0:
                     self.clickpeaks.table_muon_sec.setRowCount(len(res_SM))
                     for match in temp:
 
