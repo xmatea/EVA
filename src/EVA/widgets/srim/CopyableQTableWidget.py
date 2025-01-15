@@ -10,8 +10,7 @@ class CopyableQTableWidget(QTableWidget):
     * supports copying multiple cells text onto the clipboard
     * formatted specifically to work with multiple-cell paste into programs
       like google sheets, excel, or numbers
-
-    taken from: https://stackoverflow.com/questions/60715462/how-to-copy-and-paste-multiple-cells-in-qtablewidget-in-pyqt5
+    * https://stackoverflow.com/questions/60715462/how-to-copy-and-paste-multiple-cells-in-qtablewidget-in-pyqt5
     """
 
     def __init__(self, *args, **kwargs):
@@ -44,14 +43,25 @@ class CopyableQTableWidget(QTableWidget):
         first_row = copied_cells[0].row()
         first_column = copied_cells[0].column()
 
+        print(first_row, first_column)
+
         clipboard_text = get_app().clipboard().text()
 
         rows = clipboard_text.split("\n")
+
+        # sometimes the clipboard adds an extra newline at the end of copy, if so, remove it
+        if rows[-1] == "":
+            rows.pop(-1)
+
         if len(rows) + first_row > self.rowCount():  # add rows if needed
             self.setRowCount(first_row + len(rows))
 
         for row_ix, row in enumerate(rows):
-            rowdata = row.split("\t")
+            rowdata = row.split('\t')
+            if rowdata == "":
+                continue
+
+            print("rowdata", rowdata)
             if len(rowdata) + first_column > self.columnCount():  # add columns if needed
                 self.setColumnCount(first_column + len(rowdata))
 
