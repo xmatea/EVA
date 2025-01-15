@@ -40,13 +40,11 @@ class TestModelSpectrumWindow:
         # add another item (at end)
         qtbot.mouseClick(element_selector.add_element_button, Qt.MouseButton.LeftButton)
 
-
     def test_add_and_remove_element_selection(self, qtbot, add_and_remove_elements):
         order = [2,3,5,6,8,9] # expected order of items
         actual_order = [item.id for item in self.window.view.element_selector.element_selector_items]
 
         # check that the element selector ids are in the expected order
-        get_app().reset()
         assert actual_order == order
 
     def test_simulation_start_on_button_click(self, qtbot):
@@ -55,15 +53,12 @@ class TestModelSpectrumWindow:
         new_axes = self.window.view.plot.canvas.axs
 
         # check that there was a change in the axes
-        get_app().reset()
         assert new_axes != axes
 
     def test_set_and_get_form_data(self, qtbot):
         self.window.view.set_form_data(base_test)
         form_data = self.window.view.get_form_data()
 
-        # check that inputted form is equal to outputted form
-        get_app().reset()
         assert form_data == base_test
 
 

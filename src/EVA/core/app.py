@@ -1,7 +1,6 @@
 import logging
 import time
-import os
-import sys
+import matplotlib
 
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication
@@ -62,3 +61,18 @@ class App(QApplication):
         self.muon_database = self.legacy_muon_database
         self.config["database"]["mu_xray_db"] = "legacy"
         logger.info("Muon database has been set to legacy.")
+
+    # reset the app to its initial state
+    def reset(self):
+        self.config.restore_defaults()
+        self.main_window = None # "delete" main window
+
+        # Check config and set default "muon database" accordingly
+        if self.config["database"]["mu_xray_db"] == "legacy":
+            self.muon_database = self.legacy_muon_database
+        elif self.config["database"]["mu_xray_db"] == "mudirac":
+            self.muon_database = self.mudirac_muon_database
+        else:
+            raise KeyError  # Invalid muon database in config
+
+        matplotlib.pyplot.close()
