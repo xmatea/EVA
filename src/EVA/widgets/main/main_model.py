@@ -79,6 +79,9 @@ class MainModel(QObject):
     @staticmethod
     def toggle_plot_detector(value, detector):
         config = get_config()
+
+        print("checkstate:", value)
+        print("name:", detector)
         if value:
             config[detector]["show_plot"] = "yes"
             logger.debug("Enabled %s for plotting.", detector)

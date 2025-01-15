@@ -19,6 +19,7 @@ class MainView(QWidget):
         self.parent = parent
         super().__init__(parent)
         config = get_config()
+        self.detector_list = config["general"]["all_detectors"].split(" ")
 
         # Set up action bar items
         self.bar = self.parent.menuBar() # since parent is the QMainWindow instance
@@ -32,26 +33,14 @@ class MainView(QWidget):
         self.plot_multiplot = self.plot_menu.addAction('Multi-Run Plot')
         self.plot_detectors_menu = self.plot_menu.addMenu('Select detectors')
 
-        self.plot_which_det_GE1 = self.plot_detectors_menu.addAction('GE1')
-        self.plot_which_det_GE1.setCheckable(True)
-        self.plot_which_det_GE1.setChecked(config.parser.getboolean("GE1", "show_plot"))
-        self.plot_which_det_GE1.setShortcut("Alt+1")
+        self.plot_detectors_actions = []
 
-        self.plot_which_det_GE2 = self.plot_detectors_menu.addAction('GE2')
-        self.plot_which_det_GE2.setCheckable(True)
-        self.plot_which_det_GE2.setChecked(config.parser.getboolean("GE2", "show_plot"))
-        self.plot_which_det_GE2.setShortcut("Alt+2")
-
-        self.plot_which_det_GE3 = self.plot_detectors_menu.addAction('GE3')
-        self.plot_which_det_GE3.setCheckable(True)
-        self.plot_which_det_GE3.setChecked(True)
-        self.plot_which_det_GE3.setChecked(config.parser.getboolean("GE3", "show_plot"))
-        self.plot_which_det_GE3.setShortcut("Alt+3")
-
-        self.plot_which_det_GE4 = self.plot_detectors_menu.addAction('GE4')
-        self.plot_which_det_GE4.setCheckable(True)
-        self.plot_which_det_GE4.setChecked(config.parser.getboolean("GE4", "show_plot"))
-        self.plot_which_det_GE4.setShortcut("Alt+4")
+        for i, detector in enumerate(self.detector_list):
+            action = self.plot_detectors_menu.addAction(detector)
+            action.setCheckable(True)
+            action.setChecked(config.parser.getboolean(detector, "show_plot"))
+            action.setShortcut(f"Alt+{i+1}")
+            self.plot_detectors_actions.append(action)
 
         self.normalisation_menu = self.bar.addMenu('Normalisation')
         self.norm_none = self.normalisation_menu.addAction('Use Raw Data')
@@ -76,10 +65,11 @@ class MainView(QWidget):
         self.peakfit_menu = self.analysis_menu.addMenu('Peak Fitting')
         self.peakfit_menu.setDisabled(True)
 
-        self.peakfit_GE1 = self.peakfit_menu.addAction('GE1')
-        self.peakfit_GE2 = self.peakfit_menu.addAction('GE2')
-        self.peakfit_GE3 = self.peakfit_menu.addAction('GE3')
-        self.peakfit_GE4 = self.peakfit_menu.addAction('GE4')
+        self.peakfit_menu_actions = []
+
+        for detector in self.detector_list:
+            action = self.peakfit_menu.addAction(detector)
+            self.peakfit_menu_actions.append(action)
 
         self.tools_menu = self.bar.addMenu('Tools')
         self.trim_simulation = self.tools_menu.addAction('SRIM/TRIM Simulation')
@@ -195,6 +185,10 @@ class MainView(QWidget):
         self.norm_counts.setChecked(norm == "counts")
         self.norm_none.setChecked(norm == "none")
         self.norm_events.setChecked(norm == "events")
+
+    def update_plot_detectors_menu(self, plot_which):
+        for i, plot_detector in enumerate(plot_which):
+            self.plot_detectors_actions[i].setChecked(plot_detector)
 
     def get_dir(self):
         return QFileDialog.getExistingDirectory(self, "Choose Directory", "C:\\")

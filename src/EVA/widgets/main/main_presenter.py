@@ -1,16 +1,15 @@
 import logging
-
-from PyQt6.QtCore import QObject
+import os
 
 from EVA.core.app import get_config, get_app
 from EVA.widgets.multiplot.multi_plot_window import MultiPlotWindow
 from EVA.widgets.muonic_xray_simulation.model_spectra_widget import ModelSpectraWidget
-from EVA.widgets.srim import trim_window
 from EVA.widgets.plot_analysis import plot_window
 from EVA.widgets.settings import energy_correction_window, efficiency_correction_window
 from EVA.widgets.manual import manual_window
 from EVA.widgets.peakfit import peakfit_widget
 from EVA.widgets.srim.trim_window import TrimWindow
+from EVA.util.path_handler import get_path
 
 logger = logging.getLogger(__name__)
 
@@ -25,14 +24,9 @@ class MainPresenter(object):
         self.view.file_browse_dir.triggered.connect(self.set_default_directory)
         self.view.file_load_default.triggered.connect(self.load_default_config)
 
-        self.view.plot_which_det_GE1.triggered.connect(lambda: self.model.toggle_plot_detector(
-            self.view.plot_which_det_GE1.isChecked(), "GE1"))
-        self.view.plot_which_det_GE2.triggered.connect(lambda: self.model.toggle_plot_detector(
-            self.view.plot_which_det_GE2.isChecked(), "GE2"))
-        self.view.plot_which_det_GE3.triggered.connect(lambda: self.model.toggle_plot_detector(
-            self.view.plot_which_det_GE3.isChecked(), "GE3"))
-        self.view.plot_which_det_GE4.triggered.connect(lambda: self.model.toggle_plot_detector(
-            self.view.plot_which_det_GE4.isChecked(), "GE4"))
+        for i, det in enumerate(self.view.detector_list):
+            self.view.plot_detectors_actions[i].triggered.connect(lambda check_state, detector=det:
+                                                                  self.model.toggle_plot_detector(check_state, detector))
 
         self.view.plot_multiplot.triggered.connect(self.open_multiplot)
 
@@ -46,10 +40,8 @@ class MainPresenter(object):
         # efficiency corrections currently not implemented
         #self.view.efficiency_corrections.triggered.connect(self.open_efficiency_corrections)
 
-        self.view.peakfit_GE1.triggered.connect(lambda: self.open_peakfit("GE1"))
-        self.view.peakfit_GE2.triggered.connect(lambda: self.open_peakfit("GE2"))
-        self.view.peakfit_GE3.triggered.connect(lambda: self.open_peakfit("GE3"))
-        self.view.peakfit_GE4.triggered.connect(lambda: self.open_peakfit("GE4"))
+        for i, detector in enumerate(self.view.detector_list):
+            self.view.peakfit_menu_actions[i].triggered.connect(lambda _, det=detector: self.open_peakfit(det))
 
         self.view.trim_simulation.triggered.connect(self.open_trim)
         #self.view.trim_simulation_test.triggered.connect(self.RunTrimExample)
@@ -106,7 +98,20 @@ class MainPresenter(object):
         self.model.set_default_directory(new_dir)
 
     def load_default_config(self):
-        get_config().restore_defaults()
+        config = get_config()
+        config.restore_defaults()
+        # read default values and update the view
+        plot_detector = [config[det]["show_plot"] == "yes" for det in self.view.detector_list]
+
+        # update the gui
+        self.view.update_normalisation_menu(config["general"]["normalisation"])
+        self.view.set_run_num_line_edit(config["general"]["run_num"])
+        self.view.update_plot_detectors_menu(plot_detector)
+
+        # reset the loaded run labels
+        self.view.set_comment_labels("", "", "", "")
+        self.view.set_run_num_label("")
+
         self.view.show_message_box("Configurations have been restored to defaults.")
 
     def increment_run_num(self, load=False):
@@ -144,14 +149,14 @@ class MainPresenter(object):
 
         if flags["no_files_found"]: #  no data was loaded - return now
             # Update GUI
-            self.view.set_run_num_label("File load failed")
+            self.view.set_run_num_label(f"No files found for run {run_num} in {get_path(get_config()["general"]["working_directory"])}")
             self.view.set_comment_labels("Comment file not found.", "N/A", "N/A", "N/A")
             return
 
         self.view.set_run_num_label(str(run_num))
 
         if flags["comment_not_found"]: # Comment file was not found
-            self.view.set_comment_labels(comment="Comment file not found.", start="N/A", end="N/A", events="N/A")
+            self.view.set_comment_labels(comment="Comment file not found", start="N/A", end="N/A", events="N/A")
 
         else: # write comment info to GUI
             comment, start, end, events = self.model.read_comment_data()
