@@ -60,7 +60,7 @@ class ModelSpectraModel(object):
         return sigma
 
 
-    def model_spectrum(self, elements, proportions, detectors, e_range=None, dx=0.1, e_res_model="linear",
+    def model_spectrum(self, elements, proportions, detectors, e_range=None, dx=1, e_res_model="linear",
                  notation=0, show_components=False, show_primary=True, show_secondary=False):
         logger.info("Modelling spectrum for %s.", elements)
         logger.debug("Settings: elements = %s, proportions = %s, dx = %s, show_primary = %s, "

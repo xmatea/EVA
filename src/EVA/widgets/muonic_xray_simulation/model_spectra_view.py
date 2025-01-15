@@ -61,7 +61,7 @@ class ModelSpectraView(QWidget):
         self.plot_settings.setLayout(self.plot_settings_layout)
         self.plot_settings_layout.setContentsMargins(0, 0, 0, 0)
         self.step_label = QLabel("Step size")
-        self.step_line_edit = QLineEdit("0.1")
+        self.step_line_edit = QLineEdit("1")
         self.show_components_box = QCheckBox("Show components")
         self.show_components_box.clicked.connect(self.on_show_components)
         self.show_primary = QCheckBox("Show primary transitions")
