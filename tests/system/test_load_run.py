@@ -1,10 +1,9 @@
+import os
 import pytest
 import numpy as np
 from EVA.core.app import get_app, get_config
 from EVA.core.data_loading import loaddata
 from pytestqt.plugin import qapp
-
-testdir = "test_data/"
 
 # Run containing all data, run with one detector missing, invalid run
 run_num_list = [2630, 3064, 0]
@@ -18,10 +17,11 @@ filenames_list = [
 
 class TestLoadRun:
     def manual_load(self, filename):
+        config = get_config()
         if filename == "":
             return [], [] # return blank arrays if data is missing for the detector
 
-        path = f"{testdir}{filename}"
+        path = os.path.join(config["general"]["working_directory"], filename)
         xdata, ydata = np.loadtxt(path, delimiter=" ", unpack=True)
         return xdata, ydata
 
