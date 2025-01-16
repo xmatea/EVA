@@ -12,6 +12,7 @@ class PeakFitWidget(QWidget):
         self.view = PeakFitView(detector, parent=self)
         self.model = PeakFitModel(run, detector, parent=self)
         self.presenter = PeakFitPresenter(view=self.view, model=self.model, parent=self)
+        self.setWindowTitle("Peak Fitting")
 
         # Using a layout for this is excessive, but for some reason just parenting the view doesn't
         # force the PlotWidget to resize to fit the window, while using a layout does...?

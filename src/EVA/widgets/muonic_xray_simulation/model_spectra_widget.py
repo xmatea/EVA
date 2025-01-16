@@ -11,7 +11,9 @@ class ModelSpectraWidget(QWidget):
         self.view = ModelSpectraView(self)
         self.model = ModelSpectraModel()
         self.presenter = ModelSpectraPresenter(self.view, self.model)
+        self.setWindowTitle("Muonic X-ray Simulations")
 
         self.layout = QHBoxLayout()
         self.layout.addWidget(self.view)
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
