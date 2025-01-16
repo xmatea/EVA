@@ -24,13 +24,13 @@ class MainView(QWidget):
         # Set up action bar items
         self.bar = self.parent.menuBar() # since parent is the QMainWindow instance
         self.file_menu = self.bar.addMenu('File')
-        self.file_load_default = self.file_menu.addAction('Load Default Setting')
-        self.file_browse_dir = self.file_menu.addAction('Browse to Data Directory')
+        self.file_load_default = self.file_menu.addAction('Load default settings')
+        self.file_browse_dir = self.file_menu.addAction('Browse to data directory')
         self.file_save = self.file_menu.addAction("Save all settings")
 
         self.plot_menu = self.bar.addMenu('Plot')
-        self.plot_settings = self.plot_menu.addAction('Plot Settings')
-        self.plot_multiplot = self.plot_menu.addAction('Multi-Run Plot')
+        #self.plot_settings = self.plot_menu.addAction('Plot settings')
+        self.plot_multiplot = self.plot_menu.addAction('Multi-run plot')
         self.plot_detectors_menu = self.plot_menu.addMenu('Select detectors')
 
         self.plot_detectors_actions = []
@@ -43,15 +43,15 @@ class MainView(QWidget):
             self.plot_detectors_actions.append(action)
 
         self.normalisation_menu = self.bar.addMenu('Normalisation')
-        self.norm_none = self.normalisation_menu.addAction('Use Raw Data')
+        self.norm_none = self.normalisation_menu.addAction('Use raw data')
         self.norm_none.setCheckable(True)
         self.norm_none.setShortcut("Alt+D")
 
-        self.norm_counts = self.normalisation_menu.addAction('Normalise by total Counts')
+        self.norm_counts = self.normalisation_menu.addAction('Normalise by total counts')
         self.norm_counts.setCheckable(True)
         self.norm_counts.setShortcut("Alt+C")
 
-        self.norm_events = self.normalisation_menu.addAction('Normalise by Events')
+        self.norm_events = self.normalisation_menu.addAction('Normalise by events')
         self.norm_events.setCheckable(True)
         self.norm_events.setShortcut("Alt+S")
 
@@ -77,7 +77,7 @@ class MainView(QWidget):
         # currently not implemented
         #self.trim_simulation_test = self.tools_menu.addAction('SRIM/TRIM Simulation test')
 
-        self.model_muon_spectrum = self.tools_menu.addAction("Simulate Muonic X-ray Spectra")
+        self.model_muon_spectrum = self.tools_menu.addAction("Simulate muonic X-ray spectra")
 
         self.help_menu = self.bar.addMenu('Help')
         self.help_manual = self.help_menu.addAction("Manual")

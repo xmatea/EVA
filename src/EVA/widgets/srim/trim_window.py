@@ -19,5 +19,6 @@ class TrimWindow(QWidget):
 
         layout = QHBoxLayout()
         layout.addWidget(self.view)
+        layout.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(layout)
