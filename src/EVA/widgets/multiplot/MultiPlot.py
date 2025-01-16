@@ -15,7 +15,6 @@ def multi_plot(runs, offset):
                and config[detector_data[0].detector]["show_plot"] == "yes"]
 
     numplots = len(plot_detectors)
-    print("len plot detectors", numplots)
 
     if numplots > 1:
         #print('more than one plot')

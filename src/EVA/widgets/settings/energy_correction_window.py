@@ -1,3 +1,7 @@
+import logging
+
+from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import (
     QCheckBox,
     QLabel,
@@ -7,13 +11,12 @@ from PyQt6.QtWidgets import (
     QGridLayout, QMessageBox,
 )
 
+logger = logging.getLogger(__name__)
+
 from EVA.core.app import get_app, get_config
 
 class Correction_E(QWidget):
-    """
-        This "window" is a QWidget. If it has no parent, it
-        will appear as a free-floating window as we want.
-        """
+    energycorr_window_closed_s = pyqtSignal(QCloseEvent)
 
     def __init__(self, parent = None):
         super(Correction_E,self).__init__(parent)
@@ -58,12 +61,12 @@ class Correction_E(QWidget):
             self.gradient_line_edits.append(gradient_line_edit)
 
             self.layout.addWidget(QLabel(f"Detector {detector}"), i + 1, 0)
-            self.layout.addWidget(gradient_line_edit, i + 1, 1)
-            self.layout.addWidget(offset_line_edit, i + 1, 2)
+            self.layout.addWidget(offset_line_edit, i + 1, 1)
+            self.layout.addWidget(gradient_line_edit, i + 1, 2)
             self.layout.addWidget(checkbox, i + 1, 3)
 
 
-        self.save_button = QPushButton("Save settings")
+        self.save_button = QPushButton("Apply and close")
         self.save_button.clicked.connect(self.save_detector_settings)
         self.layout.addWidget(self.save_button, len(self.detector_list)+2, 4, 1, -1)
 
@@ -74,6 +77,7 @@ class Correction_E(QWidget):
         if not self.validate_form():
             error = "Invalid form input."
             msg = QMessageBox.critical(self, "Input error", error)
+            logger.error("Invalid energy correction form data.")
             return
 
         for i, detector in enumerate(self.detector_list):
@@ -90,6 +94,8 @@ class Correction_E(QWidget):
             else:
                 config[detector]["use_e_corr"] = "no"
 
+        logger.info("Saved current energy corrections.")
+        self.close()
 
     def on_checkbox_click(self):
         """
@@ -110,6 +116,4 @@ class Correction_E(QWidget):
         return True
 
     def closeEvent(self, event):
-        app = get_app()
-        app.energy_correction_window = None
-        event.accept()
+        self.energycorr_window_closed_s.emit(event) # emit signal to notify mainwindow

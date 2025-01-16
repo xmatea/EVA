@@ -9,5 +9,4 @@ class TestPeakFitWindow:
 
     @pytest.fixture(autouse=True)
     def setup(self, qtbot):
-        app = get_app()
-        app.set_loaded_run(2630)
+        pass

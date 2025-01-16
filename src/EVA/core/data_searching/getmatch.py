@@ -1,13 +1,13 @@
 import math
+import logging
 import time
 from EVA.core.app import get_app
+
+logger = logging.getLogger(__name__)
 
 
 def getmatchesgammastrans_clicked(Ele, En):
     app = get_app()
-    print('length of full_gamms', len(app.gamma_database))
-    print('Ele', Ele)
-    print('En', En)
     all_matches = []
     i = 1
     while i < len(app.gamma_database)-1:
@@ -25,7 +25,6 @@ def getmatchesgammastrans_clicked(Ele, En):
                 sigma = 0.005 * raw_data_kev
 
                 if raw_data_kev - sigma < float(En) < raw_data_kev + sigma:
-                    print('En matched')
                     data = {
                         'Element': raw_data[0],
                         'Energy': raw_data_kev,
@@ -42,7 +41,6 @@ def getmatchesgammas_clicked(Ele):
     i = 1
     while i < len(app.gamma_database)-1:
         i += 1
-        #print('i=',i)
         for j in range(len(app.gamma_database[i])):
 
             raw_data = app.gamma_database[i][j]
@@ -62,18 +60,17 @@ def getmatchesgammas_clicked(Ele):
 
 def get_matches_Trans(input_element, input_trans):
     app = get_app()
-    raw_data = app.muon_database
 
     matches = []
     raw_data = app.muon_database["All energies"]
 
     for element in raw_data:
         if element == input_element:
-            for transition, energy in raw_data[element].items():
+            for transition, transition_data in raw_data[element].items():
                 if transition == input_trans:
                     data = {
                         "element": element,
-                        "energy": energy,
+                        "energy": transition_data["E"],
                         "transition": transition
                     }
                     matches.append(data)
@@ -87,10 +84,10 @@ def get_matches_Element(input_element):
     raw_data = app.muon_database["All energies"]
     for element in raw_data:
         if element == input_element:
-            for transition, energy in raw_data[element].items():
+            for transition, transition_data in raw_data[element].items():
                 data = {
                     "element": element,
-                    "energy": energy,
+                    "energy": transition_data["E"],
                     "transition": transition
                 }
                 matches.append(data)
@@ -111,7 +108,8 @@ def get_matches(input_peaks):
     raw_data = peak_data["All energies"]
     for peak, sigma in input_peaks:
         for element in raw_data:
-            for transition, energy in raw_data[element].items():
+            for transition, transition_data in raw_data[element].items():
+                energy = transition_data["E"]
                 diff = abs(peak - energy)
 
                 if diff <= 3*sigma:
@@ -137,13 +135,12 @@ def get_matches(input_peaks):
             secondary_matches.append(match)
 
     end_time = time.time_ns()
-    print(f"Found matches in {(end_time - start_time) / 1e9} s.")
+    logger.debug(f"Found matches in {(end_time - start_time) / 1e9} s.")
 
     return all_matches, primary_matches, secondary_matches
 
 def getmatchesgammas(input_peaks):
     app = get_app()
-    print('length of full_gamms', len(app.gamma_database))
     all_matches = []
     i = 1
     while i < len(app.gamma_database)-1:

@@ -4,7 +4,7 @@ import numpy as np
 @dataclass
 class Spectrum:
     """
-    The 'Dataset' class holds the data from a single detector for a single run.
+    The 'Spectrum' class holds the data from a single detector for a single run.
     It holds the x and y data as numpy arrays.
     It also holds the run number and detector the dataset came from.
     """

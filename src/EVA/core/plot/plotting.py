@@ -10,11 +10,10 @@ def Plot_Peak_Location(axs,peaks,x,i):
     axs[i].scatter(peak_pos, height, color='r', s=20, marker='X', label='peaks')
 
 def plot_spectrum(spectrum, normalisation, **settings):
-    title = settings.get("title", f"Run Number: {spectrum.run_num} {spectrum.detector}")
+    title = settings.get("title", f"Run Number: {spectrum.run_number} {spectrum.detector}")
     colour = settings.get("colour", "yellow")
-    size = settings.get("size", (16, 7))
 
-    fig, ax = plt.subplots(1, fig_size=size)
+    fig, ax = plt.subplots(1)
     fig.suptitle(title)
     fig.supxlabel("Energy (keV)")
 
@@ -32,7 +31,6 @@ def plot_spectrum(spectrum, normalisation, **settings):
     ax.set_xlim(0.0)
 
     return fig, ax
-
 
 def plot_run(run, **settings):
     default_adjustments = {

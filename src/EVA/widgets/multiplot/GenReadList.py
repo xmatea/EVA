@@ -19,8 +19,6 @@ def GenReadList(line):
                 else:
                     for i in range(start,end+1,step):
                         RunList.append(i)
-                        print(i)
-    print(RunList)
     return RunList
 
 

@@ -1,5 +1,5 @@
 import time
-from matplotlib import pyplot as plt
+import logging
 from matplotlib.backend_bases import MouseButton
 
 from PyQt6.QtCore import Qt
@@ -25,15 +25,18 @@ from EVA.core.plot.plotting import plot_run, Plot_Peak_Location
 
 from EVA.widgets.plot.plot_widget import PlotWidget
 
+logger = logging.getLogger(__name__)
+
 class PlotWindow(QWidget):
     """
         This "window" is a QWidget. If it has no parent, it
         will appear as a free-floating window as we want.
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, run, parent=None, ):
         super(PlotWindow, self).__init__(parent)
         self.scn_res = int(get_config()["display"]["screen_resolution"])
+        self.run = run
 
         # the size of this widget is currently set to maximised from MainWindow
         """
@@ -62,7 +65,7 @@ class PlotWindow(QWidget):
         self.tabs.addTab(self.findpeaks, "Element Search")
 
         # set up plot window and navigator
-        self.plot = self.plot_spectra()
+        self.plot = self.plot_spectra(self.run)
         self.plot.canvas.mpl_connect('button_press_event', self.on_click)
 
         # Add everything to main window layout (gridlayout)
@@ -533,9 +536,8 @@ class PlotWindow(QWidget):
 
 
     def find_peaks_automatically(self):
-        app = get_app()
-        data = app.loaded_run.data
-        config = app.config
+        data = self.run.data
+        config = get_config()
         start_time = time.time_ns()
 
         if self.findpeaks.useDef_checkbox.isChecked():
@@ -548,9 +550,11 @@ class PlotWindow(QWidget):
             d = float(self.findpeaks.lineedit_FindPeak_Dist.text())
             #print(h,t,d)
 
-        print(self.findpeaks.peakfindroutine.currentText())
+        logger.debug("Running peak finding method %s with height = %s, threshold = %s, distance = %s.",
+                     self.findpeaks.peakfindroutine.currentText(), h, t, d)
         i = 0
 
+        t0 = time.time_ns()
         if self.findpeaks.peakfindroutine.currentText() == "find peaks (dev)":
             for dataset in data:
                 if config.parser.getboolean(dataset.detector, "show_plot"):
@@ -567,7 +571,8 @@ class PlotWindow(QWidget):
                     self.findpeaks.table_peaks.setItem(i, 1, QTableWidgetItem(str(dict(list(out.items())))))
                     # print('after table_peaks')
                     i += 1
-                    self.plot.canvas.draw()
+
+            self.plot.canvas.draw()
 
             """              
             if globals.plot_GE1:
@@ -609,6 +614,9 @@ class PlotWindow(QWidget):
                     # print('after table_peaks')
                     i += 1
             self.plot.canvas.draw()
+
+        t1 = time.time_ns()
+        logger.debug("Peak finding finished in %ss.", (t1 - t0) / 1e9)
 
         """
         if self.findpeaks.peakfindroutine.currentText() == "scipy.Find_Peak_Cwt":
@@ -666,15 +674,14 @@ class PlotWindow(QWidget):
         print(f"Found all peaks and plotted results in {(end_time - start_time) / 1e9} s.")
 
 
-    def plot_spectra(self):
-        app = get_app()
-        run = app.loaded_run
+    def plot_spectra(self, run):
+        config = get_config()
 
         # check config to see which detectors should be loaded
-        all_dets = app.config["general"]["all_detectors"].split(" ")
-        show_dets = [det for det in all_dets if app.config[det]["show_plot"] == "yes"]
+        all_dets = config["general"]["all_detectors"].split(" ")
+        show_dets = [det for det in all_dets if config[det]["show_plot"] == "yes"]
 
-        colour = app.config["plot"]["fill_colour"]
+        colour = config["plot"]["fill_colour"]
 
         fig, axs = plot_run(run, show_detectors=show_dets, colour=colour)
         return PlotWidget(fig, axs)
@@ -685,15 +692,8 @@ class PlotWindow(QWidget):
         if event.button is MouseButton.RIGHT:
             #Find possible gamma peaks
             x, y = event.xdata, event.ydata
+            logger.debug("Figure clicked at (%s, %s).", round(x, 2), round(y, 2))
             if event.inaxes:
-                ax = event.inaxes  # the axes instance
-                default_peaks = [event.xdata]
-                print('disconnecting callback')
-                #plt.disconnect(binding_id)
-                print('start peak find', time.time())
-
-
-                #default_peaks = [20.500]
                 default_peaks = [event.xdata]
 
                 # default_peaks = peaks_GE1
@@ -704,9 +704,11 @@ class PlotWindow(QWidget):
                                                 + str(default_sigma[0]))
 
                 input_data = list(zip(default_peaks, default_sigma))
-
+                t0 = time.time_ns()
                 res = getmatch.getmatchesgammas(input_data)
-                print('end peak find', time.time())
+                t1 = time.time_ns()
+                logger.debug("Found %s gamma transitions in %ss", len(res), round((t1-t0)/1e9, 4))
+
                 if res == []:
                     self.clickpeaks.table_gamma.setItem(0, 0, QTableWidgetItem('No match'))
                 else:
@@ -731,10 +733,16 @@ class PlotWindow(QWidget):
 
                     self.clickpeaks.table_gamma.setRowCount(i)
 
-
         if event.button is MouseButton.LEFT:
             #find possible muonic X-ray peaks
             x, y = event.xdata, event.ydata
+
+            # if clicking somewhere invalid
+            if x is None or y is None:
+                return
+
+            logger.debug("Figure clicked at (%s, %s).", round(x, 2), round(y, 2))
+
             if event.inaxes:
                 ax = event.inaxes  # the axes instance
                 default_peaks=[event.xdata]
@@ -744,12 +752,16 @@ class PlotWindow(QWidget):
                                            + "{:.1f}".format(default_peaks[0]) +' +/- '
                                            + str(default_sigma[0]))
                 input_data = list(zip(default_peaks, default_sigma))
+
+                t0 = time.time_ns()
                 res, res_PM, res_SM = getmatch.get_matches(input_data)
+
+                t1 = time.time_ns()
+                logger.debug("Found %s muonic xray transitions in %ss", len(res), round((t1-t0)/1e9, 4))
 
                 i = 0
                 self.clickpeaks.table_muon.setRowCount(len(res))
                 for match in res:
-
                     row = [match['peak_centre'], match['energy'], match['element'],
                            match['transition'], match['error'], match['diff']]
 
@@ -763,7 +775,7 @@ class PlotWindow(QWidget):
 
                 temp = res_PM
                 i = 0
-                #print('res_PM',res_PM)
+
                 if len(res_PM) != 0:
                     self.clickpeaks.table_muon_prim.setRowCount(len(res_PM))
                     for match in temp:
@@ -785,8 +797,7 @@ class PlotWindow(QWidget):
 
                 temp = res_SM
                 i = 0
-                if len(res_PM) != 0:
-
+                if len(res_SM) != 0:
                     self.clickpeaks.table_muon_sec.setRowCount(len(res_SM))
                     for match in temp:
 

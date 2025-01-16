@@ -7,7 +7,6 @@ def read_multi_run(run_list):
     result = [loaddata.load_run(run_num, config) for run_num in run_list]
 
     runs, flags = list(zip(*result))
-    print(runs)
 
     # iterate through loaded runs to remove failed ones:
     blank_runs = []
