@@ -31,9 +31,7 @@ if __name__ == "__main__":
 
     logger.debug("Root directory: %s", ROOT)
     app = App(sys.argv)
-    app.setStyleSheet("QLabel{font-size: 8pt;}"
-                      "QLineEdit{font-size: 8pt;}"
-                      "QPushButton{font-size: 8pt;}")
+    app.setStyle("")
 
     logger.debug("Initialising main window.")
     app.main_window = MainWindow()
