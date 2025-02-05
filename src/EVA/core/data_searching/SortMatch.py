@@ -15,6 +15,6 @@ def SortMatch(results):
     #sort the counts
     counts_sorted = dict(sorted(counts.items(), key=lambda x: x[1], reverse=True))
 
-    #return top 5
+    #return top 6
     return dict(list(counts_sorted.items())[0:5])
 
