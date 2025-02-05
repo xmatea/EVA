@@ -5,6 +5,7 @@ from EVA.core.app import get_config, get_app
 from EVA.widgets.multiplot.multi_plot_window import MultiPlotWindow
 from EVA.widgets.muonic_xray_simulation.model_spectra_widget import ModelSpectraWidget
 from EVA.widgets.plot_analysis import plot_window
+from EVA.widgets.plot_analysis.plot_analysis_widget import PlotAnalysisWidget
 from EVA.widgets.settings import energy_correction_window, efficiency_correction_window
 from EVA.widgets.manual import manual_window
 from EVA.widgets.peakfit import peakfit_widget
@@ -239,12 +240,12 @@ class MainPresenter(object):
 
         logger.info("Launching plot window.")
         if self.view.plot_window is None:
-            self.view.plot_window = plot_window.PlotWindow(run=self.model.run)
+            self.view.plot_window = PlotAnalysisWidget(run=self.model.run)
             self.view.plot_window.setWindowTitle("Plot Window: " + config["general"]["run_num"])
             self.view.plot_window.showMaximized()
 
         else:
-            self.view.plot_window = plot_window.PlotWindow(run=self.model.run)
+            self.view.plot_window = PlotAnalysisWidget(run=self.model.run)
             self.view.plot_window.setWindowTitle("Plot Window" + config["general"]["run_num"])
             self.view.plot_window.showMaximized()
 
