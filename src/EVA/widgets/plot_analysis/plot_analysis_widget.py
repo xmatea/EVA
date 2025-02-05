@@ -1,0 +1,20 @@
+from PyQt6.QtWidgets import QWidget, QHBoxLayout
+
+from EVA.widgets.plot_analysis.plot_analysis_model import PlotAnalysisModel
+from EVA.widgets.plot_analysis.plot_analysis_presenter import PlotAnalysisPresenter
+from EVA.widgets.plot_analysis.plot_analysis_view import PlotAnalysisView
+
+
+class PlotAnalysisWidget(QWidget):
+    def __init__(self, run):
+        super().__init__()
+
+        self.view = PlotAnalysisView()
+        self.model = PlotAnalysisModel(run)
+        self.presenter = PlotAnalysisPresenter(self.view, self.model)
+
+        layout = QHBoxLayout()
+        layout.addWidget(self.view)
+
+        self.setLayout(layout)
+

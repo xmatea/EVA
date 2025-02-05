@@ -32,7 +32,6 @@ class PlotWindow(QWidget):
         This "window" is a QWidget. If it has no parent, it
         will appear as a free-floating window as we want.
     """
-
     def __init__(self, run, parent=None, ):
         super(PlotWindow, self).__init__(parent)
         self.scn_res = int(get_config()["display"]["screen_resolution"])
@@ -431,6 +430,7 @@ class PlotWindow(QWidget):
 
         # update figure
         self.update_legend()
+        self.plot.canvas.draw()
         self.plot.canvas.draw()
 
         # increment number of lines in table
