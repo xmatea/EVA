@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 from EVA.core.app import get_app
 
-def Plot_Peak_Location(axs,peaks,x,i):
+def Plot_Peak_Location(ax, x, y, peak_indices):
     """
     Plots the location of the peaks
     """
-    height = peaks[1]['peak_heights']
-    peak_pos = x[peaks[0]]
-    axs[i].scatter(peak_pos, height, color='r', s=20, marker='X', label='peaks')
+    peak_heights = y[peak_indices]
+    peak_positions = x[peak_indices]
+    ax.scatter(peak_positions, peak_heights, color='r', s=20, marker='X', label='peaks')
 
 def plot_spectrum(spectrum, normalisation, **settings):
     title = settings.get("title", f"Run Number: {spectrum.run_number} {spectrum.detector}")
