@@ -4,7 +4,7 @@ from EVA.core.app import get_config, get_app
 from PyQt6.QtWidgets import QWidget
 from PyQt6.QtCore import Qt
 
-from EVA.widgets.muonic_xray_simulation.model_spectra_widget import ModelSpectraWidget
+from EVA.windows.muonic_xray_simulation.model_spectra_widget import ModelSpectraWidget
 
 base_test = {
     "elements": ["Ag", "Hg"],

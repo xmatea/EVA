@@ -1,8 +1,4 @@
-import numpy as np
 from PyQt6.QtCore import pyqtSignal
-
-from srim import TRIM, Ion, Layer, Target
-import matplotlib.pyplot as plt
 
 from PyQt6.QtWidgets import (
     QLabel,
@@ -12,15 +8,14 @@ from PyQt6.QtWidgets import (
     QGridLayout,
     QComboBox,
     QTabWidget,
-    QTableWidget,
     QTableWidgetItem,
     QMenuBar,
     QFileDialog,
     QVBoxLayout,
     QFormLayout, QMessageBox
 )
-from EVA.widgets.plot.plot_widget import PlotWidget
-from EVA.widgets.srim.CopyableQTableWidget import CopyableQTableWidget
+from EVA.windows.plot.plot_widget import PlotWidget
+from EVA.windows.base.base_table import BaseTable
 from EVA.core.app import get_config, get_app
 
 
@@ -117,7 +112,7 @@ class TrimView(QWidget):
         self.tabs.addTab(self.tab1, "Layers")
         self.tabs.addTab(self.tab2, "Results")
 
-        self.tab1.table_TRIMsetup = CopyableQTableWidget(self.tab1)
+        self.tab1.table_TRIMsetup = BaseTable(self.tab1)
 
         self.tab1.table_TRIMsetup.setShowGrid(True)
         self.tab1.table_TRIMsetup.setColumnCount(3)
@@ -139,7 +134,7 @@ class TrimView(QWidget):
         self.tab1_layout.addWidget(self.tab1.table_TRIMsetup)
         self.tab1.setLayout(self.tab1_layout)
 
-        self.tab2.table_PlotRes = CopyableQTableWidget(self.tab2)
+        self.tab2.table_PlotRes = BaseTable(self.tab2)
 
         self.tab2.table_PlotRes.setShowGrid(True)
         self.tab2.table_PlotRes.setColumnCount(5)

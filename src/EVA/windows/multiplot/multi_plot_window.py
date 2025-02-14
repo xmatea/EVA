@@ -13,8 +13,8 @@ from PyQt6.QtWidgets import (
 )
 
 from EVA.core.physics.normalisation import normalise_counts
-from EVA.widgets.multiplot import ReadMultiRun, GenReadList, MultiPlot
-from EVA.widgets.plot.plot_widget import PlotWidget
+from EVA.windows.multiplot import ReadMultiRun, GenReadList, MultiPlot
+from EVA.windows.plot.plot_widget import PlotWidget
 logger = logging.getLogger(__name__)
 
 

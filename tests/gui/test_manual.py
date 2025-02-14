@@ -2,7 +2,7 @@ from pytestqt.plugin import qtbot
 import os
 
 from PyQt6.QtWidgets import QWidget
-from EVA.widgets.manual.manual_window import ManualWindow
+from EVA.windows.manual.manual_window import ManualWindow
 
 class TestManual:
     def test_html_load(self, qtbot):

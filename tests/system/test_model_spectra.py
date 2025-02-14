@@ -7,7 +7,7 @@ from pandas.core.dtypes.missing import array_equals
 
 from EVA.core.app import get_app
 from EVA.core.data_searching.getmatch import get_matches_Element
-from EVA.widgets.muonic_xray_simulation.model_spectra_model import ModelSpectraModel
+from EVA.windows.muonic_xray_simulation.model_spectra_model import ModelSpectraModel
 
 base_test = {
     "elements": ["Ag"],

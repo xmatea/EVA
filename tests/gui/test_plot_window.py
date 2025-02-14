@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QWidget
 from pytestqt.plugin import qtbot
 from matplotlib.backend_bases import MouseButton
 
-from EVA.widgets.plot_analysis.plot_window import PlotWindow
+from EVA.windows.plot_analysis.plot_window import PlotWindow
 from EVA.core.data_loading import loaddata
 from EVA.core.app import get_app, get_config
 

@@ -1,9 +1,9 @@
 import logging
 from PyQt6.QtWidgets import QWidget, QHBoxLayout
 
-from EVA.widgets.srim.trim_model import TrimModel
-from EVA.widgets.srim.trim_presenter import TrimPresenter
-from EVA.widgets.srim.trim_view import TrimView
+from EVA.windows.srim.trim_model import TrimModel
+from EVA.windows.srim.trim_presenter import TrimPresenter
+from EVA.windows.srim.trim_view import TrimView
 
 logger = logging.getLogger(__name__)
 
