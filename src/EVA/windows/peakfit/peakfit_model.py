@@ -56,7 +56,9 @@ class PeakFitModel(QObject):
         self.id_counter = 0
 
         self.add_peak_mode = False
-        self.fig, self.axs = plotting.plot_spectrum(self.spectrum, get_config()["general"]["normalisation"])
+
+        plot_settings = {"colour": get_config()["plot"]["fill_colour"]}
+        self.fig, self.axs = plotting.plot_spectrum(self.spectrum, get_config()["general"]["normalisation"], **plot_settings)
 
     # im sure there is a fancy way to do this. exercise for the reader...
     def next_id(self) -> str:

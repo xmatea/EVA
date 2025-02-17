@@ -56,7 +56,8 @@ class ModelFitModel(QObject):
         self.x_range = None
         self.y_range = None
 
-        self.fig, self.axs = plotting.plot_spectrum(self.spectrum, get_config()["general"]["normalisation"])
+        plot_settings = {"colour": get_config()["plot"]["fill_colour"]}
+        self.fig, self.axs = plotting.plot_spectrum(self.spectrum, get_config()["general"]["normalisation"], **plot_settings)
 
     def next_id(self, name):
         filtered_name = name.replace("_", "")  # if there is an underscore in the file name things will break
