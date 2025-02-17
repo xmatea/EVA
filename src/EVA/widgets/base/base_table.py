@@ -1,17 +1,71 @@
 from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 
 from EVA.core.app import get_app
 
-
-class CopyableQTableWidget(QTableWidget):
-    """
-    inspired by
-    https://stackoverflow.com/questions/60715462/how-to-copy-and-paste-multiple-cells-in-qtablewidget-in-pyqt5
-    """
+class BaseTable(QTableWidget):
+    contents_updated_s = pyqtSignal()
+    user_edited_cell_s = pyqtSignal(int, int)
+    table_widget_clicked = pyqtSignal(int, int)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.block_updates = False
+
+        self.cellChanged.connect(self.on_cell_changed)
+
+    def on_cell_changed(self, row, col):
+        if not self.block_updates:
+            self.user_edited_cell_s.emit(row, col)
+
+    def stretch_horizontal_header(self, skip:list=None):
+        n_cols = self.columnCount()
+        for i in range(n_cols):
+            if skip is None or i not in skip:
+                self.horizontalHeader().setSectionResizeMode(i, QHeaderView.ResizeMode.Stretch)
+
+
+    def update_contents(self, data, resize_rows=True, resize_columns=False):
+        self.block_updates = True # temporarily block updates
+        input_n_rows = len(data)
+
+        if input_n_rows != 0:
+            input_n_cols = len(data[0])
+        else:
+            input_n_cols = self.columnCount()
+
+        # resize table to fit new data if requested
+        if resize_rows:
+            self.setRowCount(input_n_rows)
+
+        if resize_columns:
+            self.setColumnCount(input_n_cols)
+
+        # some lovely, probably very slow, table printing
+        for row in range(input_n_rows):
+            row_data = data[row]
+
+            for col in range(input_n_cols):
+                input_item = list(row_data)[col]
+
+                if isinstance(input_item, float):
+                    table_item = QTableWidgetItem(f"{input_item:.2f}")
+                else:
+                    table_item = QTableWidgetItem(str(input_item))
+
+                self.setItem(row, col, QTableWidgetItem(table_item))
+
+        self.block_updates = False
+        self.contents_updated_s.emit()
+
+    def get_contents(self):
+        pass
+
+    def get_row_contents(self):
+        pass
+
+    def get_column_contents(self):
+        pass
 
     def copy_selection(self):
         copied_cells = sorted(self.selectedIndexes())
