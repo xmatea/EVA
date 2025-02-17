@@ -4,7 +4,7 @@ import os
 from EVA.core.app import get_config, get_app
 from EVA.windows.multiplot.multi_plot_window import MultiPlotWindow
 from EVA.windows.muonic_xray_simulation.model_spectra_widget import ModelSpectraWidget
-from EVA.windows.plot_analysis import plot_window
+from EVA.windows.periodic_table.periodic_table_widget import PeriodicTableWidget
 from EVA.windows.plot_analysis.plot_analysis_widget import PlotAnalysisWidget
 from EVA.windows.settings import energy_correction_window, efficiency_correction_window
 from EVA.windows.manual import manual_window
@@ -47,6 +47,7 @@ class MainPresenter(object):
         self.view.trim_simulation.triggered.connect(self.open_trim)
         #self.view.trim_simulation_test.triggered.connect(self.RunTrimExample)
         self.view.model_muon_spectrum.triggered.connect(self.open_model_muon_spectrum)
+        self.view.periodic_table.triggered.connect(self.open_periodic_table)
 
         self.view.help_manual.triggered.connect(self.open_manual)
 
@@ -248,4 +249,17 @@ class MainPresenter(object):
             self.view.plot_window = PlotAnalysisWidget(run=self.model.run)
             self.view.plot_window.setWindowTitle("Plot Window" + config["general"]["run_num"])
             self.view.plot_window.showMaximized()
+
+    def open_periodic_table(self):
+        logger.info("Launching periodic table.")
+        if self.view.periodic_table_window is None:
+            self.view.periodic_table_window = PeriodicTableWidget()
+            self.view.periodic_table_window.show()
+        else:
+            self.view.periodic_table_window.show()
+
+    def close_periodic_table(self, event):
+        event.accept()
+        self.view.periodic_table_window = None
+        logger.info("Closed periodic table window.")
 

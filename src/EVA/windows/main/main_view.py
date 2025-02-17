@@ -79,6 +79,8 @@ class MainView(QWidget):
 
         self.model_muon_spectrum = self.tools_menu.addAction("Simulate muonic X-ray spectra")
 
+        self.periodic_table = self.tools_menu.addAction("Periodic table")
+
         self.help_menu = self.bar.addMenu('Help')
         self.help_manual = self.help_menu.addAction("Manual")
 
@@ -162,6 +164,7 @@ class MainView(QWidget):
         self.energy_correction_window = None
         self.manual_window = None
         self.muon_spectrum_window = None
+        self.periodic_table_window = None
 
 
     def set_run_num_line_edit(self, num):
