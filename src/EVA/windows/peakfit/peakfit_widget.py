@@ -1,17 +1,19 @@
 from PyQt6.QtWidgets import QWidget, QHBoxLayout
 
-from EVA.widgets.peakfit.peakfit_model import PeakFitModel
-from EVA.widgets.peakfit.peakfit_presenter import PeakFitPresenter
-from EVA.widgets.peakfit.peakfit_view import PeakFitView
+from EVA.windows.peakfit.model_fit_model import ModelFitModel
+from EVA.windows.peakfit.peakfit_model import PeakFitModel
+from EVA.windows.peakfit.peakfit_presenter import PeakFitPresenter
+from EVA.windows.peakfit.peakfit_view import PeakFitView
 
 
 class PeakFitWidget(QWidget):
     def __init__(self, run, detector):
         """ Assemble the view and the presenter for the PeakFit widget."""
         super().__init__()
-        self.view = PeakFitView(detector, parent=self)
+        self.view = PeakFitView(parent=self)
         self.model = PeakFitModel(run, detector, parent=self)
-        self.presenter = PeakFitPresenter(view=self.view, model=self.model, parent=self)
+        self.mf_model = ModelFitModel(run, detector, parent=self)
+        self.presenter = PeakFitPresenter(view=self.view, model=self.model, mf_model=self.mf_model, parent=self)
         self.setWindowTitle("Peak Fitting")
 
         # Using a layout for this is excessive, but for some reason just parenting the view doesn't
