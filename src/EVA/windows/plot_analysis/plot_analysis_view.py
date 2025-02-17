@@ -60,6 +60,7 @@ class PlotAnalysisView(BaseView, Ui_plot_analysis):
         for i, item in enumerate(items):
             table.setItem(0, i, QTableWidgetItem(item))
 
+
     """
     Takes in a 2d list (list of rows) and displays it in the table.
     for example, [[a,b,c],[d,e,f]] would be printed as a table with 3 columns and 2 rows 

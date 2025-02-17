@@ -1,4 +1,8 @@
 import logging
+
+from EVA.core.data_searching.getmatch import get_matches_Element, getmatchesgammas_clicked
+from EVA.util.transition_utils import is_primary
+
 logger = logging.getLogger(__name__)
 
 from matplotlib.backend_bases import MouseButton
@@ -24,8 +28,8 @@ class PlotAnalysisPresenter(object):
         self.view.routine_select_combo.setCurrentText(self.model.peakfind_selected_function)
 
         # set up all connections:
-        self.view.mu_xray_search_width_line_edit.textChanged.connect(self.set_mu_xray_search_width)
-        self.view.gamma_search_width_line_edit.textChanged.connect(self.set_gamma_search_width)
+        self.view.mu_xray_search_width_line_edit.textEdited.connect(self.set_mu_xray_search_width)
+        self.view.gamma_search_width_line_edit.textEdited.connect(self.set_gamma_search_width)
 
         # connect cellClicked event for all tables
         self.view.gamma_table.cellClicked.connect(self.on_gamma_table_cell_clicked)
@@ -45,6 +49,61 @@ class PlotAnalysisPresenter(object):
         self.view.use_default_checkbox.checkStateChanged.connect(self.view.toggle_peak_find_settings)
         self.view.find_peaks_button.clicked.connect(self.start_peak_find)
         self.view.reset_button.clicked.connect(self.reset_peak_find)
+
+        self.view.muon_search_button.clicked.connect(self.search_muonic_xrays)
+        self.view.gamma_search_button.clicked.connect(self.search_gammas)
+
+    def search_muonic_xrays(self):
+        try:
+            element = self.view.muon_search_line_edit.text()
+            res = get_matches_Element(element)
+
+            # if no matches
+            if len(res) == 0:
+                self.view.display_no_match_table(self.view.muonic_xray_table_all)
+                self.view.display_no_match_table(self.view.muonic_xray_table_prim)
+                self.view.display_no_match_table(self.view.muonic_xray_table_sec)
+                return
+
+            pretty_res = [[r["element"], r["energy"], r["transition"], ""] for r in res]
+            self.view.muonic_xray_table_all.update_contents(pretty_res)
+
+            prim_res = [[r["element"], r["energy"], r["transition"], ""] for r in res
+                        if is_primary(r["transition"], notation="spec")]
+            sec_res = [[r["element"], r["energy"], r["transition"], ""] for r in res
+                       if not is_primary(r["transition"], notation="spec")]
+
+            if len(prim_res) == 0:
+                self.view.display_no_match_table(self.view.muonic_xray_table_prim)
+            else:
+                self.view.muonic_xray_table_prim.update_contents(prim_res)
+
+            if len(sec_res) == 0:
+                self.view.display_no_match_table(self.view.muonic_xray_table_sec)
+            else:
+                self.view.muonic_xray_table_sec.update_contents(sec_res)
+
+        except (ValueError, AttributeError) as e:
+            self.view.display_error_message(message="Invalid data in muonic xray search.")
+            raise e
+
+
+    def search_gammas(self):
+        try:
+            isotope = self.view.gamma_search_line_edit.text().strip()
+            res = getmatchesgammas_clicked(isotope)
+
+            # if no matches
+            if len(res) == 0:
+                self.view.display_no_match_table(self.view.gamma_table)
+                return
+
+            pretty_res = [[r["Element"].strip(), r["Energy"], "", r["Intensity"], r["lifetime"]] for r in res]
+            self.view.gamma_table.update_contents(pretty_res)
+
+        except (ValueError, AttributeError) as e:
+            self.view.display_error_message(message="Invalid data in gamma search.")
+            raise e
 
     def set_mu_xray_search_width(self, width):
         try:
