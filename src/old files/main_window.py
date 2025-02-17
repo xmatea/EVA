@@ -17,13 +17,13 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QPalette, QColor
 from pyparsing import conditionAsParseAction
 
-from EVA.widgets.muonic_xray_simulation.model_spectra_widget import ModelSpectraWidget
-from EVA.widgets.srim import trim_window, RunTrimExample
-from EVA.widgets.plot_analysis import plot_window
-from EVA.widgets.multiplot import multi_plot_window
-from EVA.widgets.settings import energy_correction_window, efficiency_correction_window
-from EVA.widgets.manual import manual_window
-from EVA.widgets.peakfit import peakfit_widget
+from EVA.windows.muonic_xray_simulation.model_spectra_widget import ModelSpectraWidget
+from EVA.windows.srim import trim_window, RunTrimExample
+from EVA.windows.plot_analysis import plot_window
+from EVA.windows.multiplot import multi_plot_window
+from EVA.windows.settings import energy_correction_window, efficiency_correction_window
+from EVA.windows.manual import manual_window
+from EVA.windows.peakfit import peakfit_widget
 
 from EVA.core.app import get_app, get_config
 logger = logging.getLogger(__name__)

@@ -2,7 +2,9 @@ import sys
 import logging
 from pathlib import Path
 
-from EVA.widgets.main.main_window import MainWindow
+from PyQt6.QtGui import QIcon
+
+from EVA.windows.main.main_window import MainWindow
 from EVA.core.app import App
 
 logger = logging.getLogger(__name__)
@@ -31,7 +33,7 @@ if __name__ == "__main__":
 
     logger.debug("Root directory: %s", ROOT)
     app = App(sys.argv)
-    app.setStyle("")
+    #QIcon.setThemeName("TangoMFK")
 
     logger.debug("Initialising main window.")
     app.main_window = MainWindow()

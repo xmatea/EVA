@@ -6,9 +6,9 @@ from PyQt6.QtWidgets import QMainWindow, QWidget, QApplication, QMessageBox
 from PyQt6.QtCore import QSize
 from PyQt6.QtGui import QPalette, QColor, QIcon
 
-from EVA.widgets.main.main_view import MainView
-from EVA.widgets.main.main_model import MainModel
-from EVA.widgets.main.main_presenter import MainPresenter
+from EVA.windows.main.main_view import MainView
+from EVA.windows.main.main_model import MainModel
+from EVA.windows.main.main_presenter import MainPresenter
 from EVA.core.app import get_config
 from EVA.util.path_handler import get_path
 

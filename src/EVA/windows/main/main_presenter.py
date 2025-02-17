@@ -2,14 +2,14 @@ import logging
 import os
 
 from EVA.core.app import get_config, get_app
-from EVA.widgets.multiplot.multi_plot_window import MultiPlotWindow
-from EVA.widgets.muonic_xray_simulation.model_spectra_widget import ModelSpectraWidget
-from EVA.widgets.plot_analysis import plot_window
-from EVA.widgets.plot_analysis.plot_analysis_widget import PlotAnalysisWidget
-from EVA.widgets.settings import energy_correction_window, efficiency_correction_window
-from EVA.widgets.manual import manual_window
-from EVA.widgets.peakfit import peakfit_widget
-from EVA.widgets.srim.trim_window import TrimWindow
+from EVA.windows.multiplot.multi_plot_window import MultiPlotWindow
+from EVA.windows.muonic_xray_simulation.model_spectra_widget import ModelSpectraWidget
+from EVA.windows.plot_analysis import plot_window
+from EVA.windows.plot_analysis.plot_analysis_widget import PlotAnalysisWidget
+from EVA.windows.settings import energy_correction_window, efficiency_correction_window
+from EVA.windows.manual import manual_window
+from EVA.windows.peakfit import peakfit_widget
+from EVA.windows.srim.trim_window import TrimWindow
 from EVA.util.path_handler import get_path
 
 logger = logging.getLogger(__name__)

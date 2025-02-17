@@ -1,8 +1,8 @@
 from PyQt6.QtWidgets import QWidget, QHBoxLayout
 
-from EVA.widgets.muonic_xray_simulation.model_spectra_model import ModelSpectraModel
-from EVA.widgets.muonic_xray_simulation.model_spectra_presenter import ModelSpectraPresenter
-from EVA.widgets.muonic_xray_simulation.model_spectra_view import ModelSpectraView
+from EVA.windows.muonic_xray_simulation.model_spectra_model import ModelSpectraModel
+from EVA.windows.muonic_xray_simulation.model_spectra_presenter import ModelSpectraPresenter
+from EVA.windows.muonic_xray_simulation.model_spectra_view import ModelSpectraView
 
 
 class ModelSpectraWidget(QWidget):
