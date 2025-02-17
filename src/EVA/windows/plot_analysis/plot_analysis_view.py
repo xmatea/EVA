@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import (
     QVBoxLayout, QTableWidgetItem, QTreeWidgetItem
 )
 
-from EVA.widgets.base_view.base_view import BaseView
+from EVA.widgets.base.base_view import BaseView
 from EVA.widgets.plot.plot_widget import PlotWidget
 from EVA.gui.plot_analysis_gui import Ui_plot_analysis
 
@@ -20,13 +20,13 @@ class PlotAnalysisView(BaseView, Ui_plot_analysis):
         self.setWindowTitle("Plot Window")
 
         # stretch all the table headers so that they resize to occupy maximum space
-        self.stretch_horizontal_header(self.muonic_xray_table_all)
-        self.stretch_horizontal_header(self.muonic_xray_table_prim)
-        self.stretch_horizontal_header(self.muonic_xray_table_sec)
-        self.stretch_horizontal_header(self.gamma_table)
-        self.stretch_horizontal_header(self.plotted_gammas_table)
-        self.stretch_horizontal_header(self.plotted_mu_xrays_table)
-        self.stretch_horizontal_header(self.peakfind_results_table)
+        self.muonic_xray_table_all.stretch_horizontal_header()
+        self.muonic_xray_table_prim.stretch_horizontal_header()
+        self.muonic_xray_table_sec.stretch_horizontal_header()
+        self.gamma_table.stretch_horizontal_header()
+        self.plotted_gammas_table.stretch_horizontal_header()
+        self.plotted_mu_xrays_table.stretch_horizontal_header()
+        self.peakfind_results_table.stretch_horizontal_header()
 
         self.peakfind_results_table.setMaximumHeight(150)
 
@@ -64,33 +64,6 @@ class PlotAnalysisView(BaseView, Ui_plot_analysis):
     Takes in a 2d list (list of rows) and displays it in the table.
     for example, [[a,b,c],[d,e,f]] would be printed as a table with 3 columns and 2 rows 
     """
-    @staticmethod
-    def update_table(table, data, resize_columns=False):
-        input_n_rows = len(data)
-        input_n_cols = len(data[0])
-
-        if table.columnCount() != input_n_cols and not resize_columns:
-            print(data[0])
-            raise IndexError("Number of columns in input data does not match number of columns in table. "
-                             "Use 'resize-columns=True' to expand table.")
-
-        # resize table to fit new data
-        table.setRowCount(input_n_rows)
-        table.setColumnCount(input_n_cols)
-
-        # some lovely, probably very slow, table printing
-        for row in range(input_n_rows):
-            row_data = data[row]
-
-            for col in range(input_n_cols):
-                input_item = list(row_data)[col]
-
-                if isinstance(input_item, float):
-                    table_item = QTableWidgetItem(f"{input_item:.2f}")
-                else:
-                    table_item = QTableWidgetItem(str(input_item))
-
-                table.setItem(row, col, QTableWidgetItem(table_item))
 
     def toggle_peak_find_settings(self, check_state):
         self.custom_settings_container.setVisible(not (check_state == Qt.CheckState.Checked))

@@ -160,7 +160,7 @@
             <number>5</number>
            </property>
            <item>
-            <widget class="QTableWidget" name="muonic_xray_table_all">
+            <widget class="BaseTable" name="muonic_xray_table_all">
              <property name="enabled">
               <bool>true</bool>
              </property>
@@ -266,7 +266,7 @@
             <number>5</number>
            </property>
            <item>
-            <widget class="QTableWidget" name="muonic_xray_table_prim">
+            <widget class="BaseTable" name="muonic_xray_table_prim">
              <property name="enabled">
               <bool>true</bool>
              </property>
@@ -369,7 +369,7 @@
             <number>5</number>
            </property>
            <item>
-            <widget class="QTableWidget" name="muonic_xray_table_sec">
+            <widget class="BaseTable" name="muonic_xray_table_sec">
              <property name="enabled">
               <bool>true</bool>
              </property>
@@ -475,7 +475,7 @@
             <number>5</number>
            </property>
            <item>
-            <widget class="QTableWidget" name="plotted_mu_xrays_table">
+            <widget class="BaseTable" name="plotted_mu_xrays_table">
              <property name="styleSheet">
               <string notr="true"/>
              </property>
@@ -528,7 +528,7 @@
             <number>5</number>
            </property>
            <item>
-            <widget class="QTableWidget" name="gamma_table">
+            <widget class="BaseTable" name="gamma_table">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>
@@ -627,7 +627,7 @@
             <number>5</number>
            </property>
            <item>
-            <widget class="QTableWidget" name="plotted_gammas_table">
+            <widget class="BaseTable" name="plotted_gammas_table">
              <property name="styleSheet">
               <string notr="true"/>
              </property>
@@ -905,7 +905,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QTableWidget" name="peakfind_results_table">
+        <widget class="BaseTable" name="peakfind_results_table">
          <property name="maximumSize">
           <size>
            <width>16777215</width>
@@ -974,6 +974,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>BaseTable</class>
+   <extends>QTableWidget</extends>
+   <header>EVA.widgets.base.base_table</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -1,8 +1,8 @@
 from PyQt6.QtWidgets import QWidget, QHBoxLayout
 
-from EVA.widgets.plot_analysis.plot_analysis_model import PlotAnalysisModel
-from EVA.widgets.plot_analysis.plot_analysis_presenter import PlotAnalysisPresenter
-from EVA.widgets.plot_analysis.plot_analysis_view import PlotAnalysisView
+from EVA.windows.plot_analysis.plot_analysis_model import PlotAnalysisModel
+from EVA.windows.plot_analysis.plot_analysis_presenter import PlotAnalysisPresenter
+from EVA.windows.plot_analysis.plot_analysis_view import PlotAnalysisView
 
 
 class PlotAnalysisWidget(QWidget):

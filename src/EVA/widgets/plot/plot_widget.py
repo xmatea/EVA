@@ -53,7 +53,6 @@ class PlotWidget(QWidget):
 
         if axs is not None:
             self.canvas.axs = axs
-            self.canvas.draw()
 
         if fig is not None:
             self.canvas.figure = fig
@@ -73,6 +72,8 @@ class PlotWidget(QWidget):
 
             self.layout.addWidget(self.navbar)
             self.layout.addWidget(self.canvas)
+
+        self.canvas.draw()
 
     def release_navigation(self, event):
         # Removes any current zoom or pan

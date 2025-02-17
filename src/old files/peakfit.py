@@ -21,7 +21,7 @@ from PyQt6.QtWidgets import (
     QFileDialog,
 )
 
-from EVA.windows.plot import plot_widget
+from EVA.widgets.plot import plot_widget
 from EVA.core.app import get_app, get_config
 from EVA.core.plot import plotting
 from EVA.util import Trimdata

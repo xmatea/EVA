@@ -12,9 +12,8 @@ from PyQt6.QtWidgets import (
     QErrorMessage
 )
 
-from EVA.core.physics.normalisation import normalise_counts
 from EVA.windows.multiplot import ReadMultiRun, GenReadList, MultiPlot
-from EVA.windows.plot.plot_widget import PlotWidget
+from EVA.widgets.plot.plot_widget import PlotWidget
 logger = logging.getLogger(__name__)
 
 

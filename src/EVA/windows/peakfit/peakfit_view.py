@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import (
 )
 
 from EVA.gui.peak_fit_gui import Ui_peak_fit
-from EVA.windows.base.base_view import BaseView
+from EVA.widgets.base.base_view import BaseView
 from EVA.core.app import get_config
 
 logger = logging.getLogger("__main__")

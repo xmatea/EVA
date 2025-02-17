@@ -14,8 +14,8 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QFormLayout, QMessageBox
 )
-from EVA.windows.plot.plot_widget import PlotWidget
-from EVA.windows.base.base_table import BaseTable
+from EVA.widgets.plot.plot_widget import PlotWidget
+from EVA.widgets.base.base_table import BaseTable
 from EVA.core.app import get_config, get_app
 
 

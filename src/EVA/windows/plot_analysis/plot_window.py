@@ -20,7 +20,7 @@ from PyQt6.QtWidgets import (
 
 from EVA.core.data_searching import SortMatch, getmatch
 from EVA.core.peak_finding import FindPeaks
-from EVA.core.app import get_app, get_config
+from EVA.core.app import get_config
 from EVA.core.plot.plotting import plot_run, Plot_Peak_Location
 
 from EVA.widgets.plot.plot_widget import PlotWidget

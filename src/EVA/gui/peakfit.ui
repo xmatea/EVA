@@ -51,7 +51,7 @@
           </size>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="initial_bg_params_tab">
           <property name="sizePolicy">
@@ -1082,7 +1082,7 @@
      <property name="styleSheet">
       <string notr="true">background: white</string>
      </property>
-     <widget class="PlotWidget" name="plot" native="true"/>
+     <widget class="PlotWidget" name="plot"/>
      <widget class="PlotWidget" name="model_plot"/>
     </widget>
    </item>

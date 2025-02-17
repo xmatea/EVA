@@ -6,12 +6,12 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QWidget,
     QLabel,
-    QFormLayout, QComboBox, QLineEdit, QHBoxLayout, QCheckBox,
+    QComboBox, QLineEdit, QHBoxLayout, QCheckBox,
     QMessageBox, QScrollArea
 )
 
-from EVA.windows.muonic_xray_simulation.element_selector_widget import ElementSelectorWidget, ElementSelectorItem
-from EVA.windows.plot.plot_widget import PlotWidget
+from EVA.windows.muonic_xray_simulation.element_selector_widget import ElementSelectorWidget
+from EVA.widgets.plot.plot_widget import PlotWidget
 logger = logging.getLogger(__name__)
 
 
