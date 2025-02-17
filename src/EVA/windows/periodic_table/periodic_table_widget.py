@@ -1,13 +1,13 @@
 # imports
-import sys, re, glob
+import re
 import json
 from PyQt6.QtWidgets import QMainWindow, QTreeWidgetItem, QTableWidgetItem, QMessageBox
 from functools import partial
 
 from EVA.core.data_searching.getmatch import get_matches
-from EVA.widgets.periodic_table.periodic_table import Ui_MainWindow
+from EVA.windows.periodic_table.periodic_table import Ui_MainWindow
 from EVA.util.path_handler import get_path
-from EVA.util.notation_utils import to_iupac
+from EVA.util.transition_utils import to_iupac
 
 # lists
 elements = ["H", "He", 
