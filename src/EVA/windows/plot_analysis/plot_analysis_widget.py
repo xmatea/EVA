@@ -6,7 +6,7 @@ from EVA.windows.plot_analysis.plot_analysis_view import PlotAnalysisView
 
 
 class PlotAnalysisWidget(QWidget):
-    def __init__(self, run):
+    def __init__(self, run, parent=None):
         super().__init__()
 
         self.view = PlotAnalysisView()
