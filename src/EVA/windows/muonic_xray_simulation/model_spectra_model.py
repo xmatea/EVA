@@ -33,7 +33,7 @@ class ModelSpectraModel(object):
         self.all_spectra = []
         self.all_transitions = []
 
-        with open(get_path("src/EVA/databases/names/transition_notations.json"), encoding="utf-8") as file:
+        with open(get_path("src/EVA/databases/names/transition_notations_mathtext.json"), encoding="utf-8") as file:
             self.notations = json.load(file)
             file.close()
 
@@ -158,6 +158,7 @@ class ModelSpectraModel(object):
                 self.plot_components(ax, spectrum=spectrum, transitions=transitions, notation_index=notation)
 
             plt.subplots_adjust(top=0.9, bottom=0.1, left=0.1, right=0.9, hspace=0.45, wspace=0.23)
+            ax.legend()
 
         t1 = time.time_ns()
         logger.info("Spectrum modelled in %ss.", round((t1-t0)/1e9, 4))
@@ -165,42 +166,42 @@ class ModelSpectraModel(object):
 
     def plot_components(self, ax, spectrum, transitions, notation_index=0):
         for i, trans in enumerate(transitions):
-            if np.sum(trans["curve"]) > 0.1:  # Check if the peak is within the viewing range of the plot
-                color = ax._get_lines.get_next_color()
+            color = ax._get_lines.get_next_color()
 
-                ax.plot(spectrum.x, trans["curve"], label=trans["name"], color=color)
+            ax.plot(spectrum.x, trans["curve"], color=color)
 
-                # Calculate peak height
-                peak_height = (trans["intensity"] * trans["weights"]) / (trans["sigma"] * np.sqrt(2 * np.pi))
+            # Calculate peak height
+            peak_height = (trans["intensity"] * trans["weights"]) / (trans["sigma"] * np.sqrt(2 * np.pi))
 
-                spec_name = trans["name"]
-                element = trans["element"]
+            spec_name = trans["name"]
+            element = trans["element"]
 
-                font = {
-                    "size": 7,
-                    "family": "sans-serif",
-                    "color": color
-                }
+            font = {
+                "size": 7,
+                "family": "sans-serif",
+                "color": color
+            }
 
-                if notation_index == 0: # siegbahn notation
-                    name = self.notations[spec_name][1]
-                    if not name:
-                        continue # skip if peak does not have siegbahn name
+            # y_offset = (peak_height * 0.03) if i % 2 else (peak_height * 0.2) raise every other label
+            y_offset = peak_height * 0.05
 
-                    font["size"] = 9
+            if notation_index == 0: # siegbahn notation
+                name = self.notations[spec_name][1]
+                if not name:
+                    continue # skip if peak does not have siegbahn name
 
-                elif notation_index == 1: # spectroscopic notation
-                    name = spec_name
+                font["size"] = 9
+                ax.text(x=trans["E"], y=peak_height + y_offset, s=rf"{element} ${name}$",
+                        fontdict=font, horizontalalignment="center", rotation="vertical")
 
-                elif notation_index == 2: # iupac notation
-                    name = self.notations[spec_name][0]
-                else:
-                    raise ValueError("Invalid notation index!")
-
-                y_offset = (peak_height * 0.03) if i % 2 else (peak_height * 0.2)
+            elif notation_index == 1: # spectroscopic notation
+                name = spec_name
                 ax.text(x=trans["E"], y=peak_height + y_offset, s=f"{element} {name}",
-                        fontdict=font, horizontalalignment="center")
+                        fontdict=font, horizontalalignment="center", rotation="vertical")
 
-    def reset(self):
-        self.all_spectra = []
-        self.all_transitions = []
+            elif notation_index == 2: # iupac notation
+                name = self.notations[spec_name][0]
+                ax.text(x=trans["E"], y=peak_height + y_offset, s=f"{element} {name}",
+                        fontdict=font, horizontalalignment="center", rotation="vertical")
+            else:
+                raise ValueError("Invalid notation index!")
