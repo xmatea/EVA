@@ -1,0 +1,39 @@
+{
+    "background": {
+        "a": {
+            "value": 72.91373578664518,
+            "stderr": 0,
+            "vary": true
+        },
+        "b": {
+            "value": -348.5502010721708,
+            "stderr": 0,
+            "vary": true
+        },
+        "c": {
+            "value": -13584.923473028746,
+            "stderr": 0,
+            "vary": true
+        }
+    },
+    "p0": {
+        "amplitude": {
+            "value": 341914.6078868741,
+            "stderr": 0,
+            "vary": true,
+            "min": 0
+        },
+        "center": {
+            "value": 2.3877412989390976,
+            "stderr": 0,
+            "vary": true,
+            "min": 0
+        },
+        "sigma": {
+            "value": 9.739899452315877,
+            "stderr": 0,
+            "vary": true,
+            "min": 0
+        }
+    }
+}
