@@ -1,2 +1,0 @@
-# Screen Resolution #High Res = 1, Normal =2
-2
