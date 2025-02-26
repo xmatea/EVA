@@ -7,6 +7,7 @@ from EVA.windows.muonic_xray_simulation.model_spectra_view import ModelSpectraVi
 
 class ModelSpectraWidget(QWidget):
     def __init__(self, parent=None):
+
         super().__init__(parent)
         self.view = ModelSpectraView(self)
         self.model = ModelSpectraModel()

@@ -1,15 +1,39 @@
 import matplotlib.pyplot as plt
-from EVA.core.app import get_app
+import numpy as np
 
-def Plot_Peak_Location(ax, x, y, peak_indices):
+from EVA.core.app import get_app
+from EVA.core.data_structures.run import Run
+from EVA.core.data_structures.spectrum import Spectrum
+
+
+def Plot_Peak_Location(ax: plt.Axes, x: np.ndarray, y: np.ndarray, peak_indices: np.ndarray):
     """
-    Plots the location of the peaks
+    Plots the peak location for each peak specified in peak_indices on a specified Axes instance.
+
+    Args:
+        ax: axis to plot peaks on
+        x: input x-data
+        y: input y-data
+        peak_indices: indices of data arrays to plot peaks on
     """
     peak_heights = y[peak_indices]
     peak_positions = x[peak_indices]
     ax.scatter(peak_positions, peak_heights, color='r', s=20, marker='X', label='peaks')
 
-def plot_spectrum(spectrum, normalisation, **settings):
+def plot_spectrum(spectrum: Spectrum, normalisation: str, **settings: dict) -> tuple[plt.Figure, plt.Axes]:
+    """
+    Plots a single spectrum (for a single detector).
+
+    Args:
+        spectrum: Spectrum object to plot
+        normalisation: Normalisation type - valid options are "counts", "none", "spills"
+        **settings:
+            * **title** (str): plot title
+            * **colour** (str): plot fill colour
+
+    Returns:
+        matplotlib Figure and Axes with plotted spectrum
+    """
     title = settings.get("title", f"Run Number: {spectrum.run_number} {spectrum.detector}")
     colour = settings.get("colour", "yellow")
 
@@ -32,7 +56,27 @@ def plot_spectrum(spectrum, normalisation, **settings):
 
     return fig, ax
 
-def plot_run(run, **settings):
+def plot_run(run: Run, **settings: dict) -> tuple[plt.Figure, plt.Axes]:
+    """
+    Plots a Run with a subplot for each Spectrum in the Run.
+
+    Args:
+        run: Run object to plot
+        **settings:
+
+            * **show_detectors** (list): which detectors to plot (default is all loaded detectors)
+
+            * **title** (str): plot title
+
+            * **colour** (str): plot fill colour (default is yellow)
+
+            * **size** (tuple): plot size (default is (16, 7))
+
+            * **adjustment_dict** (dict): plot adjustments for plt.subplots_adjust()
+
+    Returns:
+        matplotlib Figure and Axes with plotted data
+    """
     default_adjustments = {
         "top": 0.9,
         "bottom": 0.1,

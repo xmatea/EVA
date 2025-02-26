@@ -1,6 +1,6 @@
 import pytest
 from pytestqt.plugin import qapp
-from EVA.core.data_searching import getmatch
+from EVA.core.data_searching import get_match
 from EVA.core.app import get_app
 from tests.system.test_util import load_mudirac_test_db, load_gamma_test_db, load_legacy_test_db
 
@@ -42,7 +42,7 @@ default_peaks_list_gamma = [
 default_sigma_list_gamma = [0.01]
 
 target_result_list_gamma = [
-    [{'Element': '140Eu', 'Energy': 20.5, 'diff': 0.0, 'Intensity': ' 0.000E+00', 'lifetime': '        '}]
+    [{'isotope': '140Eu', 'energy': 20.5, 'diff': 0.0, 'intensity': ' 0.000E+00', 'lifetime': '        '}]
 ]
 
 #################################################################
@@ -59,7 +59,7 @@ class TestDatabasesGetMatch:
         # Generate input string to test matches
         input_data = list(zip(default_peaks, [default_sigma] * len(default_peaks)))
 
-        res, res1, res2 = getmatch.get_matches(input_data)
+        res, res1, res2 = get_match.search_muxrays(input_data)
         matches = {}
 
 
@@ -85,7 +85,7 @@ class TestDatabasesGetMatch:
         # Generate input string to test matches
         input_data = list(zip(default_peaks, [default_sigma] * len(default_peaks)))
 
-        res, _, _ = getmatch.get_matches(input_data)
+        res, _, _ = get_match.search_muxrays(input_data)
 
         matches = {}
 
@@ -108,6 +108,6 @@ class TestDatabasesGetMatch:
 
         # Generate input string to test matches
         input_data = list(zip(default_peaks, [default_sigma] * len(default_peaks)))
-        res = getmatch.getmatchesgammas(input_data)
+        res = get_match.search_gammas(input_data)
 
         assert res == target_result, 'Data in gamma database did not match expected'

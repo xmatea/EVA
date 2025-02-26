@@ -1,6 +1,6 @@
 import logging
 
-from EVA.core.data_searching.getmatch import get_matches_Element, getmatchesgammas_clicked
+from EVA.core.data_searching.get_match import search_muxrays_single_element, search_gammas_single_isotope
 from EVA.util.transition_utils import is_primary
 
 logger = logging.getLogger(__name__)
@@ -56,7 +56,7 @@ class PlotAnalysisPresenter(object):
     def search_muonic_xrays(self):
         try:
             element = self.view.muon_search_line_edit.text()
-            res = get_matches_Element(element)
+            res = search_muxrays_single_element(element)
 
             # if no matches
             if len(res) == 0:
@@ -91,14 +91,14 @@ class PlotAnalysisPresenter(object):
     def search_gammas(self):
         try:
             isotope = self.view.gamma_search_line_edit.text().strip()
-            res = getmatchesgammas_clicked(isotope)
+            res = search_gammas_single_isotope(isotope)
 
             # if no matches
             if len(res) == 0:
                 self.view.display_no_match_table(self.view.gamma_table)
                 return
 
-            pretty_res = [[r["Element"].strip(), r["Energy"], "", r["Intensity"], r["lifetime"]] for r in res]
+            pretty_res = [[r["isotope"].strip(), r["energy"], "", r["intensity"], r["lifetime"]] for r in res]
             self.view.gamma_table.update_contents(pretty_res)
 
         except (ValueError, AttributeError) as e:
@@ -135,8 +135,8 @@ class PlotAnalysisPresenter(object):
                 return
 
             else:
-                res_subset = [[row['Element'].strip(), row['Energy'], row['diff'],
-                               row['Intensity']*100, row['lifetime']] for row in res]
+                res_subset = [[row['isotope'].strip(), row['energy'], row['diff'],
+                               row['intensity']*100, row['lifetime']] for row in res]
 
                 self.view.update_table(self.view.gamma_table, res_subset)
 

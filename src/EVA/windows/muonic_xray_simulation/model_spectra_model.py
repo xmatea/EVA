@@ -8,20 +8,15 @@ from matplotlib import pyplot as plt
 from EVA.core.data_structures.detector import DetectorIndices
 from EVA.core.app import get_app
 from EVA.core.data_structures.spectrum import Spectrum
+from EVA.core.physics.functions import quadratic, line, gaussian
 
 logger = logging.getLogger(__name__)
 from EVA.util.path_handler import get_path
 
-def gaussian(x, mean, sigma, A):
-    return (A / (sigma * np.sqrt(2 * np.pi))) * np.exp(-0.5 * ((x - mean) / sigma)**2)
-
-def line(x, x0, x1):
-    return x0 + x1 * x
-
-def quadratic(x, x0, x1, x2):
-    return x0 + x1 * x + x2 * x * x
-
 class ModelSpectraModel(object):
+    """
+    Model for generating muonic xray spectra
+    """
     def __init__(self):
         super().__init__()
         app = get_app()
@@ -38,13 +33,24 @@ class ModelSpectraModel(object):
             file.close()
 
         self.linear_e_res = np.loadtxt(get_path("./src/EVA/databases/detectors/energy_resolution_linear.txt"),
-                                    delimiter=",", skiprows=1)
+                                    delimiter=",", skiprows=1, dtype=float)
         self.quadratic_e_res = np.loadtxt(get_path("./src/EVA/databases/detectors/energy_resolution_quadratic.txt"),
-                                    delimiter=",", skiprows=1)
+                                    delimiter=",", skiprows=1, dtype=float)
 
 
-    def calculate_sigma(self, e_res_model, mean, detector_name):
-        # Calculate FWHM from energy resolution curves and convert to standard deviations
+    def calculate_sigma(self, e_res_model: str, mean: np.ndarray, detector_name: str) -> np.ndarray:
+        """
+
+        Args:
+            e_res_model: Valid options are "linear", "quadratic"
+            mean: list of peak positions
+            detector_name: Valid options are "GE1" - "GE8"
+        Returns:
+            Returns a list of standard deviations, one for each peak position, calculated from experimental data.
+
+        Raises:
+            ValueError: if invalid energy res model is specified.
+        """
         if e_res_model == "linear":
             detector_energy_res = self.linear_e_res[DetectorIndices[detector_name].value]
             sigma = line(mean, detector_energy_res[1], detector_energy_res[2]) / (
@@ -62,6 +68,22 @@ class ModelSpectraModel(object):
 
     def model_spectrum(self, elements, proportions, detectors, e_range=None, dx=1, e_res_model="linear",
                  notation=0, show_components=False, show_primary=True, show_secondary=False):
+        """
+        Args:
+            elements: list of element names to simulate for
+            proportions: list of proportions
+            detectors:
+            e_range:
+            dx:
+            e_res_model:
+            notation:
+            show_components:
+            show_primary:
+            show_secondary:
+
+        Returns:
+
+        """
         logger.info("Modelling spectrum for %s.", elements)
         logger.debug("Settings: elements = %s, proportions = %s, dx = %s, show_primary = %s, "
                      "show_secondary = %s, show_components = %s, detectors = %s, "
@@ -137,7 +159,7 @@ class ModelSpectraModel(object):
             g_time_start = time.time_ns()
             for trans in transitions:
 
-                trans["curve"] = (gaussian(xdata, mean=trans["E"], sigma=trans["sigma"], A=trans["intensity"])
+                trans["curve"] = (gaussian(xdata, mean=trans["E"], sigma=trans["sigma"], intensity=trans["intensity"])
                                   * trans["weights"])
                 total += trans["curve"]
 

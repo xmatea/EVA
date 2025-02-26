@@ -37,5 +37,6 @@ class ManualWindow(QWidget):
         # check if EVA is running in executable or from source
         if hasattr(sys, "_MEIPASS"):
             manual = manual.replace("./", "_internal/")
+            print(manual)
 
         return manual

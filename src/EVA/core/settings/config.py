@@ -26,6 +26,9 @@ class Config:
         return self.parser[field]
 
     def load(self):
+        """
+        Loads settings from config.ini file.
+        """
         self.default_parser = ConfigParser()
         self.default_parser.read(default_config_path)
 
@@ -40,6 +43,9 @@ class Config:
                 file.close()
 
     def save_config(self):
+        """
+        Writes current settings stored in memory to config.ini file.
+        """
         with open(config_path, "w") as config_file:
             self.parser.write(config_file)
             config_file.close()
@@ -47,13 +53,20 @@ class Config:
         logger.info("Current configuration has been saved to file.")
 
     def restore_defaults(self):
+        """
+        Resets current settings stored in memory to default settings by reading defaults.ini and overwriting each
+        key in config dictionary with corresponding key in default config dictionary.
+        """
         for section in self.default_parser:
             self.parser[section] = self.default_parser[section]
 
         logger.info("Configuration has been reset to defaults.")
 
-    # checks if config loaded in memory is different to config in file
-    def is_changed(self):
+    def is_changed(self) -> bool:
+        """
+        Returns:
+            Boolean indicating whether config loaded in memory is different to config saved in config.ini.
+        """
         temp_parser = ConfigParser()
         temp_parser.read(config_path)
 
@@ -62,8 +75,18 @@ class Config:
                 return True # return True as soon as a difference is found
         return False
 
-    # Splits space-separated string into an array. Ex: "1 2 3 4" -> ["1", "2", "3", "4"]
-    def to_array(self, input_str):
+
+    def to_array(self, input_str: str) -> list:
+        """
+        Args:
+            input_str: string to convert to list
+
+        Returns:
+            list containing space-separated values in input string.
+
+        Splits space-separated string into a list. Ex: "1 2 3 4" -> ["1", "2", "3", "4"].
+        Useful for reading arrays in config,ini as .ini format does not support array data types.
+        """
         return input_str.split(" ")
 
 

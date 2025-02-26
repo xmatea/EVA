@@ -1,10 +1,10 @@
-from EVA.core.data_loading import loaddata
+from EVA.core.data_loading import load_data
 from EVA.core.app import get_config
 
 
 def read_multi_run(run_list):
     config = get_config()
-    result = [loaddata.load_run(run_num, config) for run_num in run_list]
+    result = [load_data.load_run(run_num, config) for run_num in run_list]
 
     runs, flags = list(zip(*result))
 
@@ -27,7 +27,7 @@ def read_multi_run(run_list):
 """
 def ReadMultiRun(RunList):
     #print('in ReadMultiRun')
-    # keep current loaddata safe
+    # keep current load_data safe
     flag = 0
     if globals.Normalise_do_not:
         try:
@@ -80,7 +80,7 @@ def ReadMultiRun(RunList):
 
     for i in range(lenRunList):
         #print('i',RunList[i])
-        loaddata.loaddata(RunList[i])
+        load_data.load_data(RunList[i])
         #Normalise.Normalise()
         if globals.Normalise_do_not:
             try:

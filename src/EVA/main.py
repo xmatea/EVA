@@ -1,4 +1,6 @@
+
 import sys
+import os
 import logging
 from pathlib import Path
 
@@ -26,8 +28,9 @@ def handle_exception(exc_type, exc_value, exc_traceback):
 sys.excepthook = handle_exception
 
 if __name__ == "__main__":
+    # ensure all paths are relative to project root
     ROOT = Path(__file__).resolve().parent.parent.parent
-    #os.chdir(ROOT)
+    os.chdir(ROOT)
 
     logging.info("Starting EVA...")
 

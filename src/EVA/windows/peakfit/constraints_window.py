@@ -104,13 +104,16 @@ class ConstraintsWindow(QDialog):
         self.current_param_names_text_edit.setReadOnly(True)
         self.current_param_names_text_edit.setMaximumWidth(200)
 
-        # Presets to make it faster to analyse
+        # Presets to make it faster to analyse - currently not in use
+
+        """
         self.presets_label = QLabel("Presets")
         self.preset_share_sigma = QPushButton("Share sigma between all peaks")
         self.preset_share_sigma.clicked.connect(lambda: self.share_peak_param_between_all("sigma"))
 
         self.preset_share_area = QPushButton("Share amplitude between all peaks")
         self.preset_share_area.clicked.connect(lambda: self.share_peak_param_between_all("amplitude"))
+        """
 
         # Set up tabs
         self.constraints_menu = ParameterConstraintWidget(self.parameter_names)
@@ -132,11 +135,11 @@ class ConstraintsWindow(QDialog):
         # Add everything to layout
         self.layout.addWidget(self.current_param_names, 0, 0)
         self.layout.addWidget(self.current_param_names_text_edit, 1, 0, 3, 1)
-        self.layout.addWidget(self.presets_label, 0, 1)
-        self.layout.addWidget(self.preset_share_sigma, 1, 1)
-        self.layout.addWidget(self.preset_share_area, 1, 2)
-        self.layout.addWidget(self.tabs, 2, 1, 2, -1)
-        self.layout.addWidget(self.button_box, 4, 1, -1, -1)
+        #self.layout.addWidget(self.presets_label, 0, 1)
+        #self.layout.addWidget(self.preset_share_sigma, 1, 1)
+        #self.layout.addWidget(self.preset_share_area, 1, 2)
+        self.layout.addWidget(self.tabs, 1, 1, 3, -1)
+        self.layout.addWidget(self.button_box, 4, 1, 1, -1)
         self.layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.load_current_settings()

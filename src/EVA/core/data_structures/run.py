@@ -2,32 +2,27 @@ from copy import deepcopy
 
 from EVA.core.data_structures.spectrum import Spectrum
 from EVA.core.physics.normalisation import normalise_events, normalise_counts
-from EVA.core.physics.energy_correction import lincorr
 
 class Run:
     """
-    The 'Run' class holds lists of 'Spectra' from all the detectors from a single run, as well as the run number,
-    normalisation status and the comment from a single run.
+    The Run class specifies the experiment data and context for all detectors during a single measurement run.
 
-    'detectors' is a list of names of the detectors in the Spectrum lists. ex: ["GE1", "GE3"].
-
-    'raw' contains a list of Spectra, one Spectrum for each detector, with no energy calibration or normalisation
-    applied - read from the .dat files as-is. The order of the Spectra in the list corresponds to the order specified
-    in 'detectors'.
-
-    'raw_e_corr' is a copy of raw but with the energy calibration applied as specified by config.ini. If no energy
-    calibration is specified for any detectors in the config, it is just a copy of 'raw'.
-
-    'data' contains a list of Spectra with the energy calibration and normalisation as specified in config.ini.
-    This is the main data to be used for plotting and such.
-    """
+   Args:
+       raw: List of Spectrum objects, one Spectrum for each detector. The list may
+       contain empty Spectrum objects if no data was found for a detector.
+       loaded_detectors: Names of all detectors for which data was successfully loaded.
+       run_num: Run number.
+       start_time: Time run was started.
+       end_time: Time run was ended.
+       events_str: Number of events registered.
+       comment: All metadata available for the run.
+       """
     def __init__(self, raw : list[Spectrum], loaded_detectors : list[str], run_num: str, start_time: str, end_time: str,
                  events_str: str, comment: str):
 
         # Main data containers
-        self.raw = raw # raw, unprocessed data as read from file - is NOT to be changed
-        self.data = deepcopy(raw) # deepcopy ensures that raw and data do not point to the same memory address and thus
-        # any changes to data will not change raw
+        self._raw = raw # raw, unprocessed data as read from file - is NOT to be changed
+        self.data = deepcopy(raw) # copy of raw which can be modified and accessed outside the class
 
         # Basic run info
         self.loaded_detectors = loaded_detectors
@@ -45,8 +40,19 @@ class Run:
         self.events_str = events_str
         self.comment = comment
 
-    # dispatcher method to normalise from string
-    def set_normalisation(self, normalisation, normalise_which=None):
+    # dispatcher method to set normalisation from string
+    def set_normalisation(self, normalisation: str, normalise_which: bool=None):
+        """
+        Sets normalisation to ``data``.
+
+        Args:
+            normalisation: name of desired normalisation method. Valid options: "none", "counts", "spills".
+            normalise_which: Which detectors to set normalisation for. If normalisation type is set to "none", all
+            detectors will be affected.
+
+        Raises:
+            TypeError: when invalid normalisation type is specified.
+        """
         if normalise_which is None:
             normalise_which = self.normalise_which
 
@@ -60,36 +66,51 @@ class Run:
             self.set_normalisation_none()
 
         else:
-            raise KeyError(f"Normalisation type '{normalisation}' is not valid.")
+            raise TypeError(f"Normalisation type '{normalisation}' is not valid.")
 
     def set_normalisation_none(self):
-        for i, spectrum in enumerate(self.raw):
-            self.data[i].y = self.raw[i].y
+        """
+        Resets all normalisation applied for each detector.
+        """
+        for i, spectrum in enumerate(self._raw):
+            self.data[i].y = self._raw[i].y
 
         self.normalisation = "none"
         self.normalise_which = self.loaded_detectors
 
-    def set_normalisation_counts(self, normalise_which):
-        for i, spectrum in enumerate(self.raw):
+    def set_normalisation_counts(self, normalise_which: list[str]):
+        """
+        Sets normalisation by counts for each detector specified.
+
+        Args:
+            normalise_which: Names of which detectors to apply normalisation by counts for.
+        """
+        for i, spectrum in enumerate(self._raw):
             # Apply normalisation to specified spectra
             if spectrum.detector in normalise_which:
                 self.data[i].y = normalise_counts(spectrum.y)
             else:
-                self.data[i].y = self.raw[i].y
+                self.data[i].y = self._raw[i].y
 
         # Update the normalisation status
         self.normalisation = "counts"
         self.normalise_which = normalise_which
 
-    def set_normalisation_events(self, normalise_which):
+    def set_normalisation_events(self, normalise_which: list[str]):
+        """
+        Sets normalisation by events for each detector specified.
+
+        Args:
+            normalise_which: Names of which detectors to apply normalisation by events for.
+        """
         try:
             spills = int(self.events_str[19:])
-            for i, spectrum in enumerate(self.raw):
+            for i, spectrum in enumerate(self._raw):
                 # Apply normalisation to specified spectra
                 if spectrum.detector in self.normalise_which:
                     self.data[i].y = normalise_events(spectrum.y, spills)
                 else:
-                    self.data[i].y = self.raw[i].y
+                    self.data[i].y = self._raw[i].y
 
             # Update the normalisation status
             self.normalisation = "events"
@@ -97,35 +118,53 @@ class Run:
 
         except ValueError:
             # If spills data is not available, revert normalisation to none
-            for i, spectrum in enumerate(self.raw):
-                self.data[i].y = self.raw[i].y
+            for i, spectrum in enumerate(self._raw):
+                self.data[i].y = self._raw[i].y
 
             # set normalisation status to "none"
             self.normalisation = "none"
             self.normalise_which = self.loaded_detectors
             raise ValueError
 
-    def set_energy_correction(self, e_corr_params, e_corr_which=None):
+    def set_energy_correction(self, e_corr_params: list[tuple[float]], e_corr_which=list[str]):
+        """
+        Sets current energy correction.
+
+        Args:
+            e_corr_params: List of tuples containing energy correction (gradient, offset) for each detector.
+            e_corr_which: Names of which detectors to apply energy correction to.
+        """
+
         if e_corr_which is None:
             e_corr_which = self.e_corr_which
 
         # Iterate through each Spectrum in the run and apply energy correction if the detector is in e_corr_which
-        for i, spectrum in enumerate(self.raw):
+        for i, spectrum in enumerate(self._raw):
             detector = spectrum.detector
 
             if detector in e_corr_which:
                 gradient = e_corr_params[i][0]
                 offset = e_corr_params[i][1]
 
-                self.data[i].x = self.raw[i].x * gradient + offset # store energy correction in data
+                self.data[i].x = self._raw[i].x * gradient + offset # store energy correction in data
 
         self.e_corr_which = e_corr_which
         self.e_corr_params = e_corr_params
 
     def is_empty(self) -> bool:
-        # Returns a boolean indicating whether any data was loaded or not
-        return all([spectrum.x.size == 0 for spectrum in self.raw])
+        """
+        Returns: Boolean indicating whether any data was loaded or not.
+        """
+        return all([spectrum.x.size == 0 for spectrum in self._raw])
 
     def get_nonzero_data(self) -> list[Spectrum]:
-        # Returns only the loaded spectra (without empty arrays for missing detectors)
+        """
+        Returns: Copy of ``data`` without empty Spectrum objects for missing detectors.
+        """
         return [spectrum for spectrum in self.data if spectrum.x.size != 0]
+
+    def get_raw(self) -> list[Spectrum]:
+        """
+        Returns: Copy of ``raw``.
+        """
+        return deepcopy(self._raw)

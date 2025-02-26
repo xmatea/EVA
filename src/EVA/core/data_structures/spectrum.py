@@ -4,9 +4,13 @@ import numpy as np
 @dataclass
 class Spectrum:
     """
-    The 'Spectrum' class holds the data from a single detector for a single run.
-    It holds the x and y data as numpy arrays.
-    It also holds the run number and detector the dataset came from.
+    The 'Spectrum' dataclass holds the data from a single detector for a single run.
+
+    Args:
+        detector: string, name of detector.
+        run_number: string, run number for the spectrum.
+        x: numpy array, containing the x-data measured by the detector (histogram bins).
+        y: numpy array, containing y-data measured by the detector (counts per bin).
     """
     detector: str
     run_number: str

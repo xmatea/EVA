@@ -1,5 +1,5 @@
 import unittest
-from EVA.core.data_loading import loadcomment
+from EVA.core.data_loading import load_data
 
 
 class LoadComment(unittest.TestCase):
@@ -9,8 +9,8 @@ class LoadComment(unittest.TestCase):
     def test_loadcomment(self):
         #print('loadcomment test')
         directory = './test_data/'
-        RunNum=2630
-        rtnstr, flag = loadcomment.loadcomment(RunNum, directory)
+        RunNum = "2630"
+        rtnstr, flag = load_data.load_comment(RunNum, directory)
         self.assertEqual(flag, 0, 'did return flag')
         self.assertEqual(rtnstr,['Start Time        :  Thu May 3 13:08:56 2018\n',
                                  'End   Time        :  Thu May 3 13:58:33 2018\n',
@@ -21,8 +21,8 @@ class LoadComment(unittest.TestCase):
     def test_loadcomment2(self):
         #print('loadcomment2 test')
         directory = './test_data/'
-        RunNum=999
-        rtnstr, flag = loadcomment.loadcomment(RunNum, directory)
+        RunNum = "999"
+        rtnstr, flag = load_data.load_comment(RunNum, directory)
         self.assertEqual(flag, 1, 'did return flag')
         self.assertEqual(rtnstr,[" ", " ", " ", " "],
                          'didnt load comment file')
@@ -30,8 +30,8 @@ class LoadComment(unittest.TestCase):
     def test_loadcomment3(self):
         #print('loadcomment3 test')
         directory= './'
-        RunNum=2631
-        rtnstr, flag = loadcomment.loadcomment(RunNum, directory)
+        RunNum = "2631"
+        rtnstr, flag = load_data.load_comment(RunNum, directory)
         self.assertEqual(flag, 1, 'did return flag')
         self.assertEqual(rtnstr,[" ", " ", " ", " "],
                          'didnt load commnet file')

@@ -6,7 +6,7 @@ from pytestqt.plugin import qapp
 from pandas.core.dtypes.missing import array_equals
 
 from EVA.core.app import get_app
-from EVA.core.data_searching.getmatch import get_matches_Element
+from EVA.core.data_searching.get_match import search_muxrays_single_element
 from EVA.windows.muonic_xray_simulation.model_spectra_model import ModelSpectraModel
 
 base_test = {
@@ -17,7 +17,7 @@ base_test = {
     "show_secondary": True
 }
 
-class TestModelSpectrumWindow:
+class TestModelSpectrumModel:
     # this will run once before all other tests in the class
     @pytest.fixture(autouse=True)
     def setup(self):
@@ -31,15 +31,15 @@ class TestModelSpectrumWindow:
 
         self.model.model_spectrum(**test)
 
-        getmatch_transitions = []
+        get_match_transitions = []
         for i, element in enumerate(test["elements"]):
-            matches = get_matches_Element(element)
-            getmatch_transitions += [[match["transition"], match["energy"]] for match in matches]
+            matches = search_muxrays_single_element(element)
+            get_match_transitions += [[match["transition"], match["energy"]] for match in matches]
 
         modelled_transitions = self.model.all_transitions[0]
         for j, transition in enumerate(modelled_transitions):
             modelled_transition = [transition["name"], float(transition["E"])]
-            assert modelled_transition in getmatch_transitions, \
+            assert modelled_transition in get_match_transitions, \
                 f"Missing transition for {transition["element"]}: {modelled_transition}"
 
     def test_linear_sigma_model(self):
@@ -86,7 +86,7 @@ class TestModelSpectrumWindow:
 
     def test_gaussian(self):
         def gaussian(x, mu, sigma, a):
-            return (a / (sigma * np.sqrt(2 * np.pi))) * np.exp(-0.5 * ((x - mu) / sigma)**2)
+            return (a / (sigma * np.sqrt(2 * np.pi))) * np.exp(-(x - mu)**2 / (2*sigma)**2)
 
         test = base_test
         self.model.model_spectrum(**test)
@@ -131,7 +131,7 @@ class TestModelSpectrumWindow:
         fig, ax = self.model.model_spectrum(**test)
 
         element = test["elements"][0]
-        transitions = {result["transition"]: result["energy"] for result in get_matches_Element(element)}
+        transitions = {result["transition"]: result["energy"] for result in search_muxrays_single_element(element)}
 
         assert len(ax.lines) == len(transitions) + 1, "Not all transitions were plotted"
 
@@ -152,7 +152,9 @@ class TestModelSpectrumWindow:
 
                 # only assert if siegbahn name exists for that peak and that peak is in spectrum
                 if spec_name in transitions.keys() and siegbahn_name != "":
-                    assert transitions[spec_name] == peak_labels[siegbahn_name], \
+                    # the matplotlib labels have $ signs in front of them to be rendered as mathtext
+                    label_name = f"${siegbahn_name}$"
+                    assert transitions[spec_name] == peak_labels[label_name], \
                         "label was not plotted at correct position"
 
         # if notation is set to spectroscopic

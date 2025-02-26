@@ -5,9 +5,9 @@ from copy import copy, deepcopy
 
 import numpy as np
 from PyQt6.QtCore import QObject
-from EVA.core.fitting import FitData
+from EVA.core.fitting import fit_data
 from EVA.core.physics.functions import gaussian
-from EVA.util.Trimdata import Trimdata
+from EVA.util.trim_data import Trimdata
 
 from EVA.core.app import get_app, get_config
 
@@ -80,7 +80,7 @@ class ModelFitModel(QObject):
         x_data, y_data = Trimdata(self.spectrum.x, self.spectrum.y, self.x_range[0], self.x_range[1])
 
         t0 = time.time_ns()
-        self.fit_result = FitData.fit_model_lmfit(x_data, y_data, self.initial_peak_params, self.initial_bg_params,
+        self.fit_result = fit_data.fit_model_lmfit(x_data, y_data, self.initial_peak_params, self.initial_bg_params,
                                                   self.initial_model_params)
         t1 = time.time_ns()
         logger.info("Peak fitting finished in %ss.", round((t1-t0)/1e9, 3))

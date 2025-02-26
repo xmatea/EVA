@@ -1,7 +1,9 @@
 from enum import Enum
 
-# Just a simple enum to map detector names to list indices
 class DetectorIndices(Enum):
+    """
+    Enum class to map detector names to indices.
+    """
     GE1 = 0
     GE2 = 1
     GE3 = 2

@@ -11,14 +11,14 @@ def GenReadList(line):
         if start != 0:
 
             if end == 0:
-                RunList.append(line[i][0])
+                RunList.append(str(line[i][0]))
             else:
                 if step == 0:
                     RunList.append(start)
                     RunList.append(end)
                 else:
-                    for i in range(start,end+1,step):
-                        RunList.append(i)
+                    for j in range(start,end+1,step):
+                        RunList.append(str(j))
     return RunList
 
 

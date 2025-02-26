@@ -18,8 +18,8 @@ from PyQt6.QtWidgets import (
     QComboBox
 )
 
-from EVA.core.data_searching import SortMatch, getmatch
-from EVA.core.peak_finding import FindPeaks
+from EVA.core.data_searching import sort_match, get_match
+from EVA.core.peak_finding import find_peaks
 from EVA.core.app import get_config
 from EVA.core.plot.plotting import plot_run, Plot_Peak_Location
 
@@ -372,19 +372,19 @@ class PlotWindow(QWidget):
         En = table.item(row, 1).text()
 
         if col == 0:  # plot all the lines from an element
-            res = getmatch.getmatchesgammas_clicked(Ele)
+            res = get_match.search_gammas_single_isotope(Ele)
             next_color = self.plot.canvas.axs[0]._get_lines.get_next_color()
             for match in res:
-                rowres = [match['Element'], match['Energy'], match['Intensity'], match['lifetime']]
+                rowres = [match['element'], match['energy'], match['intensity'], match['lifetime']]
                 for i in range(len(self.plot.canvas.axs)):
                     self.plot.canvas.axs[i].axvline(
                         float(rowres[1]), color=next_color, linestyle='--', label=str(Ele))
 
 
         if col == 1:  # plots just one transition
-            res = getmatch.getmatchesgammastrans_clicked(Ele, En)
+            res = get_match.search_gammas_single_transition(Ele, En)
             for match in res:
-                rowres = [match['Element'], match['Energy'], match['Intensity'], match['lifetime']]
+                rowres = [match['element'], match['energy'], match['intensity'], match['lifetime']]
                 for i in range(len(self.plot.canvas.axs)):
                     self.plot.canvas.axs[i].axvline(
                         float(rowres[1]), color=self.plot.canvas.axs[i]._get_lines.get_next_color(), linestyle='--', label=Ele)
@@ -412,7 +412,7 @@ class PlotWindow(QWidget):
         Trans = table.item(row, 1).text()
 
         if col == 0:  # plot all the lines from an element
-            res = getmatch.get_matches_Element(Ele)
+            res = get_match.search_muxrays_single_element(Ele)
             next_color = self.plot.canvas.axs[0]._get_lines.get_next_color()
             for match in res:
                 rowres = [match['element'], match['energy'], match['transition']]
@@ -421,7 +421,7 @@ class PlotWindow(QWidget):
                         float(rowres[1]), color=next_color, linestyle='--', label=str(Ele))
 
         if col == 1:  # plots just one transition
-            res = getmatch.get_matches_Trans(Ele, Trans)
+            res = get_match.search_muxrays_single_transition(Ele, Trans)
             for match in res:
                 rowres = [match['element'], match['energy'], match['transition']]
                 for i in range(len(self.plot.canvas.axs)):
@@ -451,7 +451,7 @@ class PlotWindow(QWidget):
         Trans = table.item(row, 1).text()
 
         if col == 0:  # plot all the lines from an element
-            res = getmatch.get_matches_Element(Ele)
+            res = get_match.search_muxrays_single_element(Ele)
             next_color = self.plot.canvas.axs[0]._get_lines.get_next_color()
             for match in res:
                 rowres = [match['element'], match['energy'], match['transition']]
@@ -460,7 +460,7 @@ class PlotWindow(QWidget):
                         float(rowres[1]), color=next_color, linestyle='--', label=str(Ele))
 
         if col == 1:  # plots just one transition
-            res = getmatch.get_matches_Trans(Ele, Trans)
+            res = get_match.search_muxrays_single_transition(Ele, Trans)
             for match in res:
                 rowres = [match['element'], match['energy'], match['transition']]
                 for i in range(len(self.plot.canvas.axs)):
@@ -489,7 +489,7 @@ class PlotWindow(QWidget):
         Trans = table.item(row, 1).text()
 
         if col == 0:  # plot all the lines from an element
-            res = getmatch.get_matches_Element(Ele)
+            res = get_match.search_muxrays_single_element(Ele)
             next_color = self.plot.canvas.axs[0]._get_lines.get_next_color()
             for match in res:
                 rowres = [match['element'], match['energy'], match['transition']]
@@ -498,7 +498,7 @@ class PlotWindow(QWidget):
                         float(rowres[1]), color=next_color, linestyle='--', label=str(Ele))
 
         if col == 1:  # plots just one transition
-            res = getmatch.get_matches_Trans(Ele, Trans)
+            res = get_match.search_muxrays_single_transition(Ele, Trans)
             for match in res:
                 rowres = [match['element'], match['energy'], match['transition']]
                 for i in range(len(self.plot.canvas.axs)):
@@ -563,7 +563,7 @@ class PlotWindow(QWidget):
 
                     default_sigma = [2.0] * len(default_peaks)
                     input_data = list(zip(default_peaks, default_sigma))
-                    match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
+                    match_GE1, res_PM, res_SM = get_match.search_muxrays(input_data)
 
                     Plot_Peak_Location(self.plot.canvas.axs, peaks, dataset.x, i)
                     out = SortMatch.SortMatch(match_GE1)
@@ -582,7 +582,7 @@ class PlotWindow(QWidget):
                 # default_peaks = peaks_GE1
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
-                match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
+                match_GE1, res_PM, res_SM = get_match.get_matches(input_data)
 
                 Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE1, globals.x_GE1, i)
                 # Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, peak_pos_GE1, i)
@@ -602,7 +602,7 @@ class PlotWindow(QWidget):
                     # print('dp',default_peaks)
                     default_sigma = [2.0] * len(default_peaks)
                     input_data = list(zip(default_peaks, default_sigma))
-                    match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
+                    match_GE1, res_PM, res_SM = get_match.search_muxrays(input_data)
 
                     Plot_Peak_Location(self.plot.canvas.axs, peaks, dataset.x, i)
                     # Plot_Spectra.Plot_Peak_Location(figpeak, axspeak, pltpeak, peaks_GE1, globals.x_GE1,i)
@@ -628,7 +628,7 @@ class PlotWindow(QWidget):
 
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
-                match_GE1, res_PM, res_SM = getmatch.get_matches(input_data)
+                match_GE1, res_PM, res_SM = get_match.get_matches(input_data)
 
                 Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE1, globals.x_GE1, i)
 
@@ -644,7 +644,7 @@ class PlotWindow(QWidget):
                 default_peaks = peaks_GE2[0]
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
-                match_GE2, res_PM, res_SM = getmatch.get_matches(input_data)
+                match_GE2, res_PM, res_SM = get_match.get_matches(input_data)
                 Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE2, globals.x_GE2, i)
                 i+=1
 
@@ -654,7 +654,7 @@ class PlotWindow(QWidget):
                 default_peaks = peaks_GE3[0]
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
-                match_GE3, res_PM, res_SM = getmatch.get_matches(input_data)
+                match_GE3, res_PM, res_SM = get_match.get_matches(input_data)
                 Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE3, globals.x_GE3, i)
                 i += 1
 
@@ -663,7 +663,7 @@ class PlotWindow(QWidget):
                 default_peaks = peaks_GE4[0]
                 default_sigma = [2.0] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
-                match_GE4, res_PM, res_SM = getmatch.get_matches(input_data)
+                match_GE4, res_PM, res_SM = get_match.get_matches(input_data)
                 Plot_Spectra.Plot_Peak_Location(self.plot.canvas.axs, peaks_GE4, globals.x_GE4, i)
                 i+=1
     
@@ -705,7 +705,7 @@ class PlotWindow(QWidget):
 
                 input_data = list(zip(default_peaks, default_sigma))
                 t0 = time.time_ns()
-                res = getmatch.getmatchesgammas(input_data)
+                res = get_match.search_gammas(input_data)
                 t1 = time.time_ns()
                 logger.debug("Found %s gamma transitions in %ss", len(res), round((t1-t0)/1e9, 4))
 
@@ -714,8 +714,8 @@ class PlotWindow(QWidget):
                 else:
                     i = 0
                     for match in res:
-                        row = [match['Element'], match['Energy'], match['diff'],
-                               match['Intensity'], match['lifetime']]
+                        row = [match['element'], match['energy'], match['diff'],
+                               match['intensity'], match['lifetime']]
 
 
 
@@ -754,7 +754,7 @@ class PlotWindow(QWidget):
                 input_data = list(zip(default_peaks, default_sigma))
 
                 t0 = time.time_ns()
-                res, res_PM, res_SM = getmatch.get_matches(input_data)
+                res, res_PM, res_SM = get_match.search_muxrays(input_data)
 
                 t1 = time.time_ns()
                 logger.debug("Found %s muonic xray transitions in %ss", len(res), round((t1-t0)/1e9, 4))

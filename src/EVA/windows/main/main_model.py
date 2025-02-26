@@ -2,7 +2,7 @@ import logging
 from PyQt6.QtCore import QObject
 
 from EVA.core.app import get_config, get_app
-from EVA.core.data_loading import loaddata
+from EVA.core.data_loading import load_data
 logger = logging.getLogger(__name__)
 
 class MainModel(QObject):
@@ -13,7 +13,7 @@ class MainModel(QObject):
     def load_run(self, run_num):
         config = get_config()
 
-        run, flags = loaddata.load_run(run_num, config)
+        run, flags = load_data.load_run(run_num, config)
         all_detectors = config["general"]["all_detectors"].split(" ")
 
         if flags["no_files_found"]:  # no data was loaded - return now
@@ -80,8 +80,6 @@ class MainModel(QObject):
     def toggle_plot_detector(value, detector):
         config = get_config()
 
-        print("checkstate:", value)
-        print("name:", detector)
         if value:
             config[detector]["show_plot"] = "yes"
             logger.debug("Enabled %s for plotting.", detector)

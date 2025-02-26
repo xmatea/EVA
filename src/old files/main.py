@@ -11,7 +11,7 @@ import sys
 
 
 from EVA import globals
-from EVA.classes.loaders import LoadDatabaseFile as ldf, loadgamma as lg
+from EVA.classes.loaders import load_databaseFile as ldf, loadgamma as lg
 from EVA.windows import main_window as MW
 
 
@@ -37,7 +37,7 @@ if __name__ == '__main__':
     ls.loadsettings()
 
     # load database file
-    ldf.loadDatabaseFile()
+    ldf.load_databaseFile()
     lg.loadgamma()
 
     for key, value in globals.peakdata.items():

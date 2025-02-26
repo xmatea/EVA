@@ -2,8 +2,8 @@ import logging
 import matplotlib
 from PyQt6.QtCore import QObject
 
-from EVA.core.data_searching import getmatch, SortMatch
-from EVA.core.peak_finding import FindPeaks
+from EVA.core.data_searching import get_match, sort_match
+from EVA.core.peak_finding import find_peaks
 from EVA.core.app import get_config
 from EVA.core.plot.plotting import plot_run, Plot_Peak_Location
 
@@ -49,11 +49,11 @@ class PlotAnalysisModel(QObject):
         if name in self.plotted_gamma_lines:
             return # skip if element has already been plotted
 
-        res = getmatch.getmatchesgammas_clicked(element)
+        res = get_match.search_gammas_single_isotope(element)
 
         next_color = self.axs[0]._get_lines.get_next_color() # save next colour so that all lines have the same colour
         for match in res:
-            rowres = [match['Element'], match['Energy'], match['Intensity'], match['lifetime']]
+            rowres = [match['isotope'], match['energy'], match['intensity'], match['lifetime']]
             for i in range(len(self.axs)):
                 self.axs[i].axvline(
                     float(rowres[1]), color=next_color, linestyle='--', label=name)
@@ -66,9 +66,9 @@ class PlotAnalysisModel(QObject):
         if name in self.plotted_gamma_lines:
             return # ignore if it's already been plotted
 
-        res = getmatch.getmatchesgammastrans_clicked(element, energy)
+        res = get_match.search_gammas_single_transition(element, energy)
         for match in res:
-            rowres = [match['Element'], match['Energy'], match['Intensity'], match['lifetime']]
+            rowres = [match['isotope'], match['energy'], match['intensity'], match['lifetime']]
             for i in range(len(self.axs)):
                 self.axs[i].axvline(
                     float(rowres[1]), color=self.axs[i]._get_lines.get_next_color(), linestyle='--',
@@ -82,7 +82,7 @@ class PlotAnalysisModel(QObject):
         if name in self.plotted_mu_xray_lines:
             return None # ignore if it's already been plotted
 
-        res = getmatch.get_matches_Element(element)
+        res = get_match.search_muxrays_single_element(element)
 
         next_color = self.axs[0]._get_lines.get_next_color()
         for match in res:
@@ -99,7 +99,7 @@ class PlotAnalysisModel(QObject):
         if name in self.plotted_mu_xray_lines:
             return None # ignore if it's already been plotted
 
-        res = getmatch.get_matches_Trans(element, transition)
+        res = get_match.search_muxrays_single_transition(element, transition)
         for match in res:
             rowres = [match['element'], match['energy'], match['transition']]
             for i in range(len(self.axs)):
@@ -150,14 +150,14 @@ class PlotAnalysisModel(QObject):
 
             input_data = list(zip(default_peaks, default_sigma))
 
-            return getmatch.getmatchesgammas(input_data)
+            return get_match.search_gammas(input_data)
 
     def search_mu_xrays(self, x):
         default_peaks = [x]
         default_sigma = [self.mu_xray_search_width] * len(default_peaks)
 
         input_data = list(zip(default_peaks, default_sigma))
-        return getmatch.get_matches(input_data)
+        return get_match.search_muxrays(input_data)
 
     def find_peaks(self):
         config = get_config()
@@ -166,9 +166,9 @@ class PlotAnalysisModel(QObject):
 
         # get selected function
         if self.peakfind_selected_function == self.peakfind_functions[0]: # scipy version
-            func = FindPeaks.FindPeaks
+            func = find_peaks.findpeaks
         elif self.peakfind_selected_function == self.peakfind_functions[1]: # custom function
-            func = FindPeaks.Findpeak_with_bck_removed
+            func = find_peaks.findpeak_with_bck_removed
         else:
             raise ValueError("Invalid peak find method specified!")
 
@@ -192,9 +192,9 @@ class PlotAnalysisModel(QObject):
                 default_peaks = peak_positions
                 default_sigma = [1] * len(default_peaks)
                 input_data = list(zip(default_peaks, default_sigma))
-                res_all, _, _, = getmatch.get_matches(input_data)
+                res_all, _, _, = get_match.search_muxrays(input_data)
 
-                out = SortMatch.SortMatch(res_all)
+                out = sort_match.sort_match(res_all)
                 result_simplified.append([dataset.detector, str(dict(list(out.items())))])
 
                 # search then for each peak
@@ -203,7 +203,7 @@ class PlotAnalysisModel(QObject):
 
                     default_sigma = [1] * len(default_peaks)
                     input_data = list(zip(default_peaks, default_sigma))
-                    res_all, _, _, = getmatch.get_matches(input_data)
+                    res_all, _, _, = get_match.search_muxrays(input_data)
                     peakfind_res[dataset.detector][peak] = res_all
 
                 Plot_Peak_Location(self.axs[i], dataset.x, dataset.y, peak_indices)

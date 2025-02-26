@@ -4,7 +4,7 @@ import json
 from PyQt6.QtWidgets import QMainWindow, QTreeWidgetItem, QTableWidgetItem, QMessageBox
 from functools import partial
 
-from EVA.core.data_searching.getmatch import get_matches
+from EVA.core.data_searching.get_match import search_muxrays
 from EVA.windows.periodic_table.periodic_table import Ui_MainWindow
 from EVA.util.path_handler import get_path
 from EVA.util.transition_utils import to_iupac
@@ -125,10 +125,10 @@ class PeriodicTableWidget(QMainWindow, Ui_MainWindow):
                                        QMessageBox.StandardButton.Ok)
             return
 
-        res, _, _ = get_matches([[energy, error]])
+        res, _, _ = search_muxrays([[energy, error]])
 
         for r in res:
-            if r["error"] == error: # Only get results that are within the search width (getmatch will get matches within
+            if r["error"] == error: # Only get results that are within the search width (get_match will get matches within
                 # 1x error, 2x error and 3x error)
                 line = f"{r["energy"]:.4f}\t{r["transition"]}\t{to_iupac(r["transition"])}\t{r["element"]}\n"
                 self.x_ray_search.insertPlainText(line)

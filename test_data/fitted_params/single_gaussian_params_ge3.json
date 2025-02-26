@@ -1,0 +1,39 @@
+{
+    "background": {
+        "a": {
+            "value": 0.0,
+            "stderr": 0,
+            "vary": false
+        },
+        "b": {
+            "value": 0.0,
+            "stderr": 0,
+            "vary": false
+        },
+        "c": {
+            "value": 0.0,
+            "stderr": 0,
+            "vary": false
+        }
+    },
+    "p0": {
+        "amplitude": {
+            "value": 150,
+            "stderr": 0,
+            "vary": true,
+            "min": 0.0
+        },
+        "center": {
+            "value": 190,
+            "stderr": 0,
+            "vary": true,
+            "min": 0.0
+        },
+        "sigma": {
+            "value": 0.3,
+            "stderr": 0,
+            "vary": true,
+            "min": 0.0
+        }
+    }
+}

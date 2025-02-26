@@ -3,7 +3,7 @@ EVA is a data analysis and visualisation tool to be used with MuX at ISIS.
 
 ---
 # User Manual
-A full user manual can be found in EVA under the "Help" tab. Alternatively you can find the HTML manual [here](./src/EVA/resources/Manual/manual.html) - just open it with a browser.
+A full user manual can be found in EVA under the "Help" tab. Alternatively you can find the HTML manual [here](src/EVA/resources/manual/manual.html) - just open it with a browser.
 
 ---
 # Installing and building EVA from source

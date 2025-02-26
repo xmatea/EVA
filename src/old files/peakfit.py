@@ -24,7 +24,7 @@ from PyQt6.QtWidgets import (
 from EVA.widgets.plot import plot_widget
 from EVA.core.app import get_app, get_config
 from EVA.core.plot import plotting
-from EVA.util import Trimdata
+from EVA.util import trim_data
 
 class PeakFit(QWidget):
     def __init__(self, detector):

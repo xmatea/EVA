@@ -6,7 +6,7 @@ from pytestqt.plugin import qtbot
 from matplotlib.backend_bases import MouseButton
 
 from EVA.windows.plot_analysis.plot_analysis_widget import PlotAnalysisWidget
-from EVA.core.data_loading import loaddata
+from EVA.core.data_loading import load_data
 from EVA.core.app import get_app, get_config
 
 import tests.gui.test_util_gui as util
@@ -27,7 +27,7 @@ class TestPlotWindow:
         get_config()["GE3"]["show_plot"] = "yes"
         get_config()["GE4"]["show_plot"] = "no"
 
-        run, _ = loaddata.load_run(2630, get_config())
+        run, _ = load_data.load_run("2630", get_config())
 
         self.window = PlotAnalysisWidget(run)
         qtbot.addWidget(self.window)

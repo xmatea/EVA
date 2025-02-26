@@ -1,0 +1,58 @@
+{
+    "background": {
+        "background": {
+            "a": {
+                "value": 0,
+                "vary": true
+            },
+            "b": {
+                "value": 0,
+                "vary": true
+            },
+            "c": {
+                "value": 0,
+                "vary": true
+            }
+        }
+    },
+    "peaks": {
+        "p1": {
+            "center": {
+                "value": 189.65677826219977,
+                "vary": true,
+                "min": 0
+            },
+            "sigma": {
+                "value": 0.7,
+                "vary": true,
+                "min": 0
+            },
+            "amplitude": {
+                "value": 662.2864003205651,
+                "vary": true,
+                "min": 0
+            }
+        },
+        "p2": {
+            "center": {
+                "value": 191.6948409131537,
+                "vary": true,
+                "min": 0
+            },
+            "sigma": {
+                "value": 0.7,
+                "vary": true,
+                "min": 0
+            },
+            "amplitude": {
+                "value": 339.52657231623914,
+                "vary": true,
+                "min": 0
+            }
+        }
+    },
+    "x_range": [
+        184.06,
+        197.29
+    ]
+}

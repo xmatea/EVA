@@ -142,7 +142,7 @@ class MainPresenter(object):
 
     def load_run_num(self):
         try:
-            run_num = int(self.view.get_run_num_line_edit())
+            run_num = self.view.get_run_num_line_edit()
         except (ValueError, AttributeError):
             self.view.show_error_box("Invalid run number!")
             return
