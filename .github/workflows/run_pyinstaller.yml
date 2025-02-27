@@ -18,8 +18,3 @@ jobs:
           requirements: 'requirements.txt'
           upload_exe_with_name: 'EVA'
           options: --onefile, --name "EVA", --windowed
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: EVA
-          path: dist/
