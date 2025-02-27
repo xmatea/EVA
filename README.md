@@ -1,33 +1,19 @@
 # EVA - Elemental Visual Analysis
-EVA is a data analysis and visualisation tool to be used with MuX at ISIS. 
+EVA is a data analysis and visualisation tool to be used with MuX at ISIS. Documentation can be found [here](https://isismuon.github.io/EVA/index.html).
 
----
-# User Manual
-A full user manual can be found in EVA under the "Help" tab. Alternatively you can find the HTML manual [here](src/EVA/resources/manual/manual.html) - just open it with a browser.
+### Installing on Windows 64-bit systems
+Download the zip file under the "releases" panel on GitHub. Extract to a destination of choice, and start by running `main/EVA.exe` Note: Do not move the executable out of the `main` folder. If you would like quick access you can set up a shortcut instead.
 
----
-# Installing and building EVA from source
-Download the project and unzip to a destination of your choice. 
-It is highly recommended you make a virtual environment before running EVA.
+### Installing on other systems
+To run EVA on other systems you will have to build it from source. Download the source code and unzip to a destination of your choice. Make sure you have C++ build tools installed. It is highly recommended you setup a virtual environment before running EVA.
 
 Once in your virtual environment, install all requirements:
 ```
 pip install -r "requirements.txt"
 ```
-After `pip` has installed all requirements, install an editable build of the program:
-```
-pip install -e .
-```
-The above command will install a build of EVA which will update automatically as changes are made. EVA will not run unless there is a build present.
 
-Once this is done you can start EVA by running `main.py` in src/EVA.
+After this, you can start the program by running `src/EVA/main.py`. If this fails to run, you may need to run
 
-## How to build the .exe
-EVA uses Pyinstaller to compile the python script into an executable file. To build the executable, run
 ```
-pyinstaller EVA.spec
+pip install .
 ```
-
-Use the flag `--noconfirm` if you want to ignore the overwrite warning.
-
-After this you can find the EVA.exe in the `dist` folder at root level.
