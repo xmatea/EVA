@@ -1,3 +1,7 @@
 __pycache__
 build
 dist
+docs/doctrees
+docs/html
+src/EVA/core/settings/config.ini
+EVA.log

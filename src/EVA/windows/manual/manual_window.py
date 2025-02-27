@@ -1,3 +1,4 @@
+import os
 import sys
 from PyQt6.QtWidgets import (
     QVBoxLayout,
@@ -36,7 +37,7 @@ class ManualWindow(QWidget):
 
         # check if EVA is running in executable or from source
         if hasattr(sys, "_MEIPASS"):
-            manual = manual.replace("./", "_internal/")
-            print(manual)
+            bundle_dir = getattr(sys, '_MEIPASS')
+            manual = manual.replace("./", f"{bundle_dir}/")
 
         return manual

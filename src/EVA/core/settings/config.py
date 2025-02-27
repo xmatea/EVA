@@ -1,3 +1,4 @@
+import os.path
 from configparser import ConfigParser
 import logging
 
@@ -32,15 +33,15 @@ class Config:
         self.default_parser = ConfigParser()
         self.default_parser.read(default_config_path)
 
-        # Try to load saved settings, if not found, create new config file and load default settings
-        try:
-            self.parser.read(config_path)
-            logger.debug("Loading configuration from config.ini")
-        except FileNotFoundError:
+        # if config.ini does not exist, create new config file from defaults settings
+        if not os.path.exists(config_path):
             with open(config_path, "w") as file:
-                logger.debug("Creating new configuration file from defaults.")
+                logger.debug("Creating new configuration file from defaults.ini")
                 self.default_parser.write(file)
-                file.close()
+
+        # read configurations from config.ini into ConfigParser
+        self.parser.read(config_path)
+        logger.debug("Loading configuration from config.ini")
 
     def save_config(self):
         """
@@ -88,5 +89,3 @@ class Config:
         Useful for reading arrays in config,ini as .ini format does not support array data types.
         """
         return input_str.split(" ")
-
-
