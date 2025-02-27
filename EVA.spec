@@ -8,7 +8,6 @@ a = Analysis(
     binaries=[],
     datas=[("src/EVA/databases", "src/EVA/databases"),
         ('src/EVA/resources', 'src/EVA/resources'),
-           ("src/EVA/core/settings/config.ini", "src/EVA/core/settings"),
            ("src/EVA/core/settings/defaults.ini", "src/EVA/core/settings"),
             ("src/srim", "srim"),
             ("icon.ico", ".")],
