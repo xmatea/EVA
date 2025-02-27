@@ -32,10 +32,17 @@ jobs:
           python-version: ${{ matrix.python-version }}  
       - name: Install dependencies  
         run: |  
-          python -m pip install --upgrade pip  
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip
           pip install .
-          py import srim
+      - name: Display system info
+        run: |
+          import sys
+          import os
+          print(sys.env)
+          print(os.environ['PATH'])
+          import srim
+          help(srim)
+        shell: python
       - name: Lint with Ruff  
         run: |  
           pip install ruff
