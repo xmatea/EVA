@@ -23,11 +23,11 @@ class MultiPlotPresenter:
 
     def start_multiplot(self):
         # plots multiple runs from the runlist and with a y offset
-        if len(self.model.loaded_runs) == 0 or not self.model.loaded_runs:
+        if not hasattr(self.model, "loaded_runs") or len(self.model.loaded_runs) == 0:
             logger.error("Cannot plot with no runs loaded.")
             self.view.display_error_message(
                 title="Multi-run plot error",
-                message="Error: You must specify at least one valid run number in the table and load it to plot.",
+                message="Error: You must specify at least one valid run number in the table and load multi spectra before plotting.",
             )
             return
         offset, _ = self.view.get_form_data()
