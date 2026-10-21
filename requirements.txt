@@ -10,6 +10,7 @@ contourpy==1.4.0
 cycler==0.12.1
 dill==0.4.1
 docutils==0.22.4
+git+https://github.com/ISISMuon/EVA@7f0812fc9476b4585fc7a74f1f3e9516cf286f97#egg=EVA
 fonttools==4.67.0
 git+https://gitlab.com/costrouc/pysrim.git@master
 h5py==3.16.0
