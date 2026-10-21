@@ -11,6 +11,7 @@ cycler==0.12.1
 dill==0.4.1
 docutils==0.22.4
 fonttools==4.67.0
+git+https://gitlab.com/costrouc/pysrim.git@master
 h5py==3.16.0
 idna==3.20
 imagesize==2.0.1
