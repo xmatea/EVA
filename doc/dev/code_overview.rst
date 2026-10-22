@@ -67,9 +67,7 @@ by the user, config.json is updated.
 
 pysrim implementation
 ------------------------
-Inside the src directory you'll find a modified version of pysrim, which is one of the dependencies for EVA.
-The src directory also contains a modified version of pysrim. Due to an update in PyYAML, the following modification
-has to be made in the pysrim/core/elementdb.py file (as of 28/10/24) in order for it to work properly.
+Previous versions of EVA (<2.4.1) contained a vendored (modified copy) version of pysrim (under src/srim) due to a bug in the version of pysrim available on pypi. The fix was to change srim/core/elementdb.py:
 
 From
 
@@ -90,11 +88,15 @@ to
     dbpath = os.path.join(srim.__path__[0], 'data', 'elements.yaml')
     return yaml.load(open(dbpath, "r"), Loader=yaml.FullLoader)
 
+However this fix has been implemented in the main repository, just not updated on pypi,
+so this has since been fixed by installing a clone of the repo:
 
-This modification has been made to a copy of pysrim located under src/, but the copy can be removed in the future if
-the error is patched in the main repository.
+.. code-block::
 
+    pip install git+https://gitlab.com/costrouc/pysrim.git@master
 
+Note that the pysrim repository uses git LFS which fails_ to clone and install when installing using Git versions <=v2.45.1 (`git archive`_)
 
+.. _fails: https://github.com/git-lfs/git-lfs/issues/5749
 
-
+.. _git archive: https://lore.kernel.org/git/xmqqr0dheuw5.fsf@gitster.g/T/#u

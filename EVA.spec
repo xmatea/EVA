@@ -1,7 +1,11 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 from PyInstaller.utils.hooks import collect_data_files
-from PyInstaller.utils.hooks import collect_submodules
+from PyInstaller.utils.hooks import collect_submodules, collect_all
+
+# collect all data from srim
+pysrim_datas, _, pysrim_hiddenimports = collect_all("srim")
+
 a = Analysis(
     ['src/EVA/main.py', 'EVA.spec'],
     pathex=[],
@@ -10,10 +14,9 @@ a = Analysis(
         ('src/EVA/resources', 'src/EVA/resources'),
            ("src/EVA/core/settings/defaults.json", "src/EVA/core/settings"),
            ("src/EVA/core/settings/srim_defaults.txt", "src/EVA/core/settings"),
-            ("src/srim", "srim"),
             ("src/g4bl/data", "g4bl/data"),
-            ("icon.ico", ".")],
-    hiddenimports=['h5py._npystrings'],
+            ("icon.ico", ".")] + pysrim_datas,
+    hiddenimports=['h5py._npystrings'] + pysrim_hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
