@@ -12,7 +12,7 @@ dill==0.4.1
 docutils==0.22.4
 git+https://github.com/ISISMuon/EVA@7f0812fc9476b4585fc7a74f1f3e9516cf286f97#egg=EVA
 fonttools==4.67.0
-git+https://gitlab.com/costrouc/pysrim.git@master
+git+https://gitlab.com/costrouc/pysrim.git@b08dc6ce3d65ac04777ca401c7f93c70ddd6bde7
 h5py==3.16.0
 idna==3.20
 imagesize==2.0.1
